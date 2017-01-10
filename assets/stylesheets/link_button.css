@@ -1,0 +1,8 @@
+button.link_button {
+    border: none;
+    background: transparent;
+}
+
+button.link_button:hover {
+    cursor: pointer;
+}

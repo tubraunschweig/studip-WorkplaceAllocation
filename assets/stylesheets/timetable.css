@@ -1,0 +1,54 @@
+div.timetable {
+    position: relative;
+}
+
+div.timetable div.time {
+    display: block;
+    height: 2rem;
+    font-size: 1rem;
+    color: grey;
+
+    border-bottom: 1px solid grey;
+    box-sizing: border-box;
+
+    z-index: -50;
+}
+
+div.timetable div.time:nth-last-of-type(1) {
+    border-bottom: none;
+}
+
+div.timetable div.schedules {
+    position: absolute;
+    left: 5rem;
+    top: 0;
+}
+
+div.timetable div.schedules .schedule {
+    display: block;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    width: inherit;
+}
+
+div.timetable div.schedules .booked {
+    display: block;
+    box-sizing: border-box;
+
+    width: inherit;
+    border: 1px solid red;
+    padding: 0 15px;
+    color: red;
+    margin-right: 0.6em;
+    background: white;
+}
+
+div.timetable div.schedules .booked span {
+    display: inline-block;
+    vertical-align: middle;
+}
+div.timetable div.schedules .booked span svg,  div.timetable div.schedules .booked span svg image {
+    height: 1em;
+}

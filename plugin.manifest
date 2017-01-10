@@ -1,0 +1,11 @@
+pluginname=Arbeitsplatzvergabe
+pluginclassname=WorkplaceAllocation
+origin=tu-braunschweig
+version=0.1b45
+studipMinVersion=3.3
+
+dbscheme=sql/install.sql
+uninstalldbscheme=sql/uninstall.sql
+
+category=Kommunikation und Zusammenarbeit
+descriptionshort=Vergabetool f&#252;r Studierenden Arbeitspl&#228;tze
