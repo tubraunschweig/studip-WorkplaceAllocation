@@ -10,19 +10,26 @@
  * Time: 11:01
  */
 
-class CronJobBlacklist extends Migration {
+class RegisterBlacklistCronjob extends Migration {
 
-    const FILENAME = __DIR__.'/cronjobs/blacklist_cronjob.php';
+    private $FILENAME;
+
+    public function __construct()
+    {
+        $this->FILENAME = str_replace('/migrations', '', __DIR__) . '/cronjobs/blacklist_cronjob.php';
+
+        $this->FILENAME = substr($this->FILENAME, strpos($this->FILENAME, 'public/'));
+    }
 
     public function up(){
-        $task_id = CronjobScheduler::registerTask(self::FILENAME, true);
+        $task_id = CronjobScheduler::registerTask($this->FILENAME, true);
 
         CronjobScheduler::schedulePeriodic($task_id, 20, 0);
     }
 
     public function down()
     {
-        $task_id = CronjobTask::findOneByFilename(self::FILENAME)->task_id;
-        CronjobScheduler::unregisteredTask($task_id);
+        $task_id = CronjobTask::findOneByFilename($this->FILENAME)->task_id;
+        CronjobScheduler::unregisterTask($task_id);
     }
 }
