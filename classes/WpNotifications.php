@@ -75,7 +75,7 @@ class WpNotifications
     private function getMessage($parsed = true)
     {
 
-        require_once(PluginEngine::getPlugin(WorkplaceAllocation::class)->getPluginPath().'/conf/default_mesage_texts.php');
+        require_once(__DIR__.'/../conf/default_mesage_texts.php');
         global $defaultMessageTexts;
         $message = $defaultMessageTexts[$this->notificationId]['message'];
 
