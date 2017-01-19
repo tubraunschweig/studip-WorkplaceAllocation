@@ -1,10 +1,10 @@
-CREATE TABLE wp_blacklist
+CREATE TABLE IF NOT EXISTS wp_blacklist
 (
   user_id VARCHAR(255) NOT NULL,
   context_id VARCHAR(255) NOT NULL,
   expiration INT(11)
 );
-CREATE TABLE wp_messages
+CREATE TABLE IF NOT EXISTS wp_messages
 (
   id VARCHAR(255) PRIMARY KEY NOT NULL,
   context_id VARCHAR(255) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE wp_messages
   message TEXT,
   active TINYINT(4)
 );
-CREATE TABLE wp_rules
+CREATE TABLE IF NOT EXISTS wp_rules
 (
   id VARCHAR(255) PRIMARY KEY NOT NULL,
   start VARCHAR(31),
@@ -26,7 +26,7 @@ CREATE TABLE wp_rules
   one_schedule_by_day_and_user TINYINT(1),
   days INT(11)
 );
-CREATE TABLE wp_schedule
+CREATE TABLE IF NOT EXISTS wp_schedule
 (
   id VARCHAR(255) PRIMARY KEY NOT NULL,
   user_id VARCHAR(255),
@@ -36,7 +36,7 @@ CREATE TABLE wp_schedule
   comment TEXT,
   type ENUM('normal', 'blocked')
 );
-CREATE TABLE wp_waiting_list
+CREATE TABLE IF NOT EXISTS wp_waiting_list
 (
   counter INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   workplace_id VARCHAR(255),
@@ -44,7 +44,7 @@ CREATE TABLE wp_waiting_list
   day INT(11),
   insertion_timestamp INT(11)
 );
-CREATE TABLE wp_workplaces
+CREATE TABLE IF NOT EXISTS wp_workplaces
 (
   id VARCHAR(255) PRIMARY KEY NOT NULL,
   name VARCHAR(255),
