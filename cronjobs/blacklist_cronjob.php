@@ -37,6 +37,7 @@ class BlacklistCronJob extends CronJob {
      */
     public function execute($last_result, $parameters = array())
     {
-        DBManager::get()->execute("DELETE FROM wp_blacklist WHERE expiration < ?", array(new DateTime()));
+        $now = new DateTime();
+        DBManager::get()->execute("DELETE FROM wp_blacklist WHERE expiration < ?", array($now->getTimestamp()));
     }
 }
