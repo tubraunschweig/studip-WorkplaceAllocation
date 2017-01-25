@@ -405,10 +405,15 @@ class Rule
         $endTime = clone $day;
         $endTime->add($this->end);
 
-        $pauseStart = clone $day;
-        $pauseStart->add($this->pauseStart);
-        $pauseEnd = clone $day;
-        $pauseEnd->add($this->pauseEnd);
+        $hasPause = false;
+        if($this->pauseStart != null && $this->pauseEnd != null) {
+            $pauseStart = clone $day;
+            $pauseStart->add($this->pauseStart);
+            $pauseEnd = clone $day;
+            $pauseEnd->add($this->pauseEnd);
+
+            $hasPause = true;
+        }
 
         $schedules = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start > ? AND start < ? ORDER BY start ASC", array($workplace->getId(), $day->getTimestamp(), $endOfDay->getTimestamp()));
 
@@ -421,7 +426,7 @@ class Rule
             $testTime->add($this->slotDuration);
 
 
-            if($testTime >= $pauseStart && $time < $pauseEnd) {
+            if($hasPause == true && $testTime >= $pauseStart && $time < $pauseEnd) {
                 $time = clone  $pauseEnd;
             } else {
                 if($schedule->getStart() > $time && $time->diff($schedule->getStart())->format('%h%I') >= $this->slotDuration->format('%h%I') && $this->isBookable($time,$this->slotDuration,$workplace, $admin)) {
