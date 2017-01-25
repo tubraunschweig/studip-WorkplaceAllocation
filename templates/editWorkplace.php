@@ -9,14 +9,13 @@
  * Time: 12:35
  *
  * @var Workplace $workplace workplace to edit
- * @var bool $error is an error occurred
- * @var String[] $errorDetails details of occurred error
+ * @var String[] $messageBoxes message boxes to display
  */
 
-
-if($error)
-{
-    print(MessageBox::error(_("Bitte beheben Sie erst folgende Fehler, bevor Sie fortfahren:"), $errorDetails));
+if (isset($messageBoxes) && sizeof($messageBoxes) > 0) {
+    foreach ($messageBoxes as $messageBox) {
+        print($messageBox);
+    }
 }
 
 $rule = $workplace->getRule();

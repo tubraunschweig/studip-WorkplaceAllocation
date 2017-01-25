@@ -349,6 +349,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
         $rule = $workplace->getRule();
 
 
+        /** @var string[] $messageBoxes */
+        $messageBoxes = array();
         $errorDetails = array();
         $error = false;
         
@@ -406,15 +408,20 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
                     }
                 }
 
+                $messageBoxes[] = MessageBox::success(
+                    'Erfolgreich gespeichert',
+                    array('<a href="'.PluginEngine::getLink('WorkplaceAllocation',array(),'admin').'">Zurück zur Übersicht</a>'));
             }
+        }
+        if($error) {
+            $messageBoxes[] = MessageBox::error(_("Bitte beheben Sie erst folgende Fehler, bevor Sie fortfahren:"), $errorDetails);
         }
         
         /** @var Flexi_Template $template */
         $template = $this->templateFactory->open('editWorkplace');
         $template->set_layout($GLOBALS['template_factory']->open('layouts/base'));
         $template->set_attribute('workplace', $workplace);
-        $template->set_attribute('error', $error);
-        $template->set_attribute('errorDetails', $errorDetails);
+        $template->set_attribute('messageBoxes', $messageBoxes);
         
         print($template->render());
     }
