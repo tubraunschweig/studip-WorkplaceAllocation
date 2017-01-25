@@ -748,6 +748,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
                 $message->$key = $item;
             }
             $message->store();
+
+            header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail'));
         }
 
         Navigation::activateItem('/course/admin/workplaces');
