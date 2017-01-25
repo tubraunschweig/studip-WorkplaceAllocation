@@ -533,10 +533,12 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
 
         if(Request::isPost())
         {
+            $success = true;
             if(isset($_POST['s_duration']) && $admin) {
                 $duration = new DateInterval($_POST['s_duration']);
                 if(!$schedule->setDuration($duration)) {
                     $messageBoxes[] = MessageBox::error('Die &#196;nderung der Terminl&#228;nge ist nicht zul&#228;ssig');
+                    $success = false;
                 }
             }
             if(isset($_POST['s_comment']) && $schedule->getOwner()->getUserid() == get_userid()) {
@@ -545,6 +547,17 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
             if(isset($_POST['s_owner']) && $admin) {
                 $newOwner = new StudipUser($_POST['s_owner']);
                 $schedule->setOwner($newOwner);
+            }
+
+            if ($success) {
+
+                $backLink = PluginEngine::getLink(
+                    'WorkplaceAllocation',
+                    array('wp_id' => $schedule->getWorkplace()->getId(),
+                          'day' => $schedule->getStart()->format('d.m.Y')),
+                    $admin ? 'addSchedule' : 'timetable');
+
+                $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert", array("<a href='".$backLink."'>zurück</a>"));
             }
         }
 
