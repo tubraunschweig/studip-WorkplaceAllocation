@@ -342,8 +342,6 @@ class Rule
 
         $now = new DateTime();
 
-        $feiertageConnector = LPLib_Feiertage_Connector::getInstance();
-
         $startCheckTime = clone $now;
         $endCheckTime = clone $now;
         if($startCheckTime->add($this->registrationStart)->sub($this->start) < $day && !$admin) {
@@ -367,9 +365,6 @@ class Rule
             return false;
         }
         if(!$this->getDay($numberOfDay)) {
-            return false;
-        }
-        if($feiertageConnector->isFeiertagInLand($day->format('d.m.Y'), LPLib_Feiertage_Connector::LAND_NIEDERSACHSEN)) {
             return false;
         }
         return true;
