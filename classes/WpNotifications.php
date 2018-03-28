@@ -53,7 +53,8 @@ class WpNotifications
      */
     public function sendNotification()
     {
-        PersonalNotifications::add($this->userIds, $this->url, $this->getMessage(), null, $this->avatar);
+        $html_id = md5(join('',$this->userIds).time().'workplace'.$this->notificationId);
+        PersonalNotifications::add($this->userIds, $this->url, $this->getMessage(), $html_id, $this->avatar);
         $messages = WpMessages::findBySQL('context_id = ? AND hook_point = ?', array($this->contextId, $this->notificationId));
         if(sizeof($messages) > 0) {
             foreach ($messages as $message){
