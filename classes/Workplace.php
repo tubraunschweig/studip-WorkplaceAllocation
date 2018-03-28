@@ -203,7 +203,6 @@ class Workplace
         DBManager::get()->execute("DELETE FROM wp_workplaces WHERE id = ?", array($this->id));
         DBManager::get()->execute("DELETE FROM wp_rules WHERE id = ?", array($this->getRule()->getId()));
         DBManager::get()->execute("DELETE FROM wp_schedule WHERE workplace_id = ?", array($this->id));
-        unset($this);
     }
 
     /**

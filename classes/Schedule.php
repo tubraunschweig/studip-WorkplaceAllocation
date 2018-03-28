@@ -297,8 +297,6 @@ class Schedule
         );
         $notification->setContext($this->workplace->getContextId());
         $notification->sendNotification();
-
-        unset($this);
     }
 
     /*
