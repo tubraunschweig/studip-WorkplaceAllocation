@@ -31,7 +31,6 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
         require_once __DIR__."/classes/Rule.php";
         require_once __DIR__."/classes/Schedule.php";
         require_once __DIR__."/classes/WaitingList.php";
-        require_once __DIR__."/lib/LPLib_Feiertage_Connector.php";
         require_once __DIR__."/classes/Blacklist.php";
         require_once __DIR__."/classes/WpNotifications.php";
         require_once __DIR__."/classes/WpMessages.php";
@@ -781,10 +780,6 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
         } else {
             $workplaces = Workplace::getWorkplacesByContext($_GET['cid']);
         }
-
-        require_once(__DIR__.'/lib/TCPDF/tcpdf.php');
-
-        /** @noinspection PhpUndefinedClassInspection */
         $pdf = new TCPDF();
 
         //document information
