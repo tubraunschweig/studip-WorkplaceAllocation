@@ -30,6 +30,18 @@ class Blacklist implements IteratorAggregate
     }
 
     /**
+     * get the size of the Blacklist
+     *
+     * @return int size of list
+     */
+    public function list_size() {
+        $data = DBManager::get()->fetchAll("SELECT * FROM wp_blacklist WHERE context_id = ?",
+            array($this->context_id));
+
+        return sizeof($data);
+    }
+
+    /**
      * Check if user is on blacklist
      *
      * @param string $user_id

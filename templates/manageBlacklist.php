@@ -33,24 +33,31 @@
     </thead>
     <tbody>
     <?php
-    foreach($blacklist as $entry){
-        /** @var StudIPUser $user */
-        $user = $entry['user'];
-        /** @var DateTime $expiration */
-        $expiration = $entry['expiration']
+    if ($blacklist->list_size() > 0) {
+        foreach ($blacklist as $entry) {
+            /** @var StudIPUser $user */
+            $user = $entry['user'];
+            /** @var DateTime $expiration */
+            $expiration = $entry['expiration']
+            ?>
+            <tr>
+                <td><?= $user->getSurname() ?>, <?= $user->getGivenname() ?></td>
+                <td><?= $user->getUsername() ?></td>
+                <td><?= $expiration != null ? $expiration->format('d.m.Y') : _('Unbegrenzt') ?></td>
+                <td style="text-align: right;">
+                    <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>"
+                          method="post">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="user_id" value="<?= $user->getUserid() ?>">
+                        <button type="submit" class="link_button"><?= Assets::img('icons/20/blue/trash') ?></button>
+                    </form>
+                </td>
+            </tr>
+            <?php
+        }
+    } else {
         ?>
-        <tr>
-            <td><?= $user->getSurname() ?>, <?= $user->getGivenname() ?></td>
-            <td><?= $user->getUsername() ?></td>
-            <td><?= $expiration != null ? $expiration->format('d.m.Y') : _('Unbegrenzt') ?></td>
-            <td style="text-align: right;">
-                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>" method="post">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="user_id" value="<?= $user->getUserid() ?>">
-                    <button type="submit" class="link_button"><?= Assets::img('icons/20/blue/trash') ?></button>
-                </form>
-            </td>
-        </tr>
+        <tr><td colspan="4" style="text-align: center">Aktuell sind keine Personen auf der Sperrliste.</td></tr>
         <?php
     }
     ?>
