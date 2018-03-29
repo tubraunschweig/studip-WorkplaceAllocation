@@ -10,7 +10,7 @@
  * Time: 11:01
  */
 
-require_once '../cronjobs/blacklist_cronjob.php';
+require_once __DIR__.'/../cronjobs/blacklist_cronjob.php';
 
 class RegisterBlacklistCronjob extends Migration {
 
