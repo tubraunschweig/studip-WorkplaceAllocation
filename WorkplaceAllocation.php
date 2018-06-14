@@ -13,7 +13,7 @@
  * Date: 09.05.16
  * Time: 10:26
  */
-class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
+class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, HomepagePlugin
 {
     /** @var Flexi_TemplateFactory */
     private $templateFactory;
@@ -37,6 +37,19 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
         
         $this->templateFactory = new Flexi_TemplateFactory($this->getPluginPath().'/templates');
 
+        $currentUser = new StudIPUser(get_userid());
+
+        if(!isset($_REQUEST['username']) || $_REQUEST['username'] == $currentUser->username) {
+
+            /** @var Navigation $profileNavigation */
+            $profileNavigation = Navigation::getItem('/profile');
+
+            $mySchedules = new Navigation("Arbeitspl&#228;tze", PluginEngine::getURL("WorkplaceAllocation", array(), 'my_schedules'));
+            $mySchedules->setImage('icons/16/white/computer');
+            $mySchedules->setActiveImage('icons/16/black/computer');
+
+            $profileNavigation->addSubNavigation('workplace_schedules', $mySchedules);
+        }
 
     }
 
@@ -194,12 +207,12 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
             "icons/blue/16/community"
         );
         $actionsWidget->addLink(
-            "Mailbenachrichtigungen verwalten",
+            "Benachritigungstexte verwalten",
             PluginEngine::getLink("WorkplaceAllocation", array(), "manageMail"),
             "icons/blue/16/mail"
         );
         $actionsWidget->addLink(
-            "Alle Arbeitsplätze drucken",
+            "Alle Arbeitspl&#228;tze drucken",
             PluginEngine::getLink("WorkplaceAllocation", array(), "pdf"),
             "icons/blue/16/print",
             array('target' => '_blank')
@@ -641,7 +654,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
                             $falseResponse = $_POST;
                             $falseResponse['add'] = false;
                             print(createQuestion2(
-                                "Möchten sie den Nutzer \"".$user->getGivenname()." ".$user->getSurname()." (".$user->getUsername().")\" wirklich zur Sperrliste hinzufügen?",
+                                "Möchten sie den Nutzer \"".$user->getGivenname()." ".$user->getSurname()." (".$user->getUsername().")\" wirklich zur Sperrliste hinzufügen und in der Zeit der Sperrung alle Reservierungen löschen?",
                                 $trueResponse,
                                 $falseResponse,
                                 "?cid=".$_GET['cid']
@@ -653,6 +666,13 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
                                 $time = new DateTime();
                                 $today = new DateTime($time->format('d.m.Y'));
                                 $expiration = $today->getTimestamp() + ($_POST['expiration'] * 24 * 60 * 60) -1;
+                            }
+                            $user_schedules = Schedule::getSchedulesByUser($user->getUserid());
+                            $expirationDatetime = new DateTime('@'.$expiration);
+                            foreach ($user_schedules as $schedule) {
+                                if ($expiration == null || $schedule->getStart() < $expirationDatetime) {
+                                    $schedule->deleteSchedule();
+                                }
                             }
                             Blacklist::getBlacklist()->addToList($user->getUserid(), $expiration);
                         }
@@ -764,6 +784,28 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
     }
 
     /**
+     * show all schedules of current user
+     *
+     * @throws AccessDeniedException
+     */
+    public function my_schedules_action() {
+        $currentUser = new StudIPUser(get_userid());
+
+        if(isset($_REQUEST['username']) && $_REQUEST['username'] != $currentUser->username) {
+            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        }
+
+        Navigation::activateItem('/profile/workplace_schedules');
+
+        /** @var Flexi_Template $template */
+        $template = $this->templateFactory->open('user_schedules');
+        $template->set_layout($GLOBALS['template_factory']->open('layouts/base'));
+        $template->set_attribute('schedules', Schedule::getSchedulesByUser(get_userid()));
+
+        print($template->render());
+    }
+
+    /**
      * route to get pdf export of timetable
      *
      * @throws AccessDeniedException
@@ -861,5 +903,24 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin
         }
 
         print($pdf->Output('studip_arbeitsplatz.pdf', 'I'));
+    }
+
+    /**
+     * Return a template (an instance of the Flexi_Template class)
+     * to be rendered on the given user's home page. Return NULL to
+     * render nothing for this plugin.
+     *
+     * The template will automatically get a standard layout, which
+     * can be configured via attributes set on the template:
+     *
+     *  title        title to display, defaults to plugin name
+     *  icon_url     icon for this plugin (if any)
+     *  admin_url    admin link for this plugin (if any)
+     *  admin_title  title for admin link (default: Administration)
+     *
+     * @return object   template object to render or NULL
+     */
+    function getHomepageTemplate($user_id) {
+        return null;
     }
 }

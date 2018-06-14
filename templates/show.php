@@ -39,6 +39,11 @@
         </tr>
         <?php
     }
+    $blacklist = Blacklist::getBlacklist();
+    $isOnBlacklist = $blacklist->isOnList(get_userid());
+    if ($isOnBlacklist) {
+        $blacklistExpiration = $blacklist->getExpiration(get_userid());
+    }
     foreach ($workplaces as $workplace)
     {
         if($workplace->isActive()) {
@@ -59,10 +64,12 @@
                     tooltipIcon($workplace->getDescription()) ?>
                 </td>
                 <td>
+                    <?php if (!($isOnBlacklist && ($blacklistExpiration == null || $blacklistExpiration >= $quickBookDay))):?>
                     <form action="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId(), "day" => $quickBookDay->format('d.m.Y')), "timetable") ?>" method="post">
                         <input type="hidden" name="next_schedule" value="true">
                         <?= $quickBookButton ?>
                     </form>
+                    <?php endif; ?>
                 </td>
             </tr>
             <?php

@@ -323,6 +323,16 @@ class Rule
                 return false;
             }
         }
+        $user_schedules = Schedule::getSchedulesByUser(get_userid());
+        foreach ($user_schedules as $schedule) {
+            if ($schedule->getWorkplace() === $workplace) {
+                $scheduleEnd = clone $schedule->getStart();
+                $scheduleEnd->add($schedule->getDuration());
+                if(($schedule->getStart() >= $start && $schedule->getStart() < $end) || ($scheduleEnd > $start && $scheduleEnd <= $end) || ($schedule->getStart() < $start && $scheduleEnd > $end)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 

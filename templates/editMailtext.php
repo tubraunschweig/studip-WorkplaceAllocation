@@ -15,7 +15,7 @@ require_once(__DIR__.'/../conf/default_mesage_texts.php');
 global $defaultMessageTexts;
 ?>
 
-<h1>Mailtext bearbeiten</h1>
+<h1>Benachrichtigungstexte bearbeiten</h1>
 <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail') ?>">zurück</a>
 <br>
 <br>

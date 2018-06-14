@@ -371,4 +371,30 @@ class Schedule
 
         return self::getSchedule($id);
     }
+
+    /**
+     *
+     * get all schedules of given user
+     *
+     * @param int $userId
+     * @return Schedule[] schedules of given user
+     */
+    static public function getSchedulesByUser($userId)
+    {
+        $data = DBManager::get()->fetchAll('SELECT id FROM wp_schedule WHERE user_id = ?', array($userId));
+
+        $returnArray = [];
+
+        foreach ($data as $d) {
+            $schedule = self::getSchedule($d['id']);
+            $schedule_end = clone $schedule->getStart();
+            $schedule_end->add($schedule->getDuration());
+            $now = new DateTime();
+            if ($schedule_end > $now) {
+                $returnArray[] = $schedule;
+            }
+        }
+
+        return $returnArray;
+    }
 }

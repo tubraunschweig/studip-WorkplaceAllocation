@@ -16,7 +16,7 @@
 
 <table class="default">
     <caption>
-Sperrliste
+Benachrichtigungstexte
     </caption>
     <colgroup>
         <col>
@@ -38,7 +38,7 @@ Sperrliste
         ?>
         <tr>
             <td><?= $defaultMessageText['meta'] ?></td>
-            <td><?= $studipMessage !== null && $studipMessage->active ? Assets::img('icons/20/green/accept') : Assets::img('icons/20/red/decline') ?></td>
+            <td><?= $studipMessage !== null && $studipMessage->active ? Assets::img('icons/20/green/accept').' (aktiv)' : Assets::img('icons/20/red/decline').' (inaktiv)' ?></td>
             <td style="text-align: right;">
                 <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('hook_point' => $hookPoint), 'editMailtext') ?>">
                     <?= Assets::img('icons/20/blue/edit') ?>

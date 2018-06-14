@@ -68,6 +68,12 @@ if($workplace->getRule() == null){
             <?= Studip\Button::create('Gesamten Tag blocken', null, array("type" => "submit"))?>
         </form>
     <?php
+
+    if(!$workplace->getRule()->isDayBookable($day, $admin, $workplace)) {
+        $mb = MessageBox::error('Für diesen Tag kann (noch) kein Termin reserviert werden.');
+        print($mb);
+    }
+
     endif;
     ?>
 

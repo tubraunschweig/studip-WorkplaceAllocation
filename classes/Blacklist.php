@@ -55,6 +55,26 @@ class Blacklist implements IteratorAggregate
     }
 
     /**
+     * get DateTime of user blacklist expiration
+     *
+     * @param string $user_id id of requested user
+     * @return DateTime|null datetime of expiration or null if no no expiration set or user not on list
+     */
+    public function getExpiration($user_id) {
+        if (!$this->isOnList($user_id)) {
+            return null;
+        }
+        $data = DBManager::get()->fetchFirst("SELECT * FROM wp_blacklist WHERE context_id = ? AND user_id = ?",
+            array($this->context_id, $user_id));
+
+        if($data['expiration'] == null) {
+            return null;
+        } else {
+            return new DateTime('@'.$data['expiration']);
+        }
+    }
+
+    /**
      * Add user to Blacklist
      *
      * @param string $user_id
