@@ -70,7 +70,7 @@ if($workplace->getRule() == null){
     <?php
 
     if(!$workplace->getRule()->isDayBookable($day, $admin, $workplace)) {
-        $mb = MessageBox::error('Für diesen Tag kann (noch) kein Termin reserviert werden.');
+        $mb = MessageBox::error('F&#252;r diesen Tag kann (noch) kein Termin reserviert werden.');
         print($mb);
     }
 

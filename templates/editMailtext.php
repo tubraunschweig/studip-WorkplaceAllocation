@@ -16,10 +16,10 @@ global $defaultMessageTexts;
 ?>
 
 <h1>Benachrichtigungstexte bearbeiten</h1>
-<a href="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail') ?>">zurück</a>
+<a href="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail') ?>">zur&#252;ck</a>
 <br>
 <br>
-<b>Einhängepunkt:</b> <?= $defaultMessageTexts[$_GET['hook_point']]['meta'] ?>
+<b>Einh&#228;ngepunkt:</b> <?= $defaultMessageTexts[$_GET['hook_point']]['meta'] ?>
 
 <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('hook_point' => $_GET['hook_point']), 'editMailtext') ?>" method="post" class="studip-form">
     <section>
@@ -31,6 +31,7 @@ global $defaultMessageTexts;
     </section>
     <section>
         <label for="text">Nachricht</label>
+        Die Zeichenkette [context] wird durch den Namen der Einrichtung ersetzt.<br>
         <textarea id="text" name="text" cols="75" rows="30"><?= $message != null ? $message->message : '' ?></textarea>
     </section>
     <?=\Studip\Button::create(

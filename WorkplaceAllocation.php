@@ -666,9 +666,9 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                                 $time = new DateTime();
                                 $today = new DateTime($time->format('d.m.Y'));
                                 $expiration = $today->getTimestamp() + ($_POST['expiration'] * 24 * 60 * 60) -1;
+                                $expirationDatetime = new DateTime('@'.$expiration);
                             }
                             $user_schedules = Schedule::getSchedulesByUser($user->getUserid());
-                            $expirationDatetime = new DateTime('@'.$expiration);
                             foreach ($user_schedules as $schedule) {
                                 if ($expiration == null || $schedule->getStart() < $expirationDatetime) {
                                     $schedule->deleteSchedule();

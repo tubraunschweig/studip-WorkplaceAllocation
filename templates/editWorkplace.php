@@ -82,7 +82,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
     </section>
     <section>
         <label>Pause:</label>
-        <input type="checkbox" name="daily_pause_exist" id="daily_pause_exist" <?= ($rule != null && $rule->hasPause()) ? 'checked' : ''?> title="Tägliche Pause aktivieren/deaktivieren"> Aktiv<br>
+        <input type="checkbox" name="daily_pause_exist" id="daily_pause_exist" <?= ($rule != null && $rule->hasPause()) ? 'checked' : ''?> title="Tï¿½gliche Pause aktivieren/deaktivieren"> Aktiv<br>
         von
         <input type="text" class="daily_pause" name="daily_pause_start_hour" maxlength="2" title="Beginn Stunde" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseStart() != null) ? $rule->getPauseStart()->format('%H') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
         :<input type="text" class="daily_pause" name="daily_pause_start_minute" maxlength="2" title="Beginn Minute" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseStart() != null) ? $rule->getPauseStart()->format('%I') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
@@ -110,14 +110,14 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
     </section>
     <section>
         <label>Anmeldezeitraum</label>
-        Start<br>
+        Im Voraus buchbar f&#252;r x<br>
         <select title="Anmeldezeitraum Start" name="registration_start">
             <option value="P7D" <? if($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P7D'){print("selected");} ?>>1 Woche</option>
             <option value="P14D" <? if($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P14D'){print("selected");} ?>>2 Wochen</option>
             <option value="P28D" <? if($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P28D'){print("selected");} ?>>4 Wochen</option>
         </select>
         <br>
-        Ende<br>
+        Buchbar bis x vor Termin<br>
         <select title="Anmeldezeitraum Ende" name="registration_end">
             <option value="P0D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P0D'){print("selected");} ?>>nie</option>
             <option value="P1D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P1D'){print("selected");} ?>>1 Tag</option>
