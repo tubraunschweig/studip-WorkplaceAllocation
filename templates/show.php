@@ -48,12 +48,14 @@
     {
         if($workplace->isActive()) {
 
+            $registrationEnd = (new DateTime())->sub($workplace->getRule()->getRegistrationEnd());
             $quickBookDay = new DateTime();
             $quickBookDay->add($workplace->getRule()->getRegistrationStart())->sub($workplace->getRule()->getStart());
 
-            /** @var \Studip\Button $quickBookButton */
-            $quickBookButton = Studip\Button::create('Termin am '.$quickBookDay->format('d.m.Y').' buchen', null, array("type" => "submit"));
-
+            while(!$workplace->getRule()->isDayBookable($quickBookDay, false) || $quickBookDay < $registrationEnd)
+            {
+                $quickBookDay = $quickBookDay->sub(new DateInterval('P1D'));
+            }
             ?>
             <tr>
                 <td>
@@ -64,10 +66,10 @@
                     tooltipIcon($workplace->getDescription()) ?>
                 </td>
                 <td>
-                    <?php if (!($isOnBlacklist && ($blacklistExpiration == null || $blacklistExpiration >= $quickBookDay))):?>
+                    <?php if (!($isOnBlacklist && ($blacklistExpiration == null || $blacklistExpiration >= $quickBookDay)) && $quickBookDay > $registrationEnd):?>
                     <form action="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId(), "day" => $quickBookDay->format('d.m.Y')), "timetable") ?>" method="post">
                         <input type="hidden" name="next_schedule" value="true">
-                        <?= $quickBookButton ?>
+                        <?= Studip\Button::create('Termin am ' . $quickBookDay->format('d.m.Y') . ' buchen', null, array("type" => "submit"));?>
                     </form>
                     <?php endif; ?>
                 </td>
