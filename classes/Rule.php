@@ -319,7 +319,7 @@ class Rule
             if(($schedule->getStart() <= $start && $scheduleEnd > $start) || ($schedule->getStart() < $end && $schedule->getStart() > $start)){
                 return false;
             }
-            if($this->oneScheduleByDayAndUser && $schedule->getOwner()->getUserid() == get_userid() && !$admin) {
+            if($this->oneScheduleByDayAndUser && $schedule->getOwner()->user_id == get_userid() && !$admin) {
                 return false;
             }
         }

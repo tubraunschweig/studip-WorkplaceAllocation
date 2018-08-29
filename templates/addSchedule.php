@@ -150,9 +150,9 @@ if($workplace->getRule() == null){
                     if(!$foundSchedule->isBlocked() || $admin) {
                         /*Print Red Box*/
                         print('<div class="schedule booked" style="min-height: ' . $scheduleHeight . 'rem; max-height: ' . $scheduleHeight . 'rem;">');
-                        if ($admin || $foundSchedule->getOwner()->getUserid() == get_userid()) {
+                        if ($admin || $foundSchedule->getOwner()->user_id == get_userid()) {
                             print('<span>
-                                ' . ($foundSchedule->isBlocked() ? 'Geblockt von':'').' '.$foundSchedule->getOwner()->getGivenname() . ' ' . $foundSchedule->getOwner()->getSurname() . '
+                                ' . ($foundSchedule->isBlocked() ? 'Geblockt von':'').' '.$foundSchedule->getOwner()->vorname . ' ' . $foundSchedule->getOwner()->nachname . '
                                 <a href="' . PluginEngine::getLink(
                                     "WorkplaceAllocation",
                                     array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),

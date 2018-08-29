@@ -15,7 +15,7 @@ class Schedule
 
     /** @var  String */
     private $id;
-    /** @var  StudipUser */
+    /** @var  User */
     private $owner;
     /** @var  Workplace */
     private $workplace;
@@ -42,7 +42,7 @@ class Schedule
     private function __construct($id, $userID, $workplaceID, $start, $duration, $comment = "", $blocked = false) {
 
         $this->id = $id;
-        $this->owner = new StudIPUser($userID);
+        $this->owner = User::findFull($userID);
         $this->workplace = Workplace::getWorkplace($workplaceID);
         $this->start = new DateTime('@'.$start);
         $this->start->setTimezone(new DateTimeZone('Europe/Berlin'));
@@ -64,7 +64,7 @@ class Schedule
     /**
      * Get schedule owner
      *
-     * @return StudipUser schedule owner
+     * @return User schedule owner
      */
     public function getOwner()
     {
@@ -124,13 +124,13 @@ class Schedule
     /**
      * set schedule owner
      *
-     * @param StudipUser $owner
+     * @param User $owner
      */
     public function setOwner($owner)
     {
         $this->owner = $owner;
 
-        DBManager::get()->execute("UPDATE wp_schedule SET user_id = ? WHERE id = ?", array($this->owner->getUserid(), $this->id));
+        DBManager::get()->execute("UPDATE wp_schedule SET user_id = ? WHERE id = ?", array($this->owner->user_id, $this->id));
     }
 
     /**
@@ -164,7 +164,7 @@ class Schedule
 
         $notification = new WpNotifications(
             'change_schedule',
-            $this->owner->getUserid(),
+            $this->owner->user_id,
             PluginEngine::getURL(
                 'WorkplaceAllocation',
                 array(
@@ -222,7 +222,7 @@ class Schedule
 
         $notification = new WpNotifications(
             'change_schedule',
-            $this->owner->getUserid(),
+            $this->owner->user_id,
             PluginEngine::getURL(
                 'WorkplaceAllocation',
                 array(
@@ -284,7 +284,7 @@ class Schedule
 
         $notification = new WpNotifications(
             'delete_schedule',
-            $this->owner->getUserid(),
+            $this->owner->user_id,
             PluginEngine::getURL(
                 'WorkplaceAllocation',
                 array(

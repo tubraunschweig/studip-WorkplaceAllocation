@@ -30,18 +30,18 @@ foreach ($messageBoxes as $box) {
             $search = new SQLSearch("SELECT user_id, CONCAT(Vorname, ' ', Nachname, ' (', username, ')') FROM auth_user_md5 WHERE Nachname LIKE :input OR username LIKE :input OR Vorname LIKE :input", _('Benutzer'), 'username');
             $quickSearch = QuickSearch::get('s_owner', $search);
             $quickSearch->setInputClass('size-m');
-            $quickSearch->defaultValue($schedule->getOwner()->getUserid(), $schedule->getOwner()->getGivenname().' '.$schedule->getOwner()->getSurname().' ('.$schedule->getOwner()->getUsername().')');
+            $quickSearch->defaultValue($schedule->getOwner()->user_id, $schedule->getOwner()->vorname.' '.$schedule->getOwner()->nachname.' ('.$schedule->getOwner()->username.')');
             print($quickSearch->render());
         else:
         ?>
-            <input type="text" name="owner" id="s_owner" class="size-m" value="<?= $schedule->getOwner()->getGivenname() ?> <?= $schedule->getOwner()->getSurname() ?> (<?= $schedule->getOwner()->getUsername() ?>)" disabled>
+            <input type="text" name="owner" id="s_owner" class="size-m" value="<?= $schedule->getOwner()->vorname ?> <?= $schedule->getOwner()->nachname ?> (<?= $schedule->getOwner()->username ?>)" disabled>
         <?php
         endif;
         ?>
     </section>
     <section>
         <label for="s_comment">Kommentar</label>
-        <textarea id="s_comment" name="s_comment" cols="75" rows="4" <?= $schedule->getOwner()->getUserid() != get_userid() ? 'disabled' : '' ?>><?= $schedule->getComment() ?></textarea>
+        <textarea id="s_comment" name="s_comment" cols="75" rows="4" <?= $schedule->getOwner()->user_id != get_userid() ? 'disabled' : '' ?>><?= $schedule->getComment() ?></textarea>
     </section>
     <? if($admin): ?>
     <section>

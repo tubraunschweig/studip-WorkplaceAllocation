@@ -553,11 +553,11 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                     $success = false;
                 }
             }
-            if(isset($_POST['s_comment']) && $schedule->getOwner()->getUserid() == get_userid()) {
+            if(isset($_POST['s_comment']) && $schedule->getOwner()->user_id == get_userid()) {
                 $schedule->setComment($_POST['s_comment']);
             }
             if(isset($_POST['s_owner']) && $admin) {
-                $newOwner = new StudipUser($_POST['s_owner']);
+                $newOwner = User::findFull($_POST['s_owner']);
                 $schedule->setOwner($newOwner);
             }
 
@@ -594,7 +594,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
         $admin = $this->user_has_admin_perm($_GET['cid']);
 
-        if(!($this->user_has_admin_perm($_GET['cid']) || $schedule->getOwner()->getUserid() == get_userid())) {
+        if(!($this->user_has_admin_perm($_GET['cid']) || $schedule->getOwner()->user_id == get_userid())) {
             throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
         }
         $start = $schedule->getStart();
@@ -892,7 +892,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                 $scheduleDurationTime->add($schedule->getDuration());
                 $pdf->Rect(47, $topStart+$scheduleStartTableStart->getTimestamp()*$stepHeight, 155, $scheduleDurationTime->getTimestamp()*$stepHeight, 'FD',array('all' => array('width' => 0.5, 'color' => array(35, 64, 153))), array(255,255,255));
                 $pdf->SetXY(50, $topStart+$scheduleStartTableStart->getTimestamp()*$stepHeight);
-                $pdf->Cell(150, $scheduleDurationTime->getTimestamp()*$stepHeight, $schedule->getOwner()->getGivenname().' '.$schedule->getOwner()->getSurname());
+                $pdf->Cell(150, $scheduleDurationTime->getTimestamp()*$stepHeight, $schedule->getOwner()->vorname.' '.$schedule->getOwner()->nachname);
             }
 
 
