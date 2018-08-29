@@ -18,10 +18,40 @@ div.timetable div.time:nth-last-of-type(1) {
     border-bottom: none;
 }
 
-div.timetable div.schedules {
+div.timetable div.all_schedules {
+    width: 100%;
     position: absolute;
-    left: 5rem;
+    left: 0;
     top: 0;
+    white-space: nowrap;
+    padding-left: 4em;
+    box-sizing: border-box;
+    overflow-x: scroll;
+}
+
+div.timetable div.schedules {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+}
+
+div.timetable div.schedules:nth-child(2) {
+    left: 21em;
+}
+div.timetable div.schedules:nth-child(3) {
+    left: 38em;
+}
+div.timetable div.schedules:nth-child(4) {
+    left: 55em;
+}
+div.timetable div.schedules:nth-child(5) {
+    left: 72em;
+}
+div.timetable div.schedules:nth-child(6) {
+    left: 89em;
+}
+div.timetable div.schedules:nth-child(7) {
+    left: 106em;
 }
 
 div.timetable div.schedules .schedule {
@@ -30,7 +60,7 @@ div.timetable div.schedules .schedule {
     margin-bottom: 0;
     padding-top: 0;
     padding-bottom: 0;
-    width: inherit;
+    width: 17em;
 }
 
 div.timetable div.schedules .booked {
