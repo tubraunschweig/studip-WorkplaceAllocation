@@ -63,7 +63,7 @@ if($workplace->getRule() == null){
     if (! isset($_GET['week']) || $_GET['week'] != '1')
     {
         ?>
-        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'day' => $day->format('d.m.Y'), 'week' => 1), "addSchedule") ?>">
+        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'day' => $day->format('d.m.Y'), 'week' => 1), $admin ? "addSchedule" : "timetable") ?>">
             <?= Studip\Button::create('gesamte Woche zeigen') ?>
         </a>
         <?php
@@ -71,7 +71,7 @@ if($workplace->getRule() == null){
     else
     {
         ?>
-        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'day' => $day->format('d.m.Y')), "addSchedule") ?>">
+        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'day' => $day->format('d.m.Y')), $admin ? "addSchedule" : "timetable") ?>">
             <?= Studip\Button::create('nur Tag zeigen') ?>
         </a>
         <?php
@@ -206,13 +206,13 @@ if($workplace->getRule() == null){
                                         "WorkplaceAllocation",
                                         array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
                                         "editSchedule") . '" title="Termin bearbeiten">
-                                    ' . Assets::img('icons/16/blue/edit') . '
+                                    ' . (new Icon('edit'))->asImg() . '
                                 </a>
                                 <a href="' . PluginEngine::getLink(
                                         "WorkplaceAllocation",
                                         array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
                                         "removeSchedule") . '" title="Termin löschen">
-                                    ' . Assets::img('icons/16/blue/trash') . '
+                                    ' . (new Icon('trash'))->asImg() . '
                                 </a></span>');
                             } else {
                                 print('<span>Der Termin ist bereits vergeben</span>');
