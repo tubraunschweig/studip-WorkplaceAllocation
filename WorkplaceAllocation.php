@@ -122,7 +122,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         $workplaceAllocation->setActiveImage(new Icon('icons/16/black/computer'));
 
         if($this->user_has_admin_perm($course_id)) {
-            $workplacesAdminNav = new Navigation('Arbeitspl&#228;tze', PluginEngine::getURL("WorkplaceAllocation", array(), 'admin'));
+            $workplacesAdminNav = new Navigation('Arbeitsplätze', PluginEngine::getURL("WorkplaceAllocation", array(), 'admin'));
             $workplacesAdminNav->setDescription("Richten Sie Anmeldungen zu Arbeitsplätzen für Ihre Studierenden ein.");
 
             /** @var Navigation $courseAdminNav */
