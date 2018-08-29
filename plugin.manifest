@@ -8,4 +8,4 @@ dbscheme=sql/install.sql
 uninstalldbscheme=sql/uninstall.sql
 
 category=Kommunikation und Zusammenarbeit
-descriptionshort=Tool f&#252;r die Vergabe von Arbeitspl&#228;tzen an Studierende
+descriptionshort=Tool für die Vergabe von Arbeitsplätzen an Studierende

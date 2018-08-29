@@ -70,7 +70,7 @@ if($workplace->getRule() == null){
     <?php
 
     if(!$workplace->getRule()->isDayBookable($day, $admin, $workplace)) {
-        $mb = MessageBox::error('F&#252;r diesen Tag kann (noch) kein Termin reserviert werden.');
+        $mb = MessageBox::error('Für diesen Tag kann (noch) kein Termin reserviert werden.');
         print($mb);
     }
 
@@ -120,7 +120,7 @@ if($workplace->getRule() == null){
                         if($admin) {
                             /** @var \Studip\Button $fillButton */
                             $fillButton = \Studip\Button::create(
-                                _("Nachfolgende Termine aufr&#252;cken"),
+                                _("Nachfolgende Termine aufrücken"),
                                 null,
                                 array(
                                     "type" => "submit",
@@ -162,7 +162,7 @@ if($workplace->getRule() == null){
                                 <a href="' . PluginEngine::getLink(
                                     "WorkplaceAllocation",
                                     array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
-                                    "removeSchedule") . '" title="Termin l&ouml;schen">
+                                    "removeSchedule") . '" title="Termin löschen">
                                     ' . Assets::img('icons/16/blue/trash') . '
                                 </a></span>');
                         } else {

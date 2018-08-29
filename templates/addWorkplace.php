@@ -19,10 +19,10 @@ if($error)
 
 
 /** @var \Studip\Button $submitButton */
-$submitButton = \Studip\Button::create(_("Hinzuf&#252;gen"), null, array("type" => "submit"));
+$submitButton = \Studip\Button::create(_("Hinzufügen"), null, array("type" => "submit"));
 
 ?>
-<h1><?= _("Arbeitsplatz hinzuf&#252;gen")?></h1>
+<h1><?= _("Arbeitsplatz hinzufügen")?></h1>
 
 <form action="<?= PluginEngine::getLink("WorkplaceAllocation", array(), "addWorkplace") ?>" method="post" class="studip-form">
     <section class="required">

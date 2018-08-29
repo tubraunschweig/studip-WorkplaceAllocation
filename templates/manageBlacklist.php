@@ -35,20 +35,20 @@
     <?php
     if ($blacklist->list_size() > 0) {
         foreach ($blacklist as $entry) {
-            /** @var StudIPUser $user */
+            /** @var User $user */
             $user = $entry['user'];
             /** @var DateTime $expiration */
             $expiration = $entry['expiration']
             ?>
             <tr>
-                <td><?= $user->getSurname() ?>, <?= $user->getGivenname() ?></td>
-                <td><?= $user->getUsername() ?></td>
+                <td><?= $user->nachname ?>, <?= $user->vorname ?></td>
+                <td><?= $user->username ?></td>
                 <td><?= $expiration != null ? $expiration->format('d.m.Y') : _('Unbegrenzt') ?></td>
                 <td style="text-align: right;">
                     <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>"
                           method="post">
                         <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="user_id" value="<?= $user->getUserid() ?>">
+                        <input type="hidden" name="user_id" value="<?= $user->user_id ?>">
                         <button type="submit" class="link_button"><?= Assets::img('icons/20/blue/trash') ?></button>
                     </form>
                 </td>
@@ -73,9 +73,9 @@
                     $quickSearch->setInputClass('size-m');
                     print($quickSearch->render());
                     ?><br>
-                    <label for="bl_expiration">Ablauf der Sperrung in Tagen<small>(Leer für unbegrenzt)</small></label>
+                    <label for="bl_expiration">Ablauf der Sperrung in Tagen<small>(Leer fÃ¼r unbegrenzt)</small></label>
                     <input type="number" name="expiration" id="bl_expiration" class="size-s"><br>
-                    <?= Studip\Button::create("Hinzufügen") ?>
+                    <?= Studip\Button::create("HinzufÃ¼gen") ?>
                 </form>
             </td>
         </tr>

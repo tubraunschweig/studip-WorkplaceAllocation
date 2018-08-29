@@ -15,7 +15,7 @@
 ?>
 <table class="default">
     <caption>
-        Arbeitspl&auml;tze
+        Arbeitsplätze
     </caption>
     <colgroup>
         <col>
@@ -35,7 +35,7 @@
     {
         ?>
         <tr>
-            <td colspan="3" style="text-align: center;">Es wurden noch keine Arbeitspl&auml;tze eingerichtet.</td>
+            <td colspan="3" style="text-align: center;">Es wurden noch keine Arbeitsplätze eingerichtet.</td>
         </tr>
         <?php
     }

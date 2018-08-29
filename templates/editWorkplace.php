@@ -72,7 +72,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
         </table>
     </section>
     <section>
-        <label>T&auml;gliche &Ouml;ffnungzeit:</label>
+        <label>Tägliche Öffnungzeit:</label>
         von
         <input type="text" name="daily_start_hour" maxlength="2" title="Beginn Stunde" style="width: 2em;" value="<?= ($rule != null) ? $rule->getStart()->format('%H') : '00' ?>">
         :<input type="text" name="daily_start_minute" maxlength="2" title="Beginn Minute" style="width: 2em;" value="<?= ($rule != null) ? $rule->getStart()->format('%I') : '00' ?>">
@@ -82,7 +82,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
     </section>
     <section>
         <label>Pause:</label>
-        <input type="checkbox" name="daily_pause_exist" id="daily_pause_exist" <?= ($rule != null && $rule->hasPause()) ? 'checked' : ''?> title="T�gliche Pause aktivieren/deaktivieren"> Aktiv<br>
+        <input type="checkbox" name="daily_pause_exist" id="daily_pause_exist" <?= ($rule != null && $rule->hasPause()) ? 'checked' : ''?> title="Tägliche Pause aktivieren/deaktivieren"> Aktiv<br>
         von
         <input type="text" class="daily_pause" name="daily_pause_start_hour" maxlength="2" title="Beginn Stunde" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseStart() != null) ? $rule->getPauseStart()->format('%H') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
         :<input type="text" class="daily_pause" name="daily_pause_start_minute" maxlength="2" title="Beginn Minute" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseStart() != null) ? $rule->getPauseStart()->format('%I') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
@@ -100,7 +100,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
         });
     </script>
     <section>
-        <label for="wp_rule_slot_duration">Slot L&auml;nge</label>
+        <label for="wp_rule_slot_duration">Slot Länge</label>
         <select name="slot_duration" id="wp_rule_slot_duration">
             <option value="PT0H30M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT0H30M'){print("selected");} ?>>&frac12; Stunde</option>
             <option value="PT1H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H0M'){print("selected");} ?>>1 Stunde</option>
@@ -110,7 +110,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
     </section>
     <section>
         <label>Anmeldezeitraum</label>
-        Im Voraus buchbar f&#252;r x<br>
+        Im Voraus buchbar für x<br>
         <select title="Anmeldezeitraum Start" name="registration_start">
             <option value="P7D" <? if($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P7D'){print("selected");} ?>>1 Woche</option>
             <option value="P14D" <? if($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P14D'){print("selected");} ?>>2 Wochen</option>
@@ -127,7 +127,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
     </section>
     <section>
         <label>Weitere Optionen</label>
-        <input type="checkbox" name="one_schedule_by_day_and_user" id="one_schedule_by_day_and_user" <?= ($rule != null && $rule->isOneScheduleByDayAndUser()) ? 'checked' : '' ?> title="Option aktivieren/deaktivieren: Nur ein termin pro Tag und Nutzer"> F&uuml;r jeden Nutzer nur einen Termin am Tag zulassen<br>
+        <input type="checkbox" name="one_schedule_by_day_and_user" id="one_schedule_by_day_and_user" <?= ($rule != null && $rule->isOneScheduleByDayAndUser()) ? 'checked' : '' ?> title="Option aktivieren/deaktivieren: Nur ein termin pro Tag und Nutzer"> Für jeden Nutzer nur einen Termin am Tag zulassen<br>
     </section>
     <?= $submitButton ?>
 </form>

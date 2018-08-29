@@ -38,7 +38,7 @@
     {
         ?>
         <tr>
-            <td colspan="3" style="text-align: center;">Es wurden noch keine Arbeitspl&auml;tze eingerichtet.</td>
+            <td colspan="3" style="text-align: center;">Es wurden noch keine Arbeitsplätze eingerichtet.</td>
         </tr>
         <?php
     }
@@ -90,7 +90,7 @@
                 <a href="<?= PluginEngine::getLink(
                     "WorkplaceAllocation",
                     array("wp_id" => $workplace->getId()),
-                    "delWorkplace") ?>" title="<?=_('Arbeitsplatz l&#246;schen')?>">
+                    "delWorkplace") ?>" title="<?=_('Arbeitsplatz löschen')?>">
                     <?= Assets::img('icons/20/blue/trash') ?>
                 </a>
             </td>

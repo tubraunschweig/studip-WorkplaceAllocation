@@ -25,7 +25,7 @@ Benachrichtigungstexte
     </colgroup>
     <thead>
         <tr>
-            <th>Einh&#228;ngepunkt</th>
+            <th>Einhängepunkt</th>
             <th>Aktiv</th>
             <th style="text-align: right;">Aktionen</th>
         </tr>

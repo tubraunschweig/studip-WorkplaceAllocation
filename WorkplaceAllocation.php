@@ -37,7 +37,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         
         $this->templateFactory = new Flexi_TemplateFactory($this->getPluginPath().'/templates');
 
-        $currentUser = new StudIPUser(get_userid());
+        $currentUser = User::findFull(get_userid());
 
         if(!isset($_REQUEST['username']) || $_REQUEST['username'] == $currentUser->username) {
 
@@ -45,8 +45,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             $profileNavigation = Navigation::getItem('/profile');
 
             $mySchedules = new Navigation("Arbeitspl&#228;tze", PluginEngine::getURL("WorkplaceAllocation", array(), 'my_schedules'));
-            $mySchedules->setImage('icons/16/white/computer');
-            $mySchedules->setActiveImage('icons/16/black/computer');
+            $mySchedules->setImage(new Icon('icons/16/white/computer'));
+            $mySchedules->setActiveImage(new Icon('icons/16/black/computer'));
 
             $profileNavigation->addSubNavigation('workplace_schedules', $mySchedules);
         }
@@ -117,13 +117,13 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             return null;
         }
         
-        $workplaceAllocation = new Navigation("Arbeitspl&#228;tze", PluginEngine::getURL("WorkplaceAllocation", array(), 'show'));
-        $workplaceAllocation->setImage('icons/16/white/computer');
-        $workplaceAllocation->setActiveImage('icons/16/black/computer');
+        $workplaceAllocation = new Navigation("ArbeitsplÃ¤tze", PluginEngine::getURL("WorkplaceAllocation", array(), 'show'));
+        $workplaceAllocation->setImage(new Icon('icons/16/white/computer'));
+        $workplaceAllocation->setActiveImage(new Icon('icons/16/black/computer'));
 
         if($this->user_has_admin_perm($course_id)) {
             $workplacesAdminNav = new Navigation('Arbeitspl&#228;tze', PluginEngine::getURL("WorkplaceAllocation", array(), 'admin'));
-            $workplacesAdminNav->setDescription("Richten Sie Anmeldungen zu Arbeitspl&#228;tzen f&#252;r Ihre Studierenden ein.");
+            $workplacesAdminNav->setDescription("Richten Sie Anmeldungen zu ArbeitsplÃ¤tzen fÃ¼r Ihre Studierenden ein.");
 
             /** @var Navigation $courseAdminNav */
             $courseAdminNav = Navigation::getItem("course/admin");
@@ -192,12 +192,12 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     {
         if(!$this->user_has_admin_perm($_GET['cid']))
         {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
         
         $actionsWidget = new ActionsWidget();
         $actionsWidget->addLink(
-            "Arbeitsplatz hinzuf&#252;gen", 
+            "Arbeitsplatz hinzufÃ¼gen",
             PluginEngine::getLink("WorkplaceAllocation", array(), "addWorkplace"),
             "icons/blue/16/add"
         );
@@ -212,7 +212,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             "icons/blue/16/mail"
         );
         $actionsWidget->addLink(
-            "Alle Arbeitspl&#228;tze drucken",
+            "Alle ArbeitsplÃ¤tze drucken",
             PluginEngine::getLink("WorkplaceAllocation", array(), "pdf"),
             "icons/blue/16/print",
             array('target' => '_blank')
@@ -240,7 +240,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     {
         if(!$this->user_has_admin_perm($_GET['cid']))
         {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
 
         if(Request::isPost())
@@ -273,7 +273,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     {
         if(!$this->user_has_admin_perm($_GET['cid']))
         {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
         $errorDetails = array();
         $error = false;
@@ -283,7 +283,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             
             if(empty($_POST["wp_name"])) {
                 $error = true;
-                $errorDetails[] = _("Bitte geben Sie einen Namen f&#252;r den Arbeitsplatz an.");
+                $errorDetails[] = _("Bitte geben Sie einen Namen fÃ¼r den Arbeitsplatz an.");
             }
             else
             {
@@ -316,7 +316,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     {
         if(!$this->user_has_admin_perm($_GET['cid']))
         {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
 
 
@@ -336,7 +336,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             $this->admin_action();
 
             print(createQuestion(
-                "M&#246;chten Sie den Arbeitsplatz \"".$workplace->getName()."\" wirklich l&#246;schen ?", 
+                "MÃ¶chten Sie den Arbeitsplatz \"".$workplace->getName()."\" wirklich lÃ¶schen ?",
                 array("delete" => true, "wp_id" => $workplace->getId()), 
                 array("delete" => false, "wp_id" => $workplace->getId())
             ));
@@ -352,7 +352,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     {
         if(!$this->user_has_admin_perm($_GET['cid']))
         {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
 
         Navigation::activateItem('/course/admin/workplaces');
@@ -374,7 +374,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                 || empty($_POST['daily_end_minute'])))
             {
                 $error = true;
-                $errorDetails[] = "Bitte geben sie einen korrekten Wert f&#252;r die t&#228;gliche &#214;ffnungszeit an.";
+                $errorDetails[] = "Bitte geben sie einen korrekten Wert fÃ¼r die tÃ¤gliche Ã–ffnungszeit an.";
             }
             else
             {
@@ -422,7 +422,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
                 $messageBoxes[] = MessageBox::success(
                     'Erfolgreich gespeichert',
-                    array('<a href="'.PluginEngine::getLink('WorkplaceAllocation',array(),'admin').'">Zurück zur Übersicht</a>'));
+                    array('<a href="'.PluginEngine::getLink('WorkplaceAllocation',array(),'admin').'">ZurÃ¼ck zur Ãœbersicht</a>'));
             }
         }
         if($error) {
@@ -474,7 +474,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             if(isset($_POST['next_schedule']) && $_POST['next_schedule'] == 'true') {
                 if(!$workplace->getRule()->bookFirstPossibleSchedule($workplace, $day, $admin)) {
                     if(!$workplace->getRule()->isDayBookable($day, $admin, $workplace)) {
-                        $messageBox = MessageBox::error('Der Termin konnte nicht gebucht werden, dies kann verschiedene Ursachen haben', array('Sie wurden gesperrt.', 'Es ist nur ein Termin pro Nutzer und Tag zugelassen.', 'Es ist zu einer Kollision gekommen, in diesem Falle versuche in der &#220;bersicht nochmal einen Termin f&#252;r diesen Tag zu buchen um einen Platz auf der Warteliste zu bekommen.'));
+                        $messageBox = MessageBox::error('Der Termin konnte nicht gebucht werden, dies kann verschiedene Ursachen haben', array('Sie wurden gesperrt.', 'Es ist nur ein Termin pro Nutzer und Tag zugelassen.', 'Es ist zu einer Kollision gekommen, in diesem Falle versuche in der Ãœbersicht nochmal einen Termin fÃ¼r diesen Tag zu buchen um einen Platz auf der Warteliste zu bekommen.'));
                     } else {
                         $waitingListPlacement = WaitingList::push($workplace, $day);
                         if ($waitingListPlacement != null) {
@@ -549,7 +549,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             if(isset($_POST['s_duration']) && $admin) {
                 $duration = new DateInterval($_POST['s_duration']);
                 if(!$schedule->setDuration($duration)) {
-                    $messageBoxes[] = MessageBox::error('Die &#196;nderung der Terminl&#228;nge ist nicht zul&#228;ssig');
+                    $messageBoxes[] = MessageBox::error('Die Ã„nderung der TerminlÃ¤nge ist nicht zulÃ¤ssig');
                     $success = false;
                 }
             }
@@ -569,7 +569,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                           'day' => $schedule->getStart()->format('d.m.Y')),
                     $admin ? 'addSchedule' : 'timetable');
 
-                $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert", array("<a href='".$backLink."'>zurück</a>"));
+                $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert", array("<a href='".$backLink."'>zurÃ¼ck</a>"));
             }
         }
 
@@ -595,7 +595,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         $admin = $this->user_has_admin_perm($_GET['cid']);
 
         if(!($this->user_has_admin_perm($_GET['cid']) || $schedule->getOwner()->user_id == get_userid())) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
         $start = $schedule->getStart();
 
@@ -608,7 +608,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             $_GET['day'] = $schedule->getStart()->format('d.m.Y');
             $admin ? $this->addSchedule_action() : $this->timetable_action();
             print(createQuestion(
-                "M&#246;chten Sie den Termin wirklich l&#246;schen ?",
+                "MÃ¶chten Sie den Termin wirklich lÃ¶schen ?",
                 array('delete' => true, 's_id' => $schedule->getId(), 'wp_id' => $schedule->getWorkplace()->getId()),
                 array('delete' => false, 's_id' => $schedule->getId(), 'wp_id' => $schedule->getWorkplace()->getId())));
         }
@@ -623,7 +623,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      */
     public function manageBlacklist_action() {
         if(!$this->user_has_admin_perm($_GET['cid'])) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
 
         if(Request::isPost()) {
@@ -637,7 +637,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                             $falseResponse = $_POST;
                             $falseResponse['delete'] = false;
                             print(createQuestion2(
-                                "Möchten sie den Nutzer ".$user->getGivenname()." ".$user->getSurname()." (".$user->getUsername().") wirklich von der Sperrliste entfernen?",
+                                "MÃ¶chten sie den Nutzer ".$user->getGivenname()." ".$user->getSurname()." (".$user->getUsername().") wirklich von der Sperrliste entfernen?",
                                 $trueResponse,
                                 $falseResponse,
                                 "?cid=".$_GET['cid']
@@ -654,7 +654,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                             $falseResponse = $_POST;
                             $falseResponse['add'] = false;
                             print(createQuestion2(
-                                "Möchten sie den Nutzer \"".$user->getGivenname()." ".$user->getSurname()." (".$user->getUsername().")\" wirklich zur Sperrliste hinzufügen und in der Zeit der Sperrung alle Reservierungen löschen?",
+                                "MÃ¶chten sie den Nutzer \"".$user->getGivenname()." ".$user->getSurname()." (".$user->getUsername().")\" wirklich zur Sperrliste hinzufÃ¼gen und in der Zeit der Sperrung alle Reservierungen lÃ¶schen?",
                                 $trueResponse,
                                 $falseResponse,
                                 "?cid=".$_GET['cid']
@@ -701,7 +701,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     public function manageMail_action()
     {
         if(!$this->user_has_admin_perm($_GET['cid'])){
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
 
         Navigation::activateItem('/course/admin/workplaces');
@@ -737,7 +737,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     public function editMailtext_action()
     {
         if(!$this->user_has_admin_perm($_GET['cid'])) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
 
         $message = WpMessages::findBySQL('context_id = ? AND hook_point = ?', array($_GET['cid'], $_GET['hook_point']));
@@ -789,10 +789,10 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      * @throws AccessDeniedException
      */
     public function my_schedules_action() {
-        $currentUser = new StudIPUser(get_userid());
+        $currentUser = User::findFull(get_userid());
 
         if(isset($_REQUEST['username']) && $_REQUEST['username'] != $currentUser->username) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
 
         Navigation::activateItem('/profile/workplace_schedules');
@@ -813,7 +813,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     public function pdf_action() {
 
         if (!$this->user_has_admin_perm($_GET['cid'])) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+            throw new AccessDeniedException("Du hast nicht die nÃ¶tigen Rechte zum Aufruf dieser Seite");
         }
 
         if(isset($_GET['wp_id'])) {
@@ -830,9 +830,9 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         if(isset($workplace)) {
             $pdf->SetTitle('Arbeitsplatz ' . $workplace->getName() . " " . date('d.m.Y'));
         } else {
-            $pdf->SetTitle('Arbeitsplätze ' . date('d.m.Y'));
+            $pdf->SetTitle('ArbeitsplÃ¤tze ' . date('d.m.Y'));
         }
-        $pdf->SetSubject('Stud.IP Arbeitsplätze');
+        $pdf->SetSubject('Stud.IP ArbeitsplÃ¤tze');
 
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
