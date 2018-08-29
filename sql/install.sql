@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS wp_blacklist
   user_id VARCHAR(255) NOT NULL,
   context_id VARCHAR(255) NOT NULL,
   expiration INT(11)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE IF NOT EXISTS wp_messages
 (
   id VARCHAR(255) PRIMARY KEY NOT NULL,
@@ -12,7 +13,8 @@ CREATE TABLE IF NOT EXISTS wp_messages
   subject VARCHAR(255),
   message TEXT,
   active TINYINT(4)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE IF NOT EXISTS wp_rules
 (
   id VARCHAR(255) PRIMARY KEY NOT NULL,
@@ -25,7 +27,8 @@ CREATE TABLE IF NOT EXISTS wp_rules
   registration_end VARCHAR(31),
   one_schedule_by_day_and_user TINYINT(1),
   days INT(11)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE IF NOT EXISTS wp_schedule
 (
   id VARCHAR(255) PRIMARY KEY NOT NULL,
@@ -35,7 +38,8 @@ CREATE TABLE IF NOT EXISTS wp_schedule
   duration VARCHAR(31),
   comment TEXT,
   type ENUM('normal', 'blocked')
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE IF NOT EXISTS wp_waiting_list
 (
   counter INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -43,7 +47,8 @@ CREATE TABLE IF NOT EXISTS wp_waiting_list
   user_id VARCHAR(255),
   day INT(11),
   insertion_timestamp INT(11)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
 CREATE TABLE IF NOT EXISTS wp_workplaces
 (
   id VARCHAR(255) PRIMARY KEY NOT NULL,
@@ -52,4 +57,4 @@ CREATE TABLE IF NOT EXISTS wp_workplaces
   active ENUM('on', 'off') DEFAULT 'off',
   context_id VARCHAR(255),
   rule_id VARCHAR(255)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
