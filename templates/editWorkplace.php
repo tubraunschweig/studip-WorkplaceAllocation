@@ -24,7 +24,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
 
 ?>
 <h1>Arbeitsplatz bearbeiten</h1>
-<form method="post" class="studip-form">
+<form method="post" class="default">
     <section>
         <label for="wp_name"><?=_("Name")?></label>
         <input id="wp_name" name="wp_name" type="text" class="size-m" value="<?= $workplace->getName(); ?>">
@@ -35,7 +35,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
     </section>
     <h2>Anmelderegeln:</h2>
     <section>
-    <label>Regelm&auml;&szlig;ige Wochentage:</label>
+    <label>Regelmäßige Wochentage:</label>
         <table>
             <tr>
                 <td>Mo</td>
@@ -73,22 +73,24 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
     </section>
     <section>
         <label>Tägliche Öffnungzeit:</label>
-        von
-        <input type="text" name="daily_start_hour" maxlength="2" title="Beginn Stunde" style="width: 2em;" value="<?= ($rule != null) ? $rule->getStart()->format('%H') : '00' ?>">
-        :<input type="text" name="daily_start_minute" maxlength="2" title="Beginn Minute" style="width: 2em;" value="<?= ($rule != null) ? $rule->getStart()->format('%I') : '00' ?>">
-        bis
-        <input type="text" name="daily_end_hour" maxlength="2" title="Ende Stunde" style="width: 2em;" value="<?= ($rule != null) ? $rule->getEnd()->format('%H') : '00' ?>">
-        :<input type="text" name="daily_end_minute" maxlength="2" title="Ende Minute" style="width: 2em;" value="<?= ($rule != null) ? $rule->getEnd()->format('%I') : '00' ?>">
     </section>
+    von
+    <input type="text" name="daily_start_hour" title="Beginn Stunde" style="width: 2em;" value="<?= ($rule != null) ? $rule->getStart()->format('%H') : '00' ?>">
+    :<input type="text" name="daily_start_minute" title="Beginn Minute" style="width: 2em;" value="<?= ($rule != null) ? $rule->getStart()->format('%I') : '00' ?>">
+    bis
+    <input type="text" name="daily_end_hour" title="Ende Stunde" style="width: 2em;" value="<?= ($rule != null) ? $rule->getEnd()->format('%H') : '00' ?>">
+    :<input type="text" name="daily_end_minute" title="Ende Minute" style="width: 2em;" value="<?= ($rule != null) ? $rule->getEnd()->format('%I') : '00' ?>">
     <section>
-        <label>Pause:</label>
-        <input type="checkbox" name="daily_pause_exist" id="daily_pause_exist" <?= ($rule != null && $rule->hasPause()) ? 'checked' : ''?> title="Tägliche Pause aktivieren/deaktivieren"> Aktiv<br>
+        <label>
+            Pause:
+            <input type="checkbox" name="daily_pause_exist" id="daily_pause_exist" <?= ($rule != null && $rule->hasPause()) ? 'checked' : ''?> title="Tägliche Pause aktivieren/deaktivieren"> Aktiv<br>
+        </label>
         von
-        <input type="text" class="daily_pause" name="daily_pause_start_hour" maxlength="2" title="Beginn Stunde" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseStart() != null) ? $rule->getPauseStart()->format('%H') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
-        :<input type="text" class="daily_pause" name="daily_pause_start_minute" maxlength="2" title="Beginn Minute" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseStart() != null) ? $rule->getPauseStart()->format('%I') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
+        <input type="text" class="daily_pause" name="daily_pause_start_hour" title="Beginn Stunde" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseStart() != null) ? $rule->getPauseStart()->format('%H') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
+        :<input type="text" class="daily_pause" name="daily_pause_start_minute" title="Beginn Minute" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseStart() != null) ? $rule->getPauseStart()->format('%I') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
         bis
-        <input type="text" class="daily_pause" name="daily_pause_end_hour" maxlength="2" title="Ende Stunde" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseEnd() != null) ? $rule->getPauseEnd()->format('%H') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
-        :<input type="text" class="daily_pause" name="daily_pause_end_minute" maxlength="2" title="Ende Minute" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseEnd() != null) ? $rule->getPauseEnd()->format('%I') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
+        <input type="text" class="daily_pause" name="daily_pause_end_hour" title="Ende Stunde" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseEnd() != null) ? $rule->getPauseEnd()->format('%H') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
+        :<input type="text" class="daily_pause" name="daily_pause_end_minute" title="Ende Minute" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseEnd() != null) ? $rule->getPauseEnd()->format('%I') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
     </section>
     <script type="application/javascript">
         $('#daily_pause_exist').change(function () {

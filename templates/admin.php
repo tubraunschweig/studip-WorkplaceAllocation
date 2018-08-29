@@ -57,7 +57,7 @@
             <td><a href="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId()), "addSchedule") ?>"><?= $workplace->getName() ?></a></td>
             <td>
                 <?= /** @noinspection PhpParamsInspection */
-                tooltipIcon($workplace->getDescription()) ?>
+                !empty($workplace->getDescription()) ? tooltipIcon($workplace->getDescription()) : "" ?>
             </td>
             <td class="actions" width="20">
                 <a href="<?= PluginEngine::getLink(
@@ -66,7 +66,7 @@
                     "pdf") ?>" title="<?=_('Heutigen Tag drucken')?>"
                    target="_blank"
                 >
-                    <?= Assets::img('icons/20/blue/print') ?>
+                    <?= (new Icon('print'))->asImg() ?>
                 </a>
             </td>
             <td class="actions" width="20">
@@ -74,7 +74,7 @@
                     "WorkplaceAllocation",
                     array("wp_id" => $workplace->getId()),
                     "addSchedule") ?>" title="<?=_('Termine verwalten')?>">
-                    <?= Assets::img('icons/20/blue/schedule') ?>
+                    <?= (new Icon('schedule'))->asImg() ?>
                 </a>
             </td>
             <td class="actions" width="20">
@@ -83,7 +83,7 @@
                     array("wp_id" => $workplace->getId()),
                     "editWorkplace") ?>" title="<?=_('Arpeitsplatz bearbeiten')?>"
                 >
-                    <?= ($workplace->getRule() == null) ? Assets::img('icons/20/blue/new/edit') : Assets::img('icons/20/blue/edit') ?>
+                    <?= ($workplace->getRule() == null) ? (new Icon('edit+new'))->asImg() : (new Icon('edit'))->asImg() ?>
                 </a>
             </td>
             <td class="actions" width="20">
@@ -91,7 +91,7 @@
                     "WorkplaceAllocation",
                     array("wp_id" => $workplace->getId()),
                     "delWorkplace") ?>" title="<?=_('Arbeitsplatz löschen')?>">
-                    <?= Assets::img('icons/20/blue/trash') ?>
+                    <?= (new Icon('trash'))->asImg() ?>
                 </a>
             </td>
         </tr>

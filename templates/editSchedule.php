@@ -22,7 +22,7 @@ foreach ($messageBoxes as $box) {
 
 <h1>Termin bearbeiten <?= $schedule->getStart()->format('d.m.Y - H:i') ?> Uhr</h1>
 <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $schedule->getWorkplace()->getId(), 'day' => $schedule->getStart()->format('d.m.Y')), $admin ? 'addSchedule' : 'timetable') ?>">zurück</a>
-<form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('s_id' => $schedule->getId()), 'editSchedule') ?>" method="post" class="studip-form">
+<form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('s_id' => $schedule->getId()), 'editSchedule') ?>" method="post" class="default">
     <section>
         <label for="s_owner">Besitzer</label>
         <?php

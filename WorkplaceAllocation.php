@@ -45,8 +45,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             $profileNavigation = Navigation::getItem('/profile');
 
             $mySchedules = new Navigation("Arbeitspl&#228;tze", PluginEngine::getURL("WorkplaceAllocation", array(), 'my_schedules'));
-            $mySchedules->setImage(new Icon('icons/16/white/computer'));
-            $mySchedules->setActiveImage(new Icon('icons/16/black/computer'));
+            $mySchedules->setImage(new Icon('computer'));
+            $mySchedules->setActiveImage(new Icon('computer'));
 
             $profileNavigation->addSubNavigation('workplace_schedules', $mySchedules);
         }
@@ -118,12 +118,13 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         }
         
         $workplaceAllocation = new Navigation("Arbeitsplätze", PluginEngine::getURL("WorkplaceAllocation", array(), 'show'));
-        $workplaceAllocation->setImage(new Icon('icons/16/white/computer'));
-        $workplaceAllocation->setActiveImage(new Icon('icons/16/black/computer'));
+        $workplaceAllocation->setImage(new Icon('computer'));
+        $workplaceAllocation->setActiveImage(new Icon('computer'));
 
         if($this->user_has_admin_perm($course_id)) {
             $workplacesAdminNav = new Navigation('Arbeitsplätze', PluginEngine::getURL("WorkplaceAllocation", array(), 'admin'));
             $workplacesAdminNav->setDescription("Richten Sie Anmeldungen zu Arbeitsplätzen für Ihre Studierenden ein.");
+            $workplacesAdminNav->setImage(new Icon('computer'));
 
             /** @var Navigation $courseAdminNav */
             $courseAdminNav = Navigation::getItem("course/admin");
@@ -199,22 +200,22 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         $actionsWidget->addLink(
             "Arbeitsplatz hinzufügen",
             PluginEngine::getLink("WorkplaceAllocation", array(), "addWorkplace"),
-            "icons/blue/16/add"
+            new Icon("add")
         );
         $actionsWidget->addLink(
             "Sperrungen verwalten",
             PluginEngine::getLink("WorkplaceAllocation", array(), "manageBlacklist"),
-            "icons/blue/16/community"
+            new Icon("community")
         );
         $actionsWidget->addLink(
             "Benachritigungstexte verwalten",
             PluginEngine::getLink("WorkplaceAllocation", array(), "manageMail"),
-            "icons/blue/16/mail"
+            new Icon("mail")
         );
         $actionsWidget->addLink(
             "Alle Arbeitsplätze drucken",
             PluginEngine::getLink("WorkplaceAllocation", array(), "pdf"),
-            "icons/blue/16/print",
+            new Icon("print"),
             array('target' => '_blank')
         );
         

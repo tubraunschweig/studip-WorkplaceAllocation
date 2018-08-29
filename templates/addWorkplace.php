@@ -24,14 +24,18 @@ $submitButton = \Studip\Button::create(_("Hinzufügen"), null, array("type" => "
 ?>
 <h1><?= _("Arbeitsplatz hinzufügen")?></h1>
 
-<form action="<?= PluginEngine::getLink("WorkplaceAllocation", array(), "addWorkplace") ?>" method="post" class="studip-form">
-    <section class="required">
-        <label for="wp_name"><?=_("Name")?></label>
-        <input id="wp_name" name="wp_name" type="text" class="size-m" value="<?= $_POST['wp_name'] ?>">
+<form action="<?= PluginEngine::getLink("WorkplaceAllocation", array(), "addWorkplace") ?>" method="post" class="default">
+    <section>
+        <label for="wp_name">
+            <span class="required"><?=_("Name")?></span>
+            <input id="wp_name" name="wp_name" type="text" class="size-m" value="<?= $_POST['wp_name'] ?>">
+        </label>
     </section>
     <section>
-        <label for="wp_description"><?=_("Beschreibung")?></label>
-        <textarea id="wp_description" name="wp_description" cols="75" rows="4"><?= $_POST['wp_description'] ?></textarea>
+        <label for="wp_description">
+            <?=_("Beschreibung")?>
+            <textarea id="wp_description" name="wp_description" cols="75" rows="4"><?= $_POST['wp_description'] ?></textarea>
+        </label>
     </section>
     <?= $submitButton ?>
 </form>
