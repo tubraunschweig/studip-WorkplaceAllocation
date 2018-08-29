@@ -246,18 +246,16 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
         if(Request::isPost())
         {
-            foreach ($_POST as $id => $state)
+            $workplaces = Workplace::getWorkplacesByContext($_GET['cid']);
+            foreach ($workplaces as $workplace)
             {
-                $workplace = Workplace::getWorkplace($id);
-
-                switch($state)
+                if (isset($_POST[$workplace->getId()]))
                 {
-                    case 'on':
-                        $workplace->activate();
-                        break;
-                    case 'off':
-                        $workplace->deactivate();
-                        break;
+                    $workplace->activate();
+                }
+                else
+                {
+                    $workplace->deactivate();
                 }
             }
         }
