@@ -121,7 +121,7 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
         <br>
         Buchbar bis x vor Termin<br>
         <select title="Anmeldezeitraum Ende" name="registration_end">
-            <option value="P0D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P0D'){print("selected");} ?>>nie</option>
+            <option value="P0D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P0D'){print("selected");} ?>>unmitelbar</option>
             <option value="P1D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P1D'){print("selected");} ?>>1 Tag</option>
             <option value="P7D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P7D'){print("selected");} ?>>1 Woche</option>
             <option value="P14D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P14D'){print("selected");} ?>>2 Wochen</option>
