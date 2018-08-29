@@ -44,7 +44,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             /** @var Navigation $profileNavigation */
             $profileNavigation = Navigation::getItem('/profile');
 
-            $mySchedules = new Navigation("Arbeitspl&#228;tze", PluginEngine::getURL("WorkplaceAllocation", array(), 'my_schedules'));
+            $mySchedules = new Navigation("Arbeitsplätze", PluginEngine::getURL("WorkplaceAllocation", array(), 'my_schedules'));
             $mySchedules->setImage(new Icon('computer'));
             $mySchedules->setActiveImage(new Icon('computer'));
 
