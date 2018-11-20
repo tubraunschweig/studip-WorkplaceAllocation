@@ -39,7 +39,7 @@ if($workplace->getRule() == null){
                             window.location = '<?= PluginEngine::getLink(
                                     "WorkplaceAllocation",
                                     array(),
-                                    $admin ? "addSchedule" : "timetable") ?>' + '&day=' + dateText + '&wp_id=<?=$workplace->getId()?>';
+                                    $admin ? "addSchedule" : "timetable") ?>' + '&day=' + dateText + '&wp_id=<?=$workplace->getId()?>&week=<?= isset($_GET['week'])? $_GET['week'] : '0' ?>';
                         }
                     });
                 })
