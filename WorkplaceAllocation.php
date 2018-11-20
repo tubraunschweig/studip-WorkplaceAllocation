@@ -890,7 +890,7 @@ Dies ist eine automatisch generierte Mitteilung.
 
             #Headline
             $pdf->SetXY(27, 49);
-            $pdf->SetFontSize(20);
+            $pdf->SetFontSize(12);
             $pdf->SetFont(null, 'b');
             $pdf->Cell(155.5, 10, $wp->getName());
 
