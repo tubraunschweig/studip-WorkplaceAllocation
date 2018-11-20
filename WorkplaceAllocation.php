@@ -605,7 +605,27 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
         if(isset($_GET['delete'])) {
             if($_GET['delete']) {
+                $institute = Institute::findCurrent();
+                /** @var InstituteMember[] $instituteAdmins */
+                $instituteAdmins = InstituteMember::findByInstituteAndStatus($institute->getId(), 'admin');
+                $currentUser = User::findCurrent();
+                $mail = new StudipMail();
+                $mail->setBodyText("Ein Termin in der Einrichtung \"".$institute->name."\" wurde gelöscht:\n
+\n
+".strftime('%A, %e. %h %Y %H:%M Uhr', $schedule->getStart()->getTimestamp())."\n
+gelöscht von ".$currentUser->getFullName()."\n
+\n
+------\n
+Dies ist eine automatisch generierte Mitteilung.
+                ");
+                $mail->setSubject('[Arbeitsplatzvergabe] Termin gelöscht');
+                foreach ($instituteAdmins as $adminUser) {
+                    $mail->addRecipient($adminUser->email, $adminUser->vorname." ".$adminUser->nachname);
+                }
+
                 $schedule->deleteSchedule();
+
+                $mail->send();
             }
             header('Location: '.PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $_GET['wp_id'], 'day' => $start->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));
         } else {
