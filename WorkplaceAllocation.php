@@ -598,6 +598,11 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         }
         $start = $schedule->getStart();
 
+        if ($schedule->getStart() <= new DateTime()) {
+            header('Location: '.PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $_GET['wp_id'], 'day' => $start->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));
+            return;
+        }
+
         if(isset($_GET['delete'])) {
             if($_GET['delete']) {
                 $schedule->deleteSchedule();

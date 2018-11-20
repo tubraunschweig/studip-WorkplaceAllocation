@@ -205,20 +205,22 @@ if($workplace->getRule() == null){
                             /*Print Red Box*/
                             print('<div class="schedule booked" style="min-height: ' . $scheduleHeight . 'rem; max-height: ' . $scheduleHeight . 'rem;">');
                             if ($admin || $foundSchedule->getOwner()->user_id == get_userid()) {
-                                print('<span>
-                                ' . ($foundSchedule->isBlocked() ? 'Geblockt von' : '') . ' ' . $foundSchedule->getOwner()->vorname . ' ' . $foundSchedule->getOwner()->nachname . '
-                                <a href="' . PluginEngine::getLink(
+                                print('<span>');
+                                print(($foundSchedule->isBlocked() ? 'Geblockt von' : '') . ' ' . $foundSchedule->getOwner()->vorname . ' ' . $foundSchedule->getOwner()->nachname);
+                                print('<a href="' . PluginEngine::getLink(
                                         "WorkplaceAllocation",
                                         array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
                                         "editSchedule") . '" title="Termin bearbeiten">
                                     ' . (new Icon('edit'))->asImg() . '
-                                </a>
-                                <a href="' . PluginEngine::getLink(
+                                </a>');
+                                if ($foundSchedule->getStart() > new DateTime())
+                                print('<a href="' . PluginEngine::getLink(
                                         "WorkplaceAllocation",
                                         array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
                                         "removeSchedule") . '" title="Termin löschen">
                                     ' . (new Icon('trash'))->asImg() . '
-                                </a></span>');
+                                </a>');
+                                print('</span>');
                             } else {
                                 print('<span>Der Termin ist bereits vergeben</span>');
                             }
