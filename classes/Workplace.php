@@ -339,6 +339,14 @@ class Workplace
             $workplaceList[] = self::getWorkplace($item['id']);
         }
 
+        function cmp($a, $b) {
+            /** @var Workplace $a */
+            /** @var workplace $b */
+            return strcmp($a->getName(), $b->getName());
+        }
+
+        usort($workplaceList, 'cmp');
+
         return $workplaceList;
     }
 }
