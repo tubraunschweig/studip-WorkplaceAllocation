@@ -82,7 +82,7 @@ if($workplace->getRule() == null){
             <input type="hidden" name="wp_schedule_start" value="<?= $tableStartTime->getTimestamp() ?>">
             <input type="hidden" name="wp_schedule_duration" value="<?= $tableStartTime->diff($tableEndTime)->format('P%yY%mM%dDT%hH%iM%sS') ?>">
             <input type="hidden" name="wp_schedule_type" value="blocked">
-            <?= Studip\Button::create('Gesamten Tag blocken', null, array("type" => "submit"))?>
+            <?= Studip\Button::create('Ausgewählten Tag blocken', null, array("type" => "submit"))?>
         </form>
     <?php
 
@@ -105,6 +105,7 @@ if($workplace->getRule() == null){
             $heightCount++;
         }
         $days = [];
+        $selectedDay = clone $day;
         if(isset($_GET['week']) && $_GET['week'] == '1')
         {
             $dayOne = $day->sub(new DateInterval('P'.(intval($day->format('N'))-1).'D'));
@@ -137,7 +138,11 @@ if($workplace->getRule() == null){
             ?>
             <div class="schedules">
                 <?php
-                print('<div class="schedule" style="height: 2rem; text-align: center">'.strftime('%A, %e. %h %Y',$day->getTimestamp()).'</div>');
+                $dayHeader = '<div class="schedule" style="height: 2rem; text-align: center">'.strftime('%A, %e. %h %Y',$day->getTimestamp()).'</div>';
+                if ($day == $selectedDay){
+                    $dayHeader = "<b>".$dayHeader."</b>";
+                }
+                print($dayHeader);
                 $slotDuration = $workplace->getRule()->getSlotDuration();
                 $daySchedules = $workplace->getSchedulesByDay($day);
                 $freeSpace = 0;
