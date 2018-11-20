@@ -122,7 +122,7 @@ if($workplace->getRule() == null){
             $days[0] = $day;
         }
         ?>
-        <div class="all_schedules" style="height: <?= ($heightCount+1)*2 ?>rem">
+        <div class="all_schedules" style="height: <?= ($heightCount+2)*2 ?>rem">
         <?php
         foreach ($days as $day) {
             $tableStartTime = clone $day;
