@@ -213,13 +213,14 @@ if($workplace->getRule() == null){
                                         "editSchedule") . '" title="Termin bearbeiten">
                                     ' . (new Icon('edit'))->asImg() . '
                                 </a>');
-                                if ($foundSchedule->getStart() > new DateTime())
-                                print('<a href="' . PluginEngine::getLink(
-                                        "WorkplaceAllocation",
-                                        array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
-                                        "removeSchedule") . '" title="Termin löschen">
-                                    ' . (new Icon('trash'))->asImg() . '
-                                </a>');
+                                if ($foundSchedule->getStart() > new DateTime()){
+                                    print('<a href="' . PluginEngine::getLink(
+                                            "WorkplaceAllocation",
+                                            array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
+                                            "removeSchedule") . '" title="Termin löschen">
+                                        ' . (new Icon('trash'))->asImg() . '
+                                    </a>');
+                                }
                                 print('</span>');
                             } else {
                                 print('<span>Der Termin ist bereits vergeben</span>');
