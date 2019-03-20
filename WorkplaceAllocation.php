@@ -475,10 +475,11 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                     if(!$workplace->getRule()->isDayBookable($day, $admin, $workplace)) {
                         $messageBox = MessageBox::error('Der Termin konnte nicht gebucht werden, dies kann verschiedene Ursachen haben', array('Sie wurden gesperrt.', 'Es ist nur ein Termin pro Nutzer und Tag zugelassen.', 'Es ist zu einer Kollision gekommen, in diesem Falle versuche in der Übersicht nochmal einen Termin für diesen Tag zu buchen um einen Platz auf der Warteliste zu bekommen.'));
                     } else {
-                        $waitingListPlacement = WaitingList::push($workplace, $day);
-                        if ($waitingListPlacement != null) {
-                            $messageBox = MessageBox::error('Am ' . $day->format('d.m.Y') . ' ist kein Termin mehr frei. Sie wurden in die Warteliste auf Platz ' . $waitingListPlacement . ' eingetragen');
-                        }
+                        //$waitingListPlacement = WaitingList::push($workplace, $day);
+                        //if ($waitingListPlacement != null) {
+                        //    $messageBox = MessageBox::error('Am ' . $day->format('d.m.Y') . ' ist kein Termin mehr frei. Sie wurden in die Warteliste auf Platz ' . $waitingListPlacement . ' eingetragen');
+                        //}
+                        $messageBox = MessageBox::error('Am ' . $day->format('d.m.Y') . ' ist kein Termin mehr frei. ');
                     }
                 }
             } else if (isset($_POST['action']) && $_POST['action'] == 'move_up' && isset($_POST['wp_schedule_id']) && isset($_POST['wp_schedule_new_start'])) {
