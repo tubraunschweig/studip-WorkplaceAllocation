@@ -41,14 +41,14 @@
             $expiration = $entry['expiration']
             ?>
             <tr>
-                <td><?= $user->nachname ?>, <?= $user->vorname ?></td>
+                <td><?= $user->surname ?>, <?= $user->givenname ?></td>
                 <td><?= $user->username ?></td>
                 <td><?= $expiration != null ? $expiration->format('d.m.Y') : _('Unbegrenzt') ?></td>
                 <td style="text-align: right;">
                     <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>"
                           method="post">
                         <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="user_id" value="<?= $user->user_id ?>">
+                        <input type="hidden" name="user_id" value="<?= $user->userid ?>">
                         <button type="submit" class="link_button"><?= Assets::img('icons/20/blue/trash') ?></button>
                     </form>
                 </td>
