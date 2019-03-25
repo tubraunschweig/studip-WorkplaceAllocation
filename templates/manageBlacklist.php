@@ -49,7 +49,7 @@
                           method="post">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="user_id" value="<?= $user->userid ?>">
-                        <button type="submit" class="link_button"><?= Assets::img('icons/20/blue/trash') ?></button>
+                        <button type="submit" class="link_button"><?= Icon::create('trash', 'clickable')->asImg() ?></button>
                     </form>
                 </td>
             </tr>

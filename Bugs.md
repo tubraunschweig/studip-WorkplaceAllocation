@@ -40,9 +40,9 @@ Wir beobachten, ob Punkt 1 öfter passiert oder ob die beiden nur zufällig in d
 Sperrliste:
 Admins sollen direkt User sperren können
 
-
 Seit dem Update: 
 Bei Termin löschen Email Benachrichtigung
 4. Nur Ein Termin pro Studi pro Tag erlaubt 
 
 Update Test neues Plugin im April
+

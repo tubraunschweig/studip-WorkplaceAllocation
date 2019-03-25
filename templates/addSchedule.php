@@ -221,6 +221,16 @@ if($workplace->getRule() == null){
                                         ' . (new Icon('trash'))->asImg() . '
                                     </a>');
                                 }
+                                if($admin){
+                                    ?>
+                                    <form action="<?= PluginEngine::getLink("WorkplaceAllocation", array(), "manageBlacklist") ?>" method="post" style="display:inline">
+                                    <input type="hidden" name="action" value="add">
+                                    <input type="hidden" name="expiration" value="7" >
+                                    <input type="hidden" name="user_id" value="<?= $foundSchedule->getOwner()->user_id ?>">
+                                    <input type="image" src="<?= (Icon::create('decline', 'clickable'))->asImagePath() ?>" title="Benutzer 7 Tage sperren" value="sperren" alt="Submit">
+                                    </form>      
+                                    <?php
+                                }
                                 print('</span>');
                             } else {
                                 print('<span>Der Termin ist bereits vergeben</span>');
