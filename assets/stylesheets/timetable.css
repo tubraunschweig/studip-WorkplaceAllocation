@@ -82,3 +82,17 @@ div.timetable div.schedules .booked span {
 div.timetable div.schedules .booked span svg,  div.timetable div.schedules .booked span svg image {
     height: 1em;
 }
+
+.print-only{
+    display: none;
+}
+
+@media print {
+    .no-print {
+        display: none;
+    }
+
+    .print-only{
+        display: block;
+    }
+}
