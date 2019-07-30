@@ -227,11 +227,13 @@ if($workplace->getRule() == null){
                                     <input type="hidden" name="action" value="add">
                                     <input type="hidden" name="expiration" value="7" >
                                     <input type="hidden" name="user_id" value="<?= $foundSchedule->getOwner()->user_id ?>">
-                                    <input type="image" src="<?= (Icon::create('decline', 'clickable'))->asImagePath() ?>" title="Benutzer 7 Tage sperren" value="sperren" alt="Submit">
+                                    <input type="image" src="<?= (Icon::create('remove-circle', 'clickable'))->asImagePath() ?>" title="Benutzer 7 Tage sperren" value="sperren" alt="Submit">
                                     </form>      
                                     <?php
                                 }
                                 print('</span>');
+
+                                print('<div class="print-only timetable-comment">' . $foundSchedule->getComment() . '</div>' );
                             } else {
                                 print('<span>Der Termin ist bereits vergeben</span>');
                             }
