@@ -114,8 +114,7 @@ class Blacklist implements IteratorAggregate
      *        <b>Traversable</b>
      * @since 5.0.0
      */
-    public function getIterator()
-    {
+    public function getIterator(){
         $data = DBManager::get()->fetchAll("SELECT user_id, expiration FROM wp_blacklist WHERE context_id = ?", array($this->context_id));
         $usersInList = array();
         foreach($data as $uid){

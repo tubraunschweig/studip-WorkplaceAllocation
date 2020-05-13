@@ -232,8 +232,6 @@ if($workplace->getRule() == null){
                                     <?php
                                 }
                                 print('</span>');
-
-                                print('<div class="print-only timetable-comment">' . $foundSchedule->getComment() . '</div>' );
                             } else {
                                 print('<span>Der Termin ist bereits vergeben</span>');
                             }

@@ -43,10 +43,24 @@
     $isOnBlacklist = $blacklist->isOnList(get_userid());
     if ($isOnBlacklist) {
         $blacklistExpiration = $blacklist->getExpiration(get_userid());
+        
     }
     foreach ($workplaces as $workplace)
     {
-        if($workplace->isActive()) {
+        if($isOnBlacklist){
+            ?>
+                <tr>
+                    <td>
+                        <a href="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId()), "timetable") ?>"><?= $workplace->getName() ?></a>
+                    </td>
+                    <td>
+                        <?= /** @noinspection PhpParamsInspection */
+                        tooltipIcon($workplace->getDescription()) ?>
+                    </td>
+                </tr>
+            <?php 
+        }else{
+            if($workplace->isActive()) {
 
             $registrationEnd = (new DateTime())->sub($workplace->getRule()->getRegistrationEnd());
             $quickBookDay = new DateTime();
@@ -65,6 +79,7 @@
                     <?= /** @noinspection PhpParamsInspection */
                     tooltipIcon($workplace->getDescription()) ?>
                 </td>
+                
                 <td>
                     <?php if (!($isOnBlacklist && ($blacklistExpiration == null || $blacklistExpiration >= $quickBookDay)) && $quickBookDay > $registrationEnd):?>
                     <form action="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId(), "day" => $quickBookDay->format('d.m.Y')), "timetable") ?>" method="post">
@@ -74,8 +89,10 @@
                     <?php endif; ?>
                 </td>
             </tr>
+
             <?php
-        }
+            }
+        }    
     }
     ?>
     </tbody>

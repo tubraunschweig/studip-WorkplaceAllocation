@@ -630,12 +630,17 @@ Dies ist eine automatisch generierte Mitteilung.
             }
             header('Location: '.PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $_GET['wp_id'], 'day' => $start->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));
         } else {
+            if($start > new DateTime() ){ //start liegt in Zukunft --> delete action
             $_GET['day'] = $schedule->getStart()->format('d.m.Y');
             $admin ? $this->addSchedule_action() : $this->timetable_action();
             print(createQuestion(
                 "Möchten Sie den Termin wirklich löschen ?",
                 array('delete' => true, 's_id' => $schedule->getId(), 'wp_id' => $schedule->getWorkplace()->getId()),
                 array('delete' => false, 's_id' => $schedule->getId(), 'wp_id' => $schedule->getWorkplace()->getId())));
+        
+            }else{
+                throw new AccessDeniedException("Der Termin ist bereits abgelaufen");
+            }
         }
 
 
