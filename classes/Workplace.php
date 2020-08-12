@@ -185,7 +185,7 @@ class Workplace
      * @param bool $oneScheduleByDayAndUser "one schedule by day and user"-flag
      * @param array $days array of day states in boolean (<Mon>, <Tue>, <Wed>, <Thu>, <Fri>, <Sat>, <Sun>)
      */
-    public function createRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $days = array(false, false, false, false, false, false, false))
+    public function createRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $days = array(true, true, true, true, true, true, true))
     {
         if($this->rule != null)
         {
