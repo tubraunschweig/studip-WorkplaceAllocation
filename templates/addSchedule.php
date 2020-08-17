@@ -206,7 +206,7 @@ if($workplace->getRule() == null){
                             print('<div class="schedule booked" style="min-height: ' . $scheduleHeight . 'rem; max-height: ' . $scheduleHeight . 'rem;">');
                             if ($admin || $foundSchedule->getOwner()->user_id == get_userid()) {
                                 print('<span>');
-                                print(($foundSchedule->isBlocked() ? 'Geblockt von' : '') . ' ' . $foundSchedule->getOwner()->vorname . ' ' . $foundSchedule->getOwner()->nachname);
+                                print('<a href="' . URLHelper::getLink('dispatch.php/profile?username=' . ($foundSchedule->getOwner()->username)) . '" > ' . ($foundSchedule->isBlocked() ? 'Geblockt von' : '') . ' ' . $foundSchedule->getOwner()->vorname . ' ' . $foundSchedule->getOwner()->nachname . '</a>'); 
                                 print('<a href="' . PluginEngine::getLink(
                                         "WorkplaceAllocation",
                                         array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
