@@ -178,6 +178,8 @@ class Schedule
         $notification->setContext($this->workplace->getContextId());
         $notification->sendNotification();
 
+        Schedule::notifyMailinglist($this, 'setStart');
+
         if($recursive) {
             $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start = ?",
                 array($this->workplace->getId(), $oldEndTime->getTimestamp()));
@@ -236,6 +238,8 @@ class Schedule
         $notification->setContext($this->workplace->getContextId());
         $notification->sendNotification();
 
+        Schedule::notifyMailinglist($this, 'setDuration');
+
         return true;
     }
 
@@ -277,7 +281,7 @@ class Schedule
     {
         DBManager::get()->execute("DELETE FROM wp_schedule WHERE id = ?", array($this->id));
         $nextFromWaitingList = WaitingList::pop($this->workplace, $this->start);
-        var_dump($nextFromWaitingList);
+        //var_dump($nextFromWaitingList);
         if($nextFromWaitingList != null) {
             Schedule::newSchedule($nextFromWaitingList->getUserid(), $this->workplace->getId(), $this->start->getTimestamp(), $this->duration->format('P%yY%mM%dDT%hH%iM%sS'));
         }
@@ -297,6 +301,8 @@ class Schedule
         );
         $notification->setContext($this->workplace->getContextId());
         $notification->sendNotification();
+
+        Schedule::notifyMailinglist($this, 'deleteSchedule');
     }
 
     /*
@@ -369,7 +375,10 @@ class Schedule
         $notification->setContext($workplace->getContextId());
         $notification->sendNotification();
 
-        return self::getSchedule($id);
+        $schedule = self::getSchedule($id);
+        Schedule::notifyMailinglist($schedule, 'newSchedule');
+
+        return $schedule;
     }
 
     /**
@@ -396,5 +405,49 @@ class Schedule
         }
 
         return $returnArray;
+    }
+
+    /**
+     *
+     * notify all members of the mailing list
+     *
+     * @param Schedule $schedule schedule that is notified about
+     * @return string $actionkey action that is performed on schedule
+     */
+    static private function notifyMailinglist($schedule, $actionkey)
+    {
+        $mailinglist = NotifiedUserList::getNotifiedUserList($schedule->getWorkplace()->getContextId());
+        if($mailinglist->list_size() > 0) {
+            $mail = new StudipMail();
+
+            $actiontext = array(
+                "newSchedule" => "angelegt",
+                "deleteSchedule" => "geloescht",
+                "setDuration" => "geaendert",
+                "setStart" => "geaendert"
+            );
+
+            $EndTime = clone $schedule->getStart();
+            $EndTime->add($schedule->getDuration());
+
+            $mail->setBodyText("Ein Termin am Arbeitsplatz \"".$schedule->getWorkplace()->getName()."\" wurde ".$actiontext[$actionkey].":\n
+\n
+".strftime('%A, %e. %h %Y %H:%M ', $schedule->getStart()->getTimestamp())."bis ".strftime('%H:%M Uhr', $EndTime->getTimestamp())."\n
+Termin von ".$schedule->getOwner()->vorname . ' ' . $schedule->getOwner()->nachname."
+Email: ".$schedule->getOwner()->email ."\n
+\n
+------\n
+Dies ist eine automatisch generierte Mitteilung.
+            ");
+            $mail->setSubject('[Arbeitsplatzvergabe] Termin '.$actiontext[$actionkey]);
+            
+            foreach ($mailinglist as $mailingUser) {
+                if (filter_var($mailingUser->email, FILTER_VALIDATE_EMAIL)) {
+                    $mail->addRecipient($mailingUser->email, $mailingUser->vorname." ".$mailingUser->nachname);
+                }
+            }
+
+            $mail->send();
+        }
     }
 }
