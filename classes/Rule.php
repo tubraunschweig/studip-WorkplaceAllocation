@@ -501,7 +501,7 @@ class Rule
      *
      * @return null|Rule Rule if all ok, null on error
      */
-    public static function newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $days = array(false, false, false, false, false, false, false))
+    public static function newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $days = array(true, true, true, true, true, true, true))
     {
 
 

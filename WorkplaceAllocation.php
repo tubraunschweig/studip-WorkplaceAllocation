@@ -34,6 +34,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         require_once __DIR__."/classes/Blacklist.php";
         require_once __DIR__."/classes/WpNotifications.php";
         require_once __DIR__."/classes/WpMessages.php";
+        require_once __DIR__."/classes/NotifiedUserList.php";
         
         $this->templateFactory = new Flexi_TemplateFactory($this->getPluginPath().'/templates');
 
@@ -210,6 +211,11 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         $actionsWidget->addLink(
             "Benachritigungstexte verwalten",
             PluginEngine::getLink("WorkplaceAllocation", array(), "manageMail"),
+            new Icon("mail")
+        );
+        $actionsWidget->addLink(
+            "Mailingliste verwalten",
+            PluginEngine::getLink("WorkplaceAllocation", array(), "manageNotifiedUsers"),
             new Icon("mail")
         );
         $actionsWidget->addLink(
@@ -811,6 +817,79 @@ Dies ist eine automatisch generierte Mitteilung.
 
         print($template->render());
 
+    }
+
+     /**
+     * route to manage users who get notification mails when schedules are created
+     *
+     * @throws AccessDeniedException
+     */
+    public function manageNotifiedUsers_action()
+    {
+        if(!$this->user_has_admin_perm($_GET['cid'])){
+            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        }
+
+        Navigation::activateItem('/course/admin/workplaces');
+
+        /** @var string[] $messageBoxes */
+        $messageBoxes = array();
+
+        if(Request::isPost())
+        {
+            if(!isset($_POST['username']) || $_POST['username'] == "") {
+                $messageBoxes[] = MessageBox::error('Kein Nutzer angegeben.');
+            } else if($user_id = get_userid($_POST['username'])) { // checks if username is real
+                NotifiedUserList::getNotifiedUserList()->addToList($user_id);
+                $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert.");
+            } else {
+                $messageBoxes[] = MessageBox::error('Der von Ihnen angegebene Nutzer existiert nicht.');
+            }
+        }
+
+        /** @var Flexi_Template $template */
+        $template = $this->templateFactory->open('manageNotifiedUsers');
+        $template->set_layout($GLOBALS['template_factory']->open('layouts/base'));
+        $template->set_attribute('userlist', NotifiedUserList::getNotifiedUserList());
+        $template->set_attribute('messageBoxes', $messageBoxes);
+
+        print($template->render());
+    }
+
+    /**
+     * route to delete a user who gets notification mails when schedules are created
+     * first ask if you really would like to delete this user from the mailing list
+     *
+     * @throws AccessDeniedException
+     */
+    public function delNotifiedUser_action()
+    {
+        if(!$this->user_has_admin_perm($_GET['cid']))
+        {
+            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        }
+
+        $user = User::findFull($_GET['user_id']);
+
+        if(isset($_GET['delete']))
+        {
+            if($_GET['delete'])
+            {
+                NotifiedUserList::getNotifiedUserList()->deleteFromList($_GET['user_id']);
+            }
+            header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers'));
+
+        }
+        else
+        {
+            $this->manageNotifiedUsers_action();
+
+            print(createQuestion(
+                "Möchten Sie den User \"".$user->username."\" wirklich löschen ?",
+                array("user_id" => $_GET['user_id'], "delete" => true), 
+                array("delete" => false)
+            ));
+        }
     }
 
     /**
