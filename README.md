@@ -23,3 +23,6 @@ v0.5
 Name bei Terminen ist Link auf Profil  
 v0.6
 Mailingliste für Terminänderungen hinzugefügt
+v0.7
+Terminansicht standartmäßig per Woche
+Option der Beschränkung von Arbeitsplätzen für Einrichtungsmitglieder

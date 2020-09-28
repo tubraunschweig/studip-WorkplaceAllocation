@@ -129,7 +129,8 @@ $submitButton = \Studip\Button::create(_("Speichern"), null, array("type" => "su
     </section>
     <section>
         <label>Weitere Optionen</label>
-        <input type="checkbox" name="one_schedule_by_day_and_user" id="one_schedule_by_day_and_user" <?= ($rule != null && $rule->isOneScheduleByDayAndUser()) ? 'checked' : '' ?> title="Option aktivieren/deaktivieren: Nur ein termin pro Tag und Nutzer"> Für jeden Nutzer nur einen Termin am Tag zulassen<br>
+        <input type="checkbox" name="one_schedule_by_day_and_user" id="one_schedule_by_day_and_user" <?= ($rule != null && $rule->isOneScheduleByDayAndUser()) ? 'checked' : '' ?> title="Option aktivieren/deaktivieren: Nur ein Termin pro Tag und Nutzer"> Für jeden Nutzer nur einen Termin am Tag zulassen<br>
+        <input type="checkbox" name="only_members_can_book" id="only_members_can_book" <?= ($rule != null && $rule->isOnlyMembersCanBook()) ? 'checked' : '' ?> title="Option aktivieren/deaktivieren: Termine nur für Einrichtungsmitglieder"> Termine sind nur für Mitglieder der Einrichtung buchbar<br>
     </section>
     <?= $submitButton ?>
 </form>

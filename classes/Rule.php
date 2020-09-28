@@ -30,6 +30,8 @@ class Rule
     private $slotDuration;
     /** @var bool */
     private $oneScheduleByDayAndUser;
+    /** @var bool */
+    private $onlyMembersCanBook;
     /** @var bool[7] */
     private $days;
 
@@ -44,9 +46,10 @@ class Rule
      * @param int $registrationEnd
      * @param $slotDuration
      * @param bool $oneScheduleByDayAndUser
+     * @param bool $onlyMembersCanBook
      * @param array $days
      */
-    private function __construct($id, $start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $days = array(true, true, true, true, true, true, true))
+    private function __construct($id, $start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $onlyMembersCanBook = false, $days = array(true, true, true, true, true, true, true))
     {
         $this->id = $id;
         $this->start = new DateInterval($start);
@@ -62,6 +65,7 @@ class Rule
         $this->registrationEnd = new DateInterval($registrationEnd);
         $this->slotDuration = new DateInterval($slotDuration);
         $this->oneScheduleByDayAndUser = $oneScheduleByDayAndUser;
+        $this->onlyMembersCanBook = $onlyMembersCanBook;
         $this->days = $days;
     }
 
@@ -173,7 +177,15 @@ class Rule
         return $this->oneScheduleByDayAndUser;
     }
 
-
+    /**
+     * Get "is only members can book"-flag
+     *
+     * @return boolean true if a user is only allowed to book schedules if they are a member of the institute
+     */
+    public function isOnlyMembersCanBook()
+    {
+        return $this->onlyMembersCanBook;
+    }
 
     /**
      * Set start of first possible stol in relation to day start in seconds
@@ -293,6 +305,17 @@ class Rule
         DBManager::get()->execute("UPDATE wp_rules SET one_schedule_by_day_and_user = ? WHERE id = ?", array($oneScheduleByDayAndUser, $this->id));
     }
 
+    /**
+     * Set "only members can book"-flag
+     *
+     * @param boolean $onlyMembersCanBook true if a user should be a member of the institute to book schedules
+     */
+    public function setOnlyMembersCanBook($onlyMembersCanBook)
+    {
+        $this->onlyMembersCanBook = $onlyMembersCanBook;
+
+        DBManager::get()->execute("UPDATE wp_rules SET only_members_can_book = ? WHERE id = ?", array($onlyMembersCanBook, $this->id));
+    }
 
     /**
      * look if schedule is bookable
@@ -482,6 +505,7 @@ class Rule
             $data['registration_end'], 
             $data['slot_duration'],
             $data['one_schedule_by_day_and_user'],
+            $data['only_members_can_book'],
             self::daysNumberToArray($data['days'])
         );
     }
@@ -497,19 +521,20 @@ class Rule
      * @param int $registrationEnd end of registration period in relation to day end in seconds
      * @param int $slotDuration default slot duration in seconds
      * @param bool $oneScheduleByDayAndUser "one schedule by day and user"-flag
+     * @param bool $onlyMembersCanBook "only members can book"-flag
      * @param array $days array of day states in boolean (<Mon>, <Tue>, <Wed>, <Thu>, <Fri>, <Sat>, <Sun>)
      *
      * @return null|Rule Rule if all ok, null on error
      */
-    public static function newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $days = array(true, true, true, true, true, true, true))
+    public static function newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $onlyMembersCanBook = false, $days = array(true, true, true, true, true, true, true))
     {
 
 
         $id = sha1(rand());
         DBManager::get()->execute(
-            "INSERT INTO wp_rules (id, start, end, pause_start, pause_end, registration_start, registration_end, slot_duration, one_schedule_by_day_and_user, days) 
+            "INSERT INTO wp_rules (id, start, end, pause_start, pause_end, registration_start, registration_end, slot_duration, one_schedule_by_day_and_user, only_members_can_book, days) 
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            array($id, $start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser, self::daysArrayToNumber($days)));
+            array($id, $start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser, $onlyMembersCanBook, self::daysArrayToNumber($days)));
 
         return self::getRule($id);
     }

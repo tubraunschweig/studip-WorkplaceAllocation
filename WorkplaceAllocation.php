@@ -171,6 +171,23 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     }
 
     /**
+     * check if actual user is member of the actual context
+     *
+     * @return bool
+     */
+    private function user_is_member() {
+        $current_institute = Institute::findCurrent();
+        $user_institutes = Institute::getMyInstitutes();
+
+        foreach($user_institutes as $inst) {
+            if($current_institute->getId() == $inst->getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * main route for students
      */
     public function show_action()
@@ -415,6 +432,11 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                 } else {
                     $rule->setOneScheduleByDayAndUser(false);
                 }
+                if(isset($_POST['only_members_can_book']) && $_POST['only_members_can_book'] == 'on') {
+                    $rule->setOnlyMembersCanBook(true);
+                } else {
+                    $rule->setOnlyMembersCanBook(false);
+                }
                 if(is_array($_POST['day'])) {
                     for ($i = 0; $i < 7; $i++) {
                         if (in_array($i, $_POST['day'])) {
@@ -464,6 +486,11 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         }
 
         $workplace = Workplace::getWorkplace($_GET['wp_id']);
+
+        if(!$admin && $workplace->getRule()->isOnlyMembersCanBook() && !$this->user_is_member()) {
+            throw new AccessDeniedException("Termine an diesem Arbeitsplatz sind nur für Mitglieder der Einrichtung buchbar");
+        }
+
         $nowTime = new DateTime();
         if(isset($_GET['day']))
         {
