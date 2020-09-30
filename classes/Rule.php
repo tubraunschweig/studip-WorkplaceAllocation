@@ -533,7 +533,7 @@ class Rule
         $id = sha1(rand());
         DBManager::get()->execute(
             "INSERT INTO wp_rules (id, start, end, pause_start, pause_end, registration_start, registration_end, slot_duration, one_schedule_by_day_and_user, only_members_can_book, days) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             array($id, $start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser, $onlyMembersCanBook, self::daysArrayToNumber($days)));
 
         return self::getRule($id);
