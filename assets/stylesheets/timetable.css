@@ -4,11 +4,11 @@ div.timetable {
 
 div.timetable div.time {
     display: block;
-    height: 2rem;
+    height: 4rem;
     font-size: 1rem;
-    color: grey;
+    color: rgb(102, 102, 102);
 
-    border-bottom: 1px solid grey;
+    border-bottom: 1px solid rgb(102, 102, 102);
     box-sizing: border-box;
 
     z-index: -50;
@@ -67,18 +67,18 @@ div.timetable div.schedules .booked {
     display: block;
     box-sizing: border-box;
 
-    width: inherit;
-    border: 1px solid red;
+    width: 17em;
+    border: 1px solid #28497c;
     padding: 0 15px;
-    color: red;
+    color: rgb(190, 30, 60);
     margin-right: 0.6em;
-    background: white;
+    background: rgb(153, 153, 153);
 }
 
-div.timetable div.schedules .booked span {
-    display: inline-block;
-    vertical-align: middle;
-}
 div.timetable div.schedules .booked span svg,  div.timetable div.schedules .booked span svg image {
     height: 1em;
+}
+
+div.timetable span.schedule_comment {
+    display: block;
 }
