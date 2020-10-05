@@ -5,10 +5,10 @@
 1. Wochenansicht soll Standart werden: ✓
 Die Wochenansicht soll sofort erscheinen und die Tagesansicht mit extra Klick erreichbar sein.
 
-2. Klarere Ankündigungen:
+2. Klarere Ankündigungen: ✓
 Der ausklappbare Ankündigungspunkt auf der Kurzinfo Seite sollte beim Laden bereits ausgeklappt sein. Alternativ könnte man die Eintragung in der Einrichtung zur Voraussetzung für das Anlegen von Terminen machen. Dann würden Ankündigungen per Rundmail ohne großen Aufwand alle Nutzer erreichen.
 
-3. Drucken von Kommentaren:
+3. Drucken von Kommentaren: ✓
 Das Kommentarfeld eines Termins wird in der ausgedruckten Ansicht nicht dargestellt. Diese Funktion ist wichtig für die Modellbauwerkstatt, da die Adminaccounts manchmal Termine für Studenten anlegen. In diesem Fall geht der Name des Termineigentümers nur aus dem Kommentarfeld hervor und muss auf den ausgedruckten DIN A5 Zetteln der Werkstatt klar ersichtlich sein.  
 
 Die Kommentare können beim Druck in die Terminblöcke geschrieben werden. Eventuell erfordert das eine Beschränkung der Textlänge.
@@ -39,7 +39,7 @@ Muss so entwickelt werden das alle bisherigen Methoden mit beiden Klassen von Ge
 1. Löschen des eigenen Termins:
 Das Löschen des eigenen Termins noch vor dem Startzeitpunkt ist zu kurzfristig möglich. Minuten vor dem Termin kann niemand mehr darauf reagieren - Termin neuvergeben etc. Dies sollte schon viel früher blockiert werden. Wunsch wäre ein Werktag.
 
-2. Größe der Wochenansicht:
+2. Größe der Wochenansicht: ✓
 Wochenansicht und Tagesansicht sind sehr kleinteilig gehalten. Die Formatierung könnte größere Elemente haben. Moderne Monitore lassen mehr Spielraum als wir nutzen.
 
 Größere Formatierung mit mehr Platz für die Slots wäre besser. 

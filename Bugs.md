@@ -4,6 +4,8 @@ Termine der Studierenden werden manchmal trotz Versandt einer Bestätigungsmail 
 
 Da es nur bei starker Nutzung vereinzelt auftritt könnte es mit Kollisionen zu tun haben.
 
+Implementation eines locks für die Modifikation von Termindaten als Lösungsansatz. Es kann nur noch ein User gleichzeitig Termine an einem Arbeitsplatz modifizieren. Wirkung ist allerdings schwer prüfbar.
+
 2. Alle Arbeitsplätze drucken funktioniert nicht:
 Der Button produziert seit einiger Zeit nur eine Fehlermeldung.
 

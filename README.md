@@ -26,3 +26,6 @@ Mailingliste für Terminänderungen hinzugefügt
 v0.7
 Terminansicht standartmäßig per Woche
 Option der Beschränkung von Arbeitsplätzen für Einrichtungsmitglieder
+Überarbeitung der Terminansicht
+Darstellung von Kommentaren in Termin- und Druckansicht
+Implementation eines locks für Modifikationen von Termindaten

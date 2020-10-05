@@ -1045,7 +1045,9 @@ Dies ist eine automatisch generierte Mitteilung.
                 $scheduleDurationTime->add($schedule->getDuration());
                 $pdf->Rect(47, $topStart+$scheduleStartTableStart->getTimestamp()*$stepHeight, 155, $scheduleDurationTime->getTimestamp()*$stepHeight, 'FD',array('all' => array('width' => 0.5, 'color' => array(35, 64, 153))), array(255,255,255));
                 $pdf->SetXY(50, $topStart+$scheduleStartTableStart->getTimestamp()*$stepHeight);
-                $pdf->Cell(150, $scheduleDurationTime->getTimestamp()*$stepHeight, $schedule->getOwner()->vorname.' '.$schedule->getOwner()->nachname);
+                $comment = $schedule->getComment();
+                strlen($comment)>48?$string=substr($comment, 0,48).'...':$string=$comment;
+                $pdf->Cell(150, $scheduleDurationTime->getTimestamp()*$stepHeight, $schedule->getOwner()->vorname.' '.$schedule->getOwner()->nachname.'   '.$string);
             }
 
 
