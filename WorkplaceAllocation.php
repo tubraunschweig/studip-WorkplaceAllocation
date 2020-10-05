@@ -478,6 +478,10 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             Navigation::activateItem('/course/admin/workplaces');
         }
 
+        // file based lock to limit schedule manipulations to one user per workplace at once
+        $path = $this->getPluginPath().'/locks/'.$_GET['wp_id'];
+        $lock = fopen($path, 'c');
+
         if(!$this->user_has_admin_perm($_GET['cid']))
         {
             $admin = false;
@@ -503,6 +507,9 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
         if(Request::isPost())
         {
+            // closing lock for schedule manipulations or waiting
+            flock($lock, LOCK_EX);
+
             if(isset($_POST['next_schedule']) && $_POST['next_schedule'] == 'true') {
                 if(!$workplace->getRule()->bookFirstPossibleSchedule($workplace, $day, $admin)) {
                     if(!$workplace->getRule()->isDayBookable($day, $admin, $workplace)) {
@@ -533,6 +540,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                     $messageBox = MessageBox::error('Der Termin konnte nicht gebucht werden, dies kann verschiedene Ursachen haben', array('Der Termin ist bereits belegt.', 'Es ist nur ein Termin pro Nutzer und Tag zugelassen.'));
                 }
             }
+
+            flock($lock, LOCK_UN);
         }
 
         /** @var Flexi_Template $template */
@@ -570,14 +579,19 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             $admin = true;
         }
 
-
-
         $schedule = Schedule::getSchedule($_GET['s_id']);
+
+        // file based lock to limit schedule manipulations to one user per workplace at once
+        $path = $this->getPluginPath().'/locks/'.$schedule->getWorkplace()->getId();
+        $lock = fopen($path, 'c');
 
         $messageBoxes = array();
 
         if(Request::isPost())
         {
+            // closing lock for schedule manipulations or waiting
+            flock($lock, LOCK_EX);
+
             $success = true;
             if(isset($_POST['s_duration']) && $admin) {
                 $duration = new DateInterval($_POST['s_duration']);
@@ -599,11 +613,14 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                 $backLink = PluginEngine::getLink(
                     'WorkplaceAllocation',
                     array('wp_id' => $schedule->getWorkplace()->getId(),
+                          'week' => '1',
                           'day' => $schedule->getStart()->format('d.m.Y')),
                     $admin ? 'addSchedule' : 'timetable');
 
                 $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert", array("<a href='".$backLink."'>zurück</a>"));
             }
+
+            flock($lock, LOCK_UN);
         }
 
         /** @var Flexi_Template $template */
