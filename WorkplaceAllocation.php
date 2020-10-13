@@ -177,10 +177,10 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      */
     private function user_is_member() {
         $current_institute = Institute::findCurrent();
-        $user_institutes = Institute::getMyInstitutes();
+        $user_institutes = InstituteMember::findByUser(get_userid());
 
-        foreach($user_institutes as $inst) {
-            if($current_institute->getId() == $inst->getId()) {
+        for($i = 0, $size = count($user_institutes); $i < $size; $i++) {
+            if($current_institute->getId() == $user_institutes[$i]['institut_id']) {
                 return true;
             }
         }
