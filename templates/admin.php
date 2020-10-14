@@ -54,7 +54,7 @@
                     form="action_form" 
                     <? if($workplace->isActive()) {print("checked");} ?> title="Arbeitsplatz aktivieren/deaktivieren">
             </td>
-            <td><a href="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId()), "addSchedule") ?>"><?= $workplace->getName() ?></a></td>
+            <td><a href="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId(), "week" => 1), "addSchedule") ?>"><?= $workplace->getName() ?></a></td>
             <td>
                 <?= /** @noinspection PhpParamsInspection */
                 !empty($workplace->getDescription()) ? tooltipIcon($workplace->getDescription()) : "" ?>

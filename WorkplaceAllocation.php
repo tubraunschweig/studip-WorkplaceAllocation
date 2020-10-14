@@ -171,6 +171,23 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     }
 
     /**
+     * check if actual user is member of the actual context
+     *
+     * @return bool
+     */
+    private function user_is_member() {
+        $current_institute = Institute::findCurrent();
+        $user_institutes = InstituteMember::findByUser(get_userid());
+
+        for($i = 0, $size = count($user_institutes); $i < $size; $i++) {
+            if($current_institute->getId() == $user_institutes[$i]['institut_id']) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * main route for students
      */
     public function show_action()
@@ -415,6 +432,11 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                 } else {
                     $rule->setOneScheduleByDayAndUser(false);
                 }
+                if(isset($_POST['only_members_can_book']) && $_POST['only_members_can_book'] == 'on') {
+                    $rule->setOnlyMembersCanBook(true);
+                } else {
+                    $rule->setOnlyMembersCanBook(false);
+                }
                 if(is_array($_POST['day'])) {
                     for ($i = 0; $i < 7; $i++) {
                         if (in_array($i, $_POST['day'])) {
@@ -456,6 +478,10 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             Navigation::activateItem('/course/admin/workplaces');
         }
 
+        // file based lock to limit schedule manipulations to one user per workplace at once
+        $path = $this->getPluginPath().'/locks/'.$_GET['wp_id'];
+        $lock = fopen($path, 'c');
+
         if(!$this->user_has_admin_perm($_GET['cid']))
         {
             $admin = false;
@@ -464,6 +490,11 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         }
 
         $workplace = Workplace::getWorkplace($_GET['wp_id']);
+
+        if(!$admin && $workplace->getRule()->isOnlyMembersCanBook() && !$this->user_is_member()) {
+            throw new AccessDeniedException("Termine an diesem Arbeitsplatz sind nur für Mitglieder der Einrichtung buchbar");
+        }
+
         $nowTime = new DateTime();
         if(isset($_GET['day']))
         {
@@ -476,6 +507,9 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
         if(Request::isPost())
         {
+            // closing lock for schedule manipulations or waiting
+            flock($lock, LOCK_EX);
+
             if(isset($_POST['next_schedule']) && $_POST['next_schedule'] == 'true') {
                 if(!$workplace->getRule()->bookFirstPossibleSchedule($workplace, $day, $admin)) {
                     if(!$workplace->getRule()->isDayBookable($day, $admin, $workplace)) {
@@ -506,6 +540,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                     $messageBox = MessageBox::error('Der Termin konnte nicht gebucht werden, dies kann verschiedene Ursachen haben', array('Der Termin ist bereits belegt.', 'Es ist nur ein Termin pro Nutzer und Tag zugelassen.'));
                 }
             }
+
+            flock($lock, LOCK_UN);
         }
 
         /** @var Flexi_Template $template */
@@ -543,14 +579,19 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             $admin = true;
         }
 
-
-
         $schedule = Schedule::getSchedule($_GET['s_id']);
+
+        // file based lock to limit schedule manipulations to one user per workplace at once
+        $path = $this->getPluginPath().'/locks/'.$schedule->getWorkplace()->getId();
+        $lock = fopen($path, 'c');
 
         $messageBoxes = array();
 
         if(Request::isPost())
         {
+            // closing lock for schedule manipulations or waiting
+            flock($lock, LOCK_EX);
+
             $success = true;
             if(isset($_POST['s_duration']) && $admin) {
                 $duration = new DateInterval($_POST['s_duration']);
@@ -572,11 +613,14 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                 $backLink = PluginEngine::getLink(
                     'WorkplaceAllocation',
                     array('wp_id' => $schedule->getWorkplace()->getId(),
+                          'week' => '1',
                           'day' => $schedule->getStart()->format('d.m.Y')),
                     $admin ? 'addSchedule' : 'timetable');
 
                 $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert", array("<a href='".$backLink."'>zurück</a>"));
             }
+
+            flock($lock, LOCK_UN);
         }
 
         /** @var Flexi_Template $template */
@@ -1001,7 +1045,9 @@ Dies ist eine automatisch generierte Mitteilung.
                 $scheduleDurationTime->add($schedule->getDuration());
                 $pdf->Rect(47, $topStart+$scheduleStartTableStart->getTimestamp()*$stepHeight, 155, $scheduleDurationTime->getTimestamp()*$stepHeight, 'FD',array('all' => array('width' => 0.5, 'color' => array(35, 64, 153))), array(255,255,255));
                 $pdf->SetXY(50, $topStart+$scheduleStartTableStart->getTimestamp()*$stepHeight);
-                $pdf->Cell(150, $scheduleDurationTime->getTimestamp()*$stepHeight, $schedule->getOwner()->vorname.' '.$schedule->getOwner()->nachname);
+                $comment = $schedule->getComment();
+                strlen($comment)>48?$string=substr($comment, 0,48).'...':$string=$comment;
+                $pdf->Cell(150, $scheduleDurationTime->getTimestamp()*$stepHeight, $schedule->getOwner()->vorname.' '.$schedule->getOwner()->nachname.'   '.$string);
             }
 
 

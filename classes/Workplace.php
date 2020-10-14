@@ -183,15 +183,16 @@ class Workplace
      * @param int $registrationEnd end of registration period in relation to day end in seconds
      * @param int $slotDuration default slot duration in seconds
      * @param bool $oneScheduleByDayAndUser "one schedule by day and user"-flag
+     * @param bool $onlyMembersCanBook "only members can book"-flag
      * @param array $days array of day states in boolean (<Mon>, <Tue>, <Wed>, <Thu>, <Fri>, <Sat>, <Sun>)
      */
-    public function createRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $days = array(true, true, true, true, true, true, true))
+    public function createRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $onlyMembersCanBook = false, $days = array(true, true, true, true, true, true, true))
     {
         if($this->rule != null)
         {
             return;
         }
-        $this->rule = Rule::newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser, $days);
+        $this->rule = Rule::newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser, $onlyMembersCanBook, $days);
         DBManager::get()->execute("UPDATE wp_workplaces SET rule_id = ? WHERE id = ?", array($this->rule->getId(), $this->getId()));
     }
 

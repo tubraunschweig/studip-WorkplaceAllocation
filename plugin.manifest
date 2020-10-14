@@ -1,7 +1,7 @@
 pluginname=Arbeitsplatzvergabe
 pluginclassname=WorkplaceAllocation
 origin=tu-braunschweig
-version=0.6_rc7
+version=0.7_rc7
 studipMinVersion=4.1
 
 dbscheme=sql/install.sql

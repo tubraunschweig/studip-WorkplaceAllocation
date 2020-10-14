@@ -97,7 +97,7 @@ if($workplace->getRule() == null){
     <div class="timetable">
         <?
         $heightCount = 0;
-        print("<div style='height: 2rem;'></div>");
+        print("<div style='height: 4rem;'></div>");
         for ($time = clone $tableStartTime;
              $time < $tableEndTime;
              $time->add($timetableSpacingDuration)) {
@@ -122,7 +122,7 @@ if($workplace->getRule() == null){
             $days[0] = $day;
         }
         ?>
-        <div class="all_schedules" style="height: <?= ($heightCount+2)*2 ?>rem">
+        <div class="all_schedules" style="height: <?= ($heightCount+2)*4 ?>rem">
         <?php
         foreach ($days as $day) {
             $tableStartTime = clone $day;
@@ -138,7 +138,7 @@ if($workplace->getRule() == null){
             ?>
             <div class="schedules">
                 <?php
-                $dayHeader = '<div class="schedule" style="height: 2rem; text-align: center">'.strftime('%A, %e. %h %Y',$day->getTimestamp()).'</div>';
+                $dayHeader = '<div class="schedule" style="height: 4rem; text-align: center">'.strftime('%A, %e. %h %Y',$day->getTimestamp()).'</div>';
                 if ($day == $selectedDay){
                     $dayHeader = "<b>".$dayHeader."</b>";
                 }
@@ -155,7 +155,7 @@ if($workplace->getRule() == null){
                         $freeSpace = 0;
                     }
 
-                    $height = ((date_create('@0')->add($slotDuration)->getTimestamp() / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 2);
+                    $height = ((date_create('@0')->add($slotDuration)->getTimestamp() / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 4);
                     $startTime = clone $time;
                     $endTime = clone $time;
                     $endTime->add($slotDuration);
@@ -170,7 +170,7 @@ if($workplace->getRule() == null){
                     if ($foundSchedule != null) {
                         $diff = date_create('@0')->add($startTime->diff($foundSchedule->getStart()))->getTimestamp();
                         if ($diff != 0) {
-                            $diffHeight = (($diff / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 2);
+                            $diffHeight = (($diff / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 4);
                             if ($admin) {
                                 /** @var \Studip\Button $fillButton */
                                 $fillButton = \Studip\Button::create(
@@ -199,7 +199,7 @@ if($workplace->getRule() == null){
                             }
                         }
                         $foundScheduleDurationSeconds = date_create('@0')->add($foundSchedule->getDuration())->getTimestamp();
-                        $scheduleHeight = (($foundScheduleDurationSeconds / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 2);
+                        $scheduleHeight = (($foundScheduleDurationSeconds / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 4);
 
                         if (!$foundSchedule->isBlocked() || $admin) {
                             /*Print Red Box*/
@@ -232,6 +232,9 @@ if($workplace->getRule() == null){
                                     <?php
                                 }
                                 print('</span>');
+                                $comment = $foundSchedule->getComment();
+                                strlen($comment)>32?$string=substr($comment, 0,32).'...':$string=$comment; 
+                                print('<span class="schedule_comment"> '.$string.' </span>');
                             } else {
                                 print('<span>Der Termin ist bereits vergeben</span>');
                             }
@@ -245,12 +248,12 @@ if($workplace->getRule() == null){
                     } else if ($workplace->getRule()->hasPause() && $endTime > $pauseStartTime && $startTime < $pauseEndTime) {
                         $diff = date_create('@0')->add($startTime->diff($pauseStartTime))->getTimestamp();
                         if ($diff != 0) {
-                            $diffHeight = (($diff / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 2);
+                            $diffHeight = (($diff / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 4);
                             print('<div class="schedule diff" style="min-height: ' . $diffHeight . 'rem; max-height: ' . $diffHeight . 'rem;"></div>');
                         }
 
                         $pauseDuration = date_create('@0')->add($pauseStartTime->diff($pauseEndTime))->getTimestamp();
-                        $scheduleHeight = (($pauseDuration / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 2);
+                        $scheduleHeight = (($pauseDuration / date_create('@0')->add($timetableSpacingDuration)->getTimestamp()) * 4);
                         print('<div class="schedule booked" style="min-height: ' . $scheduleHeight . 'rem; max-height: ' . $scheduleHeight . 'rem;">');
                         print('<span>Pause</span>');
                         print('</div>');
@@ -267,7 +270,7 @@ if($workplace->getRule() == null){
                                 "style" => "max-height: " . $height . "rem; 
                             min-height: " . $height . "rem;"));
 
-                        print('<form action="' . PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), "day" => $day->format('d.m.Y')), $admin ? "addSchedule" : "timetable") . '" method="post">');
+                        print('<form action="' . PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), "week" => "1", "day" => $day->format('d.m.Y')), $admin ? "addSchedule" : "timetable") . '" method="post">');
                         print('<input type="hidden" name="wp_schedule_start" value="' . $startTime->getTimestamp() . '">');
                         print('<input type="hidden" name="wp_schedule_duration" value="' . $slotDuration->format('P%yY%mM%dDT%hH%iM%sS') . '">');
                         print($bookButton);
