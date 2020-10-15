@@ -43,13 +43,17 @@ Benachrichtigte Nutzer
         foreach($userlist as $user){
             ?>
             <tr>
+                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post" style="display:inline">
+                <?php $id = $user->user_id; ?>
                 <td><?= ($user->vorname . ' ' . $user->nachname) ?></td>
-                <td><?= $user->username ?></td>
+                <td><?= $user->username ." " ?></td>
                 <td style="text-align: right;">
-                    <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('user_id' => $user->user_id), 'delNotifiedUser') ?>">
-                    <?= Icon::create('trash', 'clickable')->asImg() ?>
-                    </a>
+                    <input type="hidden" name="user_id" value="<?= $id ?>">
+                    <input type="hidden" name="action" value="delete">
+                    <?= CSRFProtection::tokenTag() ?>
+                    <input type="image" src="<?= (Icon::create('trash', 'clickable'))->asImagePath() ?>" title="Eintrag löschen" alt="Submit">
                 </td>
+                </form>
             </tr>
             <?php
         }
@@ -65,10 +69,10 @@ Benachrichtigte Nutzer
     ?>
     <tr>
         <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post" >
-        <td></td>
-        <td><input type="text" id="mnu_add_id" name="username" value="Stud.IP Nutzername" /></td>
+        <td><input type="hidden" name="action" value="add"></td>
+        <?= CSRFProtection::tokenTag() ?>
+        <td><input type="text" id="mnu_add_id" name="username" value="Stud.IP Nutzername" /></td> 
         <td><?= Studip\Button::create("Hinzufügen") ?></td>
         </form>
     </tr>
 </tbody>
-</table>

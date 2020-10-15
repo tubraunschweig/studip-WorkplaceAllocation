@@ -34,6 +34,7 @@ global $defaultMessageTexts;
         Die Zeichenkette [context] wird durch den Namen der Einrichtung ersetzt.<br>
         <textarea id="text" name="text" cols="75" rows="30"><?= $message != null ? $message->message : '' ?></textarea>
     </section>
+    <?= CSRFProtection::tokenTag() ?>
     <?=\Studip\Button::create(
         "Speichern",
         null,

@@ -13,7 +13,9 @@
 
 ?>
 
-<form action="<?= PluginEngine::getLink("WorkplaceAllocation", array(), "saveActivation") ?>" method="post" id="action_form"></form>
+<form action="<?= PluginEngine::getLink("WorkplaceAllocation", array(), "saveActivation") ?>" method="post" id="action_form">
+<?= CSRFProtection::tokenTag() ?>
+</form>
 <table class="default">
     <caption>
         Arbeitspl&auml;tze
@@ -87,12 +89,11 @@
                 </a>
             </td>
             <td class="actions" width="20">
-                <a href="<?= PluginEngine::getLink(
-                    "WorkplaceAllocation",
-                    array("wp_id" => $workplace->getId()),
-                    "delWorkplace") ?>" title="<?=_('Arbeitsplatz löschen')?>">
-                    <?= (new Icon('trash'))->asImg() ?>
-                </a>
+                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'delWorkplace') ?>" method="post" >
+                    <input type="hidden" name="wp_id" value="<?= $workplace->getId() ?>">
+                    <?= CSRFProtection::tokenTag() ?>
+                    <input type="image" src="<?= (Icon::create('trash', 'clickable'))->asImagePath() ?>" title="Arpeitsplatz löschen" alt="Submit">
+                </form>
             </td>
         </tr>
         <?php

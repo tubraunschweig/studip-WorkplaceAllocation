@@ -82,6 +82,7 @@ if($workplace->getRule() == null){
             <input type="hidden" name="wp_schedule_start" value="<?= $tableStartTime->getTimestamp() ?>">
             <input type="hidden" name="wp_schedule_duration" value="<?= $tableStartTime->diff($tableEndTime)->format('P%yY%mM%dDT%hH%iM%sS') ?>">
             <input type="hidden" name="wp_schedule_type" value="blocked">
+            <?= CSRFProtection::tokenTag() ?>
             <?= Studip\Button::create('Ausgewählten Tag blocken', null, array("type" => "submit"))?>
         </form>
     <?php
@@ -192,6 +193,7 @@ if($workplace->getRule() == null){
                                 print('<input type="hidden" name="action" value="move_up">');
                                 print('<input type="hidden" name="wp_schedule_id" value="' . $foundSchedule->getId() . '">');
                                 print('<input type="hidden" name="wp_schedule_new_start" value="' . $startTime->getTimestamp() . '">');
+                                print(CSRFProtection::tokenTag());
                                 print($fillButton);
                                 print('</form>');
                             } else {
@@ -214,12 +216,14 @@ if($workplace->getRule() == null){
                                     ' . (new Icon('edit'))->asImg() . '
                                 </a>');
                                 if ($foundSchedule->getStart() > new DateTime()){
-                                    print('<a href="' . PluginEngine::getLink(
-                                            "WorkplaceAllocation",
-                                            array("wp_id" => $workplace->getId(), "s_id" => $foundSchedule->getId()),
-                                            "removeSchedule") . '" title="Termin löschen">
-                                        ' . (new Icon('trash'))->asImg() . '
-                                    </a>');
+                                    ?>
+                                    <form action="<?= PluginEngine::getLink("WorkplaceAllocation", array(), "removeSchedule") ?>" method="post" style="display:inline">
+                                    <input type="hidden" name="wp_id" value="<?= $workplace->getId() ?>">
+                                    <input type="hidden" name="s_id" value="<?= $foundSchedule->getId() ?>" >
+                                    <?= CSRFProtection::tokenTag() ?>
+                                    <input type="image" src="<?= (Icon::create('trash', 'clickable'))->asImagePath() ?>" title="Termin löschen" alt="Submit">
+                                    </form>      
+                                    <?php
                                 }
                                 if($admin){
                                     ?>
@@ -227,6 +231,7 @@ if($workplace->getRule() == null){
                                     <input type="hidden" name="action" value="add">
                                     <input type="hidden" name="expiration" value="7" >
                                     <input type="hidden" name="user_id" value="<?= $foundSchedule->getOwner()->user_id ?>">
+                                    <?= CSRFProtection::tokenTag() ?>
                                     <input type="image" src="<?= (Icon::create('remove-circle', 'clickable'))->asImagePath() ?>" title="Benutzer 7 Tage sperren" value="sperren" alt="Submit">
                                     </form>      
                                     <?php
@@ -273,6 +278,7 @@ if($workplace->getRule() == null){
                         print('<form action="' . PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), "week" => "1", "day" => $day->format('d.m.Y')), $admin ? "addSchedule" : "timetable") . '" method="post">');
                         print('<input type="hidden" name="wp_schedule_start" value="' . $startTime->getTimestamp() . '">');
                         print('<input type="hidden" name="wp_schedule_duration" value="' . $slotDuration->format('P%yY%mM%dDT%hH%iM%sS') . '">');
+                        print(CSRFProtection::tokenTag());
                         print($bookButton);
                         print('</form>');
                     } else {

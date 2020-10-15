@@ -74,6 +74,7 @@ foreach ($messageBoxes as $box) {
         </select>
     </section>
     <? endif;?>
+    <?= CSRFProtection::tokenTag() ?>
     <?=\Studip\Button::create(
         "Speichern",
         null,

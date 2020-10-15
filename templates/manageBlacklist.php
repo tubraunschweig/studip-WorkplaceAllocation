@@ -45,10 +45,10 @@
                 <td><?= $user->username ?></td>
                 <td><?= $expiration != null ? $expiration->format('d.m.Y') : _('Unbegrenzt') ?></td>
                 <td style="text-align: right;">
-                    <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>"
-                          method="post">
+                    <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>" method="post">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="user_id" value="<?= $user->userid ?>">
+                        <?= CSRFProtection::tokenTag() ?>
                         <button type="submit" class="link_button"><?= Icon::create('trash', 'clickable')->asImg() ?></button>
                     </form>
                 </td>
@@ -75,6 +75,7 @@
                     ?><br>
                     <label for="bl_expiration">Ablauf der Sperrung in Tagen<small>(Leer für unbegrenzt)</small></label>
                     <input type="number" name="expiration" id="bl_expiration" class="size-s"><br>
+                    <?= CSRFProtection::tokenTag() ?>
                     <?= Studip\Button::create("Hinzufügen") ?>
                 </form>
             </td>

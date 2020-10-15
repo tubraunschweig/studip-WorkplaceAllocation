@@ -37,5 +37,6 @@ $submitButton = \Studip\Button::create(_("Hinzufügen"), null, array("type" => "
             <textarea id="wp_description" name="wp_description" cols="75" rows="4"><?= $_POST['wp_description'] ?></textarea>
         </label>
     </section>
+    <?= CSRFProtection::tokenTag() ?>
     <?= $submitButton ?>
 </form>

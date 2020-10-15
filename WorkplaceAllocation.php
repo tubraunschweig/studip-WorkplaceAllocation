@@ -250,6 +250,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         $template = $this->templateFactory->open('admin');
         $template->set_layout($GLOBALS['template_factory']->open('layouts/base'));
         $template->set_attribute('workplaces', Workplace::getWorkplacesByContext($_GET['cid']));
+
+        PageLayout::addStylesheet($this->getPluginURL().'/assets/stylesheets/link_button.css');
         
         print($template->render());
     }
@@ -269,6 +271,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
         if(Request::isPost())
         {
+            CSRFProtection::verifySecurityToken();
             $workplaces = Workplace::getWorkplacesByContext($_GET['cid']);
             foreach ($workplaces as $workplace)
             {
@@ -302,6 +305,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         
         if(Request::isPost())
         {
+            CSRFProtection::verifySecurityToken();
             
             if(empty($_POST["wp_name"])) {
                 $error = true;
@@ -336,32 +340,30 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      */
     public function delWorkplace_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
+        if(!$this->user_has_admin_perm($_GET['cid'])) {
             throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
         }
 
-
-        $workplace = Workplace::getWorkplace($_GET['wp_id']);
-
-        if(isset($_GET['delete']))
-        {
-            if($_GET['delete'])
-            {
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $workplace = Workplace::getWorkplace($_POST['wp_id']);
+            if(!isset($_POST['confirm'])) {   
+                $trueResponse = $_POST;
+                $trueResponse['confirm'] = true;
+                $falseResponse = $_POST;
+                $falseResponse['confirm'] = false;
+                $this->admin_action();
+                print(createQuestion2(
+                    "Möchten Sie den Arbeitsplatz \"".$workplace->getName()."\" wirklich löschen ?",
+                    $trueResponse, 
+                    $falseResponse,
+                    "?cid=".$_GET['cid']
+                ));
+            }
+            if($_POST['confirm']) {
                 $workplace->deleteWorkplace();
             }
             header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'admin'));
-
-        }
-        else
-        {
-            $this->admin_action();
-
-            print(createQuestion(
-                "Möchten Sie den Arbeitsplatz \"".$workplace->getName()."\" wirklich löschen ?",
-                array("delete" => true, "wp_id" => $workplace->getId()), 
-                array("delete" => false, "wp_id" => $workplace->getId())
-            ));
         }
     }
 
@@ -390,6 +392,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         
         if(Request::isPost())
         {
+            CSRFProtection::verifySecurityToken();
             if(isset($_POST['day']) && (empty($_POST['daily_start_hour'])
                 || empty($_POST['daily_start_minute'])
                 || empty($_POST['daily_end_hour'])
@@ -468,7 +471,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     /**
      * route to add schedule
      *
-     * @param bool $isSetNavigation if this is an embedded route set true
+     * @param bool $isSetNavigation if navigation has already been activated, set true
      */
     public function addSchedule_action($isSetNavigation = false)
     {
@@ -496,8 +499,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         }
 
         $nowTime = new DateTime();
-        if(isset($_GET['day']))
-        {
+        if(isset($_GET['day'])) {
             $day = new DateTime($_GET['day']);
         } else {
             $day = new DateTime($nowTime->format('d.m.Y'));
@@ -505,8 +507,9 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
         $messageBox = null;
 
-        if(Request::isPost())
+        if(Request::isPost() && !($_GET['embedded']))
         {
+            CSRFProtection::verifySecurityToken();
             // closing lock for schedule manipulations or waiting
             flock($lock, LOCK_EX);
 
@@ -569,7 +572,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     /**
      * route to edit a specific schedule
      */
-    public function editSchedule_action() {
+    public function editSchedule_action() 
+    {
         if(!$this->user_has_admin_perm($_GET['cid']))
         {
             Navigation::activateItem('/course/workplaces');
@@ -589,6 +593,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
         if(Request::isPost())
         {
+            CSRFProtection::verifySecurityToken();
             // closing lock for schedule manipulations or waiting
             flock($lock, LOCK_EX);
 
@@ -639,61 +644,43 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      *
      * @throws AccessDeniedException
      */
-    public function removeSchedule_action() {
-        $schedule = Schedule::getSchedule($_GET['s_id']);
-
+    public function removeSchedule_action() 
+    {
+        $schedule = Schedule::getSchedule($_POST['s_id']);
         $admin = $this->user_has_admin_perm($_GET['cid']);
 
-        if(!($this->user_has_admin_perm($_GET['cid']) || $schedule->getOwner()->user_id == get_userid())) {
+        if(!($admin || $schedule->getOwner()->user_id == get_userid())) {
             throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
-        }
-        $start = $schedule->getStart();
-
-        if ($schedule->getStart() <= new DateTime()) {
-            header('Location: '.PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $_GET['wp_id'], 'day' => $start->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));
-            return;
-        }
-
-        if(isset($_GET['delete'])) {
-            if($_GET['delete']) {
-                $institute = Institute::findCurrent();
-                /** @var InstituteMember[] $instituteAdmins */
-                $instituteAdmins = InstituteMember::findByInstituteAndStatus($institute->getId(), 'admin');
-                $currentUser = User::findCurrent();
-                $mail = new StudipMail();
-                $mail->setBodyText("Ein Termin in der Einrichtung \"".$institute->name."\" wurde gelöscht:\n
-\n
-".strftime('%A, %e. %h %Y %H:%M Uhr', $schedule->getStart()->getTimestamp())."\n
-gelöscht von ".$currentUser->getFullName()."\n
-\n
-------\n
-Dies ist eine automatisch generierte Mitteilung.
-                ");
-                $mail->setSubject('[Arbeitsplatzvergabe] Termin gelöscht');
-                foreach ($instituteAdmins as $adminUser) {
-                    $mail->addRecipient($adminUser->email, $adminUser->vorname." ".$adminUser->nachname);
+        }    
+      
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            if(!isset($_POST['confirm'])) {   
+                if($schedule->getStart() > new DateTime()) { //start liegt in Zukunft --> delete action
+                    $trueResponse = $_POST;
+                    $trueResponse['confirm'] = true;
+                    $falseResponse = $_POST;
+                    $falseResponse['confirm'] = false;
+                    $_GET['day'] = $schedule->getStart()->format('d.m.Y');
+                    $_GET['wp_id'] = $schedule->getWorkplace()->getId();
+                    $_GET['week'] = '1';
+                    $_GET['embedded'] = '1';
+                    $admin ? $this->addSchedule_action() : $this->timetable_action();
+                    print(createQuestion2(
+                        "Möchten Sie den Termin wirklich löschen ?",
+                        $trueResponse,
+                        $falseResponse,
+                        "?cid=".$_GET['cid']
+                    ));
+                } else {
+                    throw new AccessDeniedException("Der Termin ist bereits abgelaufen");
                 }
-
+            }
+            if($_POST['confirm']) {
                 $schedule->deleteSchedule();
-
-                $mail->send();
             }
-            header('Location: '.PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $_GET['wp_id'], 'day' => $start->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));
-        } else {
-            if($start > new DateTime() ){ //start liegt in Zukunft --> delete action
-            $_GET['day'] = $schedule->getStart()->format('d.m.Y');
-            $admin ? $this->addSchedule_action() : $this->timetable_action();
-            print(createQuestion(
-                "Möchten Sie den Termin wirklich löschen ?",
-                array('delete' => true, 's_id' => $schedule->getId(), 'wp_id' => $schedule->getWorkplace()->getId()),
-                array('delete' => false, 's_id' => $schedule->getId(), 'wp_id' => $schedule->getWorkplace()->getId())));
-        
-            }else{
-                throw new AccessDeniedException("Der Termin ist bereits abgelaufen");
-            }
+            header('Location: '.PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $schedule->getWorkplace()->getId(), 'week' => '1', 'day' => $schedule->getStart()->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));   
         }
-
-
     }
 
     /**
@@ -701,12 +688,14 @@ Dies ist eine automatisch generierte Mitteilung.
      *
      * @throws AccessDeniedException
      */
-    public function manageBlacklist_action() {
+    public function manageBlacklist_action() 
+    {
         if(!$this->user_has_admin_perm($_GET['cid'])) {
             throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
         }
 
         if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
             if(isset($_POST['action']) && isset($_POST['user_id'])) {
                 $user = new StudIPUser($_POST['user_id']);
                 switch ($_POST['action']) {
@@ -831,6 +820,7 @@ Dies ist eine automatisch generierte Mitteilung.
         }
 
         if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
             $data = array(
                 'context_id' => $_GET['cid'],
                 'hook_point' => $_GET['hook_point'],
@@ -879,16 +869,41 @@ Dies ist eine automatisch generierte Mitteilung.
         /** @var string[] $messageBoxes */
         $messageBoxes = array();
 
+        $userlist = NotifiedUserList::getNotifiedUserList(); 
+
         if(Request::isPost())
         {
-            if(!isset($_POST['username']) || $_POST['username'] == "") {
-                $messageBoxes[] = MessageBox::error('Kein Nutzer angegeben.');
-            } else if($user_id = get_userid($_POST['username'])) { // checks if username is real
-                NotifiedUserList::getNotifiedUserList()->addToList($user_id);
-                $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert.");
-            } else {
-                $messageBoxes[] = MessageBox::error('Der von Ihnen angegebene Nutzer existiert nicht.');
-            }
+            CSRFProtection::verifySecurityToken();
+            switch($_POST['action']) {
+                case "add":
+                    if(!isset($_POST['username']) || $_POST['username'] == "") {
+                        $messageBoxes[] = MessageBox::error('Kein Nutzer angegeben.');
+                    } else if($user_id = get_userid($_POST['username'])) { // checks if username is real
+                        $userlist->addToList($user_id);
+                        $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert.");
+                    } else {
+                        $messageBoxes[] = MessageBox::error('Der von Ihnen angegebene Nutzer existiert nicht.');
+                    }
+                    break;
+                case "delete":
+                    if(!isset($_POST['confirm'])) {
+                        $trueResponse = $_POST;
+                        $trueResponse['confirm'] = true;
+                        $falseResponse = $_POST;
+                        $falseResponse['confirm'] = false;
+                        print(createQuestion2(
+                            "Möchten Sie den User \"".User::findFull($_POST['user_id'])->username."\" wirklich löschen ?",
+                            $trueResponse, 
+                            $falseResponse,
+                            "?cid=".$_GET['cid']
+                        )); 
+                    }
+                    if($_POST['confirm']) {
+                        NotifiedUserList::getNotifiedUserList()->deleteFromList($_POST['user_id']);
+                    }
+                    header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers'));
+                    break;
+            }   
         }
 
         /** @var Flexi_Template $template */
@@ -897,43 +912,9 @@ Dies ist eine automatisch generierte Mitteilung.
         $template->set_attribute('userlist', NotifiedUserList::getNotifiedUserList());
         $template->set_attribute('messageBoxes', $messageBoxes);
 
+        PageLayout::addStylesheet($this->getPluginURL().'/assets/stylesheets/link_button.css');
+
         print($template->render());
-    }
-
-    /**
-     * route to delete a user who gets notification mails when schedules are created
-     * first ask if you really would like to delete this user from the mailing list
-     *
-     * @throws AccessDeniedException
-     */
-    public function delNotifiedUser_action()
-    {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
-        }
-
-        $user = User::findFull($_GET['user_id']);
-
-        if(isset($_GET['delete']))
-        {
-            if($_GET['delete'])
-            {
-                NotifiedUserList::getNotifiedUserList()->deleteFromList($_GET['user_id']);
-            }
-            header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers'));
-
-        }
-        else
-        {
-            $this->manageNotifiedUsers_action();
-
-            print(createQuestion(
-                "Möchten Sie den User \"".$user->username."\" wirklich löschen ?",
-                array("user_id" => $_GET['user_id'], "delete" => true), 
-                array("delete" => false)
-            ));
-        }
     }
 
     /**

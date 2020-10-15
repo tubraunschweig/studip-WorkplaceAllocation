@@ -84,6 +84,7 @@
                     <?php if (!($isOnBlacklist && ($blacklistExpiration == null || $blacklistExpiration >= $quickBookDay)) && $quickBookDay > $registrationEnd):?>
                     <form action="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId(), "week" => "1", "day" => $quickBookDay->format('d.m.Y')), "timetable") ?>" method="post">
                         <input type="hidden" name="next_schedule" value="true">
+                        <?= CSRFProtection::tokenTag() ?>
                         <?= Studip\Button::create('Termin am ' . $quickBookDay->format('d.m.Y') . ' buchen', null, array("type" => "submit"));?>
                     </form>
                     <?php endif; ?>
