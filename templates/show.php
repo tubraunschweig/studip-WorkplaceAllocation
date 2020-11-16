@@ -10,9 +10,8 @@
  *
  * @var Workplace[] $workplaces array of workplaces
  */
-
-
 ?>
+
 <table class="default">
     <caption>
         Arbeitsplätze
@@ -31,27 +30,29 @@
     </thead>
     <tbody>
     <?php
-    if(sizeof($workplaces) == 0)
-    {
+
+    if(sizeof($workplaces) == 0) {
         ?>
         <tr>
             <td colspan="3" style="text-align: center;">Es wurden noch keine Arbeitsplätze eingerichtet.</td>
         </tr>
         <?php
     }
+
     $blacklist = Blacklist::getBlacklist();
     $isOnBlacklist = $blacklist->isOnList(get_userid());
+
     if ($isOnBlacklist) {
         $blacklistExpiration = $blacklist->getExpiration(get_userid());
-        
     }
-    foreach ($workplaces as $workplace)
-    {
-        if($isOnBlacklist){
+
+    foreach ($workplaces as $workplace) {
+
+        if($isOnBlacklist) {
             ?>
                 <tr>
                     <td>
-                        <a href="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId()), "timetable") ?>"><?= $workplace->getName() ?></a>
+                        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId()), 'timetable') ?>"><?= $workplace->getName() ?></a>
                     </td>
                     <td>
                         <?= /** @noinspection PhpParamsInspection */
@@ -59,42 +60,49 @@
                     </td>
                 </tr>
             <?php 
-        }else{
+        } else {
+
             if($workplace->isActive()) {
 
-            $registrationEnd = (new DateTime())->sub($workplace->getRule()->getRegistrationEnd());
-            $quickBookDay = new DateTime();
-            $quickBookDay->add($workplace->getRule()->getRegistrationStart())->sub($workplace->getRule()->getStart());
+                $registrationEnd = (new DateTime())->sub($workplace->getRule()->getRegistrationEnd());
+                $quickBookDay = new DateTime();
+                $quickBookDay->add($workplace->getRule()->getRegistrationStart())->sub($workplace->getRule()->getStart());
 
-            while(!$workplace->getRule()->isDayBookable($quickBookDay, false) || $quickBookDay < $registrationEnd)
-            {
-                $quickBookDay = $quickBookDay->sub(new DateInterval('P1D'));
-            }
-            ?>
-            <tr>
-                <td>
-                    <a href="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId(), "week" => "1"), "timetable") ?>"><?= $workplace->getName() ?></a>
-                </td>
-                <td>
-                    <?= /** @noinspection PhpParamsInspection */
-                    tooltipIcon($workplace->getDescription()) ?>
-                </td>
-                
-                <td>
-                    <?php if (!($isOnBlacklist && ($blacklistExpiration == null || $blacklistExpiration >= $quickBookDay)) && $quickBookDay > $registrationEnd):?>
-                    <form action="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId(), "week" => "1", "day" => $quickBookDay->format('d.m.Y')), "timetable") ?>" method="post">
-                        <input type="hidden" name="next_schedule" value="true">
-                        <?= CSRFProtection::tokenTag() ?>
-                        <?= Studip\Button::create('Termin am ' . $quickBookDay->format('d.m.Y') . ' buchen', null, array("type" => "submit"));?>
-                    </form>
-                    <?php endif; ?>
-                </td>
-            </tr>
+                while(!$workplace->getRule()->isDayBookable($quickBookDay, false) || $quickBookDay < $registrationEnd) {
+                    $quickBookDay = $quickBookDay->sub(new DateInterval('P1D'));
+                }
 
-            <?php
+                ?>
+                <tr>
+                    <td>
+                        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'week' => '1'), 'timetable') ?>"><?= $workplace->getName() ?></a>
+                    </td>
+                    <td>
+                        <?= /** @noinspection PhpParamsInspection */
+                        tooltipIcon($workplace->getDescription()) ?>
+                    </td>
+                    <td>
+                        <?php 
+
+                        if (!($isOnBlacklist && ($blacklistExpiration == null || $blacklistExpiration >= $quickBookDay)) && $quickBookDay > $registrationEnd):?>
+                        <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'week' => '1', 'day' => $quickBookDay->format('d.m.Y')), 'timetable') ?>" method="post">
+                            <input type="hidden" name="next_schedule" value="true">
+                            <?= CSRFProtection::tokenTag() ?>
+                            <?= Studip\Button::create('Termin am ' . $quickBookDay->format('d.m.Y') . ' buchen', null, array('type' => 'submit'));?>
+                        </form>
+
+                        <?php 
+                        
+                        endif; ?>
+
+                    </td>
+                </tr>
+
+                <?php
             }
         }    
     }
+
     ?>
     </tbody>
 </table>

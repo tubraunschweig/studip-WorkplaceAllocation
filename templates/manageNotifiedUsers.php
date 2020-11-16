@@ -13,6 +13,7 @@
  */
 
 if (isset($messageBoxes) && sizeof($messageBoxes) > 0) {
+
     foreach ($messageBoxes as $messageBox) {
         print($messageBox);
     }
@@ -39,14 +40,16 @@ Benachrichtigte Nutzer
     </thead>
     <tbody>
     <?php
+
     if($userlist->list_size() > 0) {
+
         foreach($userlist as $user){
             ?>
             <tr>
                 <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post" style="display:inline">
                 <?php $id = $user->user_id; ?>
                 <td><?= ($user->vorname . ' ' . $user->nachname) ?></td>
-                <td><?= $user->username ." " ?></td>
+                <td><?= $user->username . ' ' ?></td>
                 <td style="text-align: right;">
                     <input type="hidden" name="user_id" value="<?= $id ?>">
                     <input type="hidden" name="action" value="delete">
@@ -58,6 +61,7 @@ Benachrichtigte Nutzer
             <?php
         }
     } else {
+
         ?>
         <tr>
             <th></th>
@@ -66,6 +70,7 @@ Benachrichtigte Nutzer
         </tr>
         <?php
     }
+    
     ?>
     <tr>
         <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post" >

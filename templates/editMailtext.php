@@ -35,13 +35,5 @@ global $defaultMessageTexts;
         <textarea id="text" name="text" cols="75" rows="30"><?= $message != null ? $message->message : '' ?></textarea>
     </section>
     <?= CSRFProtection::tokenTag() ?>
-    <?=\Studip\Button::create(
-        "Speichern",
-        null,
-        array(
-            "type" => "submit",
-            "class" => "accept"
-        )
-    )
-    ?>
+    <?=\Studip\Button::create('Speichern', null, array('type' => 'submit', 'class' => 'accept'))?>
 </form>

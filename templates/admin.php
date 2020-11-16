@@ -13,7 +13,7 @@
 
 ?>
 
-<form action="<?= PluginEngine::getLink("WorkplaceAllocation", array(), "saveActivation") ?>" method="post" id="action_form">
+<form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'saveActivation') ?>" method="post" id="action_form">
 <?= CSRFProtection::tokenTag() ?>
 </form>
 <table class="default">
@@ -36,55 +36,37 @@
     </thead>
     <tbody>
     <?php
-    if(sizeof($workplaces) == 0)
-    {
+
+    if(sizeof($workplaces) == 0) {
         ?>
         <tr>
             <td colspan="3" style="text-align: center;">Es wurden noch keine Arbeitsplätze eingerichtet.</td>
         </tr>
         <?php
     }
-    foreach ($workplaces as $workplace)
-    {
+
+    foreach ($workplaces as $workplace) {
         ?>
         <tr>
             <td style="text-align: center;">
-                <input 
-                    type="checkbox" 
-                    name="<?= $workplace->getId() ?>" 
-                    class="itemboxes" 
-                    form="action_form" 
-                    <? if($workplace->isActive()) {print("checked");} ?> title="Arbeitsplatz aktivieren/deaktivieren">
+                <input type="checkbox" name="<?= $workplace->getId() ?>" class="itemboxes" form="action_form" <? if($workplace->isActive()) {print("checked");} ?> title="Arbeitsplatz aktivieren/deaktivieren">
             </td>
-            <td><a href="<?= PluginEngine::getLink("WorkplaceAllocation", array("wp_id" => $workplace->getId(), "week" => 1), "addSchedule") ?>"><?= $workplace->getName() ?></a></td>
+            <td><a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'week' => 1), 'addSchedule') ?>"><?= $workplace->getName() ?></a></td>
             <td>
-                <?= /** @noinspection PhpParamsInspection */
-                !empty($workplace->getDescription()) ? tooltipIcon($workplace->getDescription()) : "" ?>
+                <?= /** @noinspection PhpParamsInspection */ !empty($workplace->getDescription()) ? tooltipIcon($workplace->getDescription()) : "" ?>
             </td>
             <td class="actions" width="20">
-                <a href="<?= PluginEngine::getLink(
-                    "WorkplaceAllocation",
-                    array("wp_id" => $workplace->getId()),
-                    "pdf") ?>" title="<?=_('Heutigen Tag drucken')?>"
-                   target="_blank"
-                >
+                <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId()), 'pdf') ?>" title="<?=_('Heutigen Tag drucken')?>" target="_blank">
                     <?= (new Icon('print'))->asImg() ?>
                 </a>
             </td>
             <td class="actions" width="20">
-                <a href="<?= PluginEngine::getLink(
-                    "WorkplaceAllocation",
-                    array("wp_id" => $workplace->getId()),
-                    "addSchedule") ?>" title="<?=_('Termine verwalten')?>">
+                <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId()), 'addSchedule') ?>" title="<?=_('Termine verwalten')?>">
                     <?= (new Icon('schedule'))->asImg() ?>
                 </a>
             </td>
             <td class="actions" width="20">
-                <a href="<?= PluginEngine::getLink(
-                    "WorkplaceAllocation",
-                    array("wp_id" => $workplace->getId()),
-                    "editWorkplace") ?>" title="<?=_('Arpeitsplatz bearbeiten')?>"
-                >
+                <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId()), 'editWorkplace') ?>" title="<?=_('Arpeitsplatz bearbeiten')?>">
                     <?= ($workplace->getRule() == null) ? (new Icon('edit+new'))->asImg() : (new Icon('edit'))->asImg() ?>
                 </a>
             </td>
@@ -98,20 +80,13 @@
         </tr>
         <?php
     }
+
     ?>
     </tbody>
     <tfoot>
         <tr>
             <td colspan="7" style="text-align: center">
-                <?= \Studip\Button::create(
-                    "Speichern",
-                    null, 
-                    array(
-                        "type" => "submit", 
-                        "form" => "action_form",
-                        "class" => "accept"
-                    )
-                ) ?>
+                <?= \Studip\Button::create('Speichern', null, array('type' => 'submit', 'form' => 'action_form', 'class' => 'accept')) ?>
             </td>
         </tr>
     </tfoot>

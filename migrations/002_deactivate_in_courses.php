@@ -9,21 +9,27 @@
 
 class DeactivateInCourses extends Migration
 {
-    function up() {
+    function up() 
+    {
         /** @var $semClasses SemClass[] */
         $semClasses = SemClass::getClasses();
+
         foreach ($semClasses as $semClass) {
             $modules = $semClass->getModules();
+
             $modules['WorkplaceAllocation'] = array(
                 'activated' => 0,
                 'sticky' => 1
             );
+            
             $semClass->setModules($modules);
             $semClass->store();
         }
+
     }
 
-    function down() {
+    function down() 
+    {
 
     }
 }
