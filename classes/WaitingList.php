@@ -48,7 +48,7 @@ class WaitingList
      *
      * @param Workplace $workplace target workplace
      * @param DateTime $day any time on target day
-     * @return StudIPUser|null first user on list or null on error
+     * @return User|null first user on list or null on error
      */
     static function peek($workplace, $day) 
     {
@@ -56,7 +56,7 @@ class WaitingList
         $data = DBManager::get()->fetchAll("SELECT user_id FROM wp_waiting_list WHERE workplace_id = ? AND day = ? ORDER BY insertion_timestamp ASC", array($workplace->getId(), $realDay->getTimestamp()));
 
         if(sizeof($data) > 0) {
-            return new StudIPUser($data[0]['user_id']);
+            return User::findFull($data[0]['user_id']);
         } else {
             return null;
         }
@@ -68,7 +68,7 @@ class WaitingList
      *
      * @param Workplace $workplace target workplace
      * @param DateTime $day any time on target day
-     * @return null|StudIPUser first user on list or error
+     * @return null|User first user on list or error
      */
     static function pop($workplace, $day) 
     {
@@ -76,7 +76,7 @@ class WaitingList
         $user = self::peek($workplace, $day);
 
         if($user != null) {
-            DBManager::get()->execute("DELETE FROM wp_waiting_list WHERE workplace_id = ? AND day = ? AND user_id = ?", array($workplace->getId(), $realDay->getTimestamp(), $user->getUserid()));
+            DBManager::get()->execute("DELETE FROM wp_waiting_list WHERE workplace_id = ? AND day = ? AND user_id = ?", array($workplace->getId(), $realDay->getTimestamp(), $user->user_id));
         }
 
         return $user;

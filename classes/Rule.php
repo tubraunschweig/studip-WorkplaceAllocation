@@ -412,7 +412,7 @@ class Rule
             }
         }
 
-        if(Blacklist::getBlacklist($_GET['cid'])->isOnList(get_userid())) {
+        if(Blacklist::getBlacklist(Request::get('cid'))->isOnList(get_userid())) {
             return false;
         }
 

@@ -6,7 +6,6 @@ Da es nur bei starker Nutzung vereinzelt auftritt könnte es mit Kollisionen zu 
 
 Implementation eines locks für die Modifikation von Termindaten als Lösungsansatz. Es kann nur noch ein User gleichzeitig Termine an einem Arbeitsplatz modifizieren. Wirkung ist allerdings schwer prüfbar.
 
-2. Alle Arbeitsplätze drucken funktioniert nicht:
-Der Button produziert seit einiger Zeit nur eine Fehlermeldung.
+2. Werden neue Arbeitsplätze vor der Konfiguration sofort wieder gelöscht gibt es eine Fehlermeldung, das Löschen funktioniert aber trotzdem.
 
-Sie meinten das könnte seit dem Bug mit dem neu erstellten Arbeitsplatz ohne aktivierten Tagen so sein. Sind sich aber nicht sicher.
+Vor der Konfiguration besitzen Arbeitsplätze kein Regelfeld. Beim Löschen eines Arbeitsplatzes wird automatisch dessen Regelfeld mitgelöscht. Es wird also versucht ein nicht-existentes Objekt zu löschen. 

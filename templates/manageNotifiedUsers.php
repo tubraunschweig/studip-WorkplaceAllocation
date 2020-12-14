@@ -72,12 +72,23 @@ Benachrichtigte Nutzer
     }
     
     ?>
-    <tr>
-        <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post" >
-        <td><input type="hidden" name="action" value="add"></td>
-        <?= CSRFProtection::tokenTag() ?>
-        <td><input type="text" id="mnu_add_id" name="username" value="Stud.IP Nutzername" /></td> 
-        <td><?= Studip\Button::create("Hinzufügen") ?></td>
-        </form>
-    </tr>
-</tbody>
+    <tr></tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="4">
+                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post">
+                    <input type="hidden" name="action" value="add">
+                    <?php
+                    $search = new SQLSearch("SELECT user_id, CONCAT(Vorname, ' ', Nachname, ' (', username, ')') FROM auth_user_md5 WHERE Nachname LIKE :input OR username LIKE :input OR Vorname LIKE :input", _('Benutzer'), 'username');
+                    $quickSearch = QuickSearch::get('user_id', $search);
+                    $quickSearch->setInputClass('size-m');
+                    print($quickSearch->render());
+                    ?><br>
+                    <?= CSRFProtection::tokenTag() ?>
+                    <?= Studip\Button::create('Hinzufügen') ?>
+                </form>
+            </td>
+        </tr>
+    </tfoot>
+</table>

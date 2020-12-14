@@ -27,7 +27,7 @@ if($workplace->getRule() == null) {
 } else {
     ?>
 
-    <form class="studip-form">
+    <form class="default">
         <section>
             <label for="wp_day"><?= _("Datum") ?></label>
             <input id="wp_day" name="day" value="<?= $day->format('d.m.Y') ?>" data-min-date="">
@@ -35,7 +35,7 @@ if($workplace->getRule() == null) {
                 $(function () {
                     $('#wp_day').datepicker({
                         onSelect: function (dateText) {
-                            window.location = '<?= PluginEngine::getLink("WorkplaceAllocation", array(), $admin ? "addSchedule" : "timetable") ?>' + '&day=' + dateText + '&wp_id=<?=$workplace->getId()?>&week=<?= isset($_GET['week'])? $_GET['week'] : '0' ?>';
+                            window.location = '<?= PluginEngine::getLink("WorkplaceAllocation", array(), $admin ? "addSchedule" : "timetable") ?>' + '&day=' + dateText + '&wp_id=<?=$workplace->getId()?>&week=<?= Request::get('week') != null ? Request::get('week') : '0' ?>';
                         }
                     });
                 })
@@ -57,7 +57,7 @@ if($workplace->getRule() == null) {
         $pauseEndTime->add($workplace->getRule()->getPauseEnd());
     }
 
-    if (! isset($_GET['week']) || $_GET['week'] != '1') {
+    if (Request::get('week') == null || Request::get('week') != '1') {
         ?>
         <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'day' => $day->format('d.m.Y'), 'week' => 1), $admin ? 'addSchedule' : 'timetable') ?>">
             <?= Studip\Button::create('gesamte Woche zeigen') ?>
@@ -103,7 +103,7 @@ if($workplace->getRule() == null) {
         $days = [];
         $selectedDay = clone $day;
 
-        if(isset($_GET['week']) && $_GET['week'] == '1') {
+        if(Request::get('week') != null && Request::get('week') == '1') {
             $dayOne = $day->sub(new DateInterval('P' . (intval($day->format('N'))-1) . 'D'));
             $days[0] = (clone $dayOne);
             $days[1] = (clone $dayOne)->add(new DateInterval('P1D'));

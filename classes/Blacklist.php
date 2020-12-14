@@ -23,7 +23,7 @@ class Blacklist implements IteratorAggregate
     static public function getBlacklist($context_id = null) 
     {
         if($context_id == null) {
-            $context_id = $_GET['cid'];
+            $context_id = Request::get('cid');
         }
 
         $return = new Blacklist();
@@ -128,7 +128,7 @@ class Blacklist implements IteratorAggregate
         
         foreach($data as $uid){
             $entry = array();
-            $entry['user'] = new StudIPUser($uid['user_id']);
+            $entry['user'] = User::findFull($uid['user_id']);
 
             if($uid['expiration'] != null){
                 $entry['expiration'] = new DateTime('@' . $uid['expiration']);

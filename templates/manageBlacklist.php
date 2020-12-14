@@ -43,13 +43,13 @@
             $expiration = $entry['expiration']
             ?>
             <tr>
-                <td><?= $user->surname ?>, <?= $user->givenname ?></td>
+                <td><?= $user->nachname ?>, <?= $user->vorname ?></td>
                 <td><?= $user->username ?></td>
                 <td><?= $expiration != null ? $expiration->format('d.m.Y') : _('Unbegrenzt') ?></td>
                 <td style="text-align: right;">
                     <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>" method="post">
                         <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="user_id" value="<?= $user->userid ?>">
+                        <input type="hidden" name="user_id" value="<?= $user->user_id ?>">
                         <?= CSRFProtection::tokenTag() ?>
                         <button type="submit" class="link_button"><?= Icon::create('trash', 'clickable')->asImg() ?></button>
                     </form>

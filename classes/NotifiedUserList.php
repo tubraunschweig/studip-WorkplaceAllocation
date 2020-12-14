@@ -24,7 +24,7 @@ class NotifiedUserList implements IteratorAggregate
     static public function getNotifiedUserList($context_id = null) 
     {
         if($context_id == null) {
-            $context_id = $_GET['cid'];
+            $context_id = Request::get('cid');
         }
 
         $return = new NotifiedUserList();
@@ -99,7 +99,7 @@ class NotifiedUserList implements IteratorAggregate
         $usersInList = array();
         
         foreach($data as $uid){
-            $usersInList[] = USER::findFull($uid['user_id']);
+            $usersInList[] = User::findFull($uid['user_id']);
         }
         
         return new ArrayIterator($usersInList);
