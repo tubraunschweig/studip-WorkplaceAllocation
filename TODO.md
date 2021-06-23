@@ -5,8 +5,8 @@
 1. Verwendung der SimpleORMap Klasse für die Datenbankabfragen
 Die Datenbankabfragen wären einfacher mit der hierfür vorgesehenen SimpleORMap Klasse zu implementieren.
 
-2. Verwendung des Trails MVC Frameworks 
-Stud.IP verfügt über ein fertiges MVC Framework. Es wäre besser dieses zu verwenden anstatt der alten Methoden im Plug-in. 
+2. Verwendung des Trails MVC Frameworks
+Stud.IP verfügt über ein fertiges MVC Framework. Es wäre besser dieses zu verwenden anstatt der alten Methoden im Plug-in.
 
 ## Funktionen
 
@@ -24,7 +24,7 @@ Die Kommentare können beim Druck in die Terminblöcke geschrieben werden. Event
 4. Übertragung der Auftragsdaten:
 Gewünscht ist ein Uploadfeld im Termin das von Studierenden zum Upload von Auftragsdateien an die Drucker, etc. genutzt werden kann. Später kann das Personal in der Werkstatt die Datei aus dem Termin downloaden und den Auftrag ausführen. Alternativ kann auch im Gerät selber alle Dateien vom aktuellen Tag runtergeladen werden.
 
-Hier könnte man das Cloud Storage System der TU nutzen. Eine Funktion in der man einen der downloadlinks hinterlegen kann die in der Webansicht generiert werden können könnte so etwas leisten ohne Stud.IP zusätzlich zu belasten. 
+Hier könnte man das Cloud Storage System der TU nutzen. Eine Funktion in der man einen der downloadlinks hinterlegen kann die in der Webansicht generiert werden können könnte so etwas leisten ohne Stud.IP zusätzlich zu belasten.
 
 5. Anlegen von dauerhaften Terminen:
 Ein regelmäßiger Termin ähnlich wie in einem Kalender. Rhythmus wäre täglich, wöchentlich, zweiwöchentlich und monatlich. Termine die nicht gebraucht werden müssen sperrbar sein. Der Eintrag des Termins soll mit der gleichen Zeitmaske wie bei den täglichen Öffnungszeiten der Arbeitsplätze geschehen.  
@@ -32,10 +32,10 @@ Ein regelmäßiger Termin ähnlich wie in einem Kalender. Rhythmus wäre täglic
 Neue Kategorie von Termin?  
 
 6. Bessere Übersicht der Arbeitsplätze:
-Die Darstellung der Arbeitsplätze soll besser Gegliedert werden. Es soll möglich sein Kategorien und Objekttypen als ausklappbare Überschriften zu erzeugen. Die erstellten Arbeitsplätze sollen als Instanzen der Objekttypen auftauchen. Also Kategorie -> Objekttyp -> Objekt (bisheriger Arbeitsplatz). 
+Die Darstellung der Arbeitsplätze soll besser Gegliedert werden. Es soll möglich sein Kategorien und Objekttypen als ausklappbare Überschriften zu erzeugen. Die erstellten Arbeitsplätze sollen als Instanzen der Objekttypen auftauchen. Also Kategorie -> Objekttyp -> Objekt (bisheriger Arbeitsplatz).
 
 7. Neue Kategorie - Arbeitsgerät:
-Alternative Klasse von Arbeitsplätzen mit eigener Klasse von Terminen. Objektklasse mit fester Anzahl von Instanzen die so lange verliehen werden kann bis es keine Instanzen mehr gibt. 
+Alternative Klasse von Arbeitsplätzen mit eigener Klasse von Terminen. Objektklasse mit fester Anzahl von Instanzen die so lange verliehen werden kann bis es keine Instanzen mehr gibt.
 
 Der Verleih dieser Geräte soll weniger kleinteilig sein. Also ausleihbar für ganze Tage. Folglich ist bei diesen Geräten auch eine andere Seitendarstellung ohne Uhrzeiten notwendig. Diese Geräte müssen dann auch für mehrere Tage oder sogar Wochen ausleihbar sein.
 
@@ -43,7 +43,7 @@ Die Geräte benötigen Checkboxes mit "abgeholt" und "zurückgegeben" die von Mi
 
 Eine Funktion mit der Studenten ihre entliehenen Geräte unter bestimmten Umständen verlängern könnten wäre auch nützlich. Wenn am Tag der Rückgabe noch Geräte verfügbar sind? Hat jedoch geringere Priorität.
 
-Übersicht als Gantt-Diagramm für Mitarbeiter? Für Studenten so eine Monats-Kalenderansicht mit Anzahl der freien Geräte für jeden Tag eingetragen? 
+Übersicht als Gantt-Diagramm für Mitarbeiter? Für Studenten so eine Monats-Kalenderansicht mit Anzahl der freien Geräte für jeden Tag eingetragen?
 
 Muss so entwickelt werden das alle bisherigen Methoden mit beiden Klassen von Geräten und Terminen arbeiten können.
 
@@ -183,7 +183,7 @@ Das Löschen des eigenen Termins noch vor dem Startzeitpunkt ist zu kurzfristig 
 2. Größe der Wochenansicht: ✓
 Wochenansicht und Tagesansicht sind sehr kleinteilig gehalten. Die Formatierung könnte größere Elemente haben. Moderne Monitore lassen mehr Spielraum als wir nutzen.
 
-Größere Formatierung mit mehr Platz für die Slots wäre besser. 
+Größere Formatierung mit mehr Platz für die Slots wäre besser.
 
 3. Mailanhang:
 Momentan in Bezug auf erlaubte Dateitypen und Größe beschränkt. Gewünscht wären 500MB mit PDF, TIFF, DWG, DXF, STL und SAT Endungen möglich und automatischer Löschung nach 4 Tagen.  

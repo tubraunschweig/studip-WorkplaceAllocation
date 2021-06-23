@@ -21,15 +21,13 @@ class NotifiedUserList implements IteratorAggregate
      * @param null|string $context_id if null then use actual context
      * @return NotifiedUserList
      */
-    static public function getNotifiedUserList($context_id = null) 
+    public static function getNotifiedUserList($context_id = null)
     {
-        if($context_id == null) {
+        if ($context_id == null) {
             $context_id = Request::get('cid');
         }
-
         $return = new NotifiedUserList();
         $return->context_id = $context_id;
-
         return $return;
     }
 
@@ -38,9 +36,9 @@ class NotifiedUserList implements IteratorAggregate
      *
      * @return int size of list
      */
-    public function list_size() 
+    public function list_size()
     {
-        $data = DBManager::get()->fetchAll("SELECT * FROM wp_notified_user_list WHERE context_id = ?", array($this->context_id));
+        $data = DBManager::get()->fetchAll("SELECT * FROM wp_notified_user_list WHERE context_id = ?", [$this->context_id]);
 
         return sizeof($data);
     }
@@ -51,9 +49,9 @@ class NotifiedUserList implements IteratorAggregate
      * @param string $user_id
      * @return bool
      */
-    public function isOnList($user_id) 
+    public function isOnList($user_id)
     {
-        $data = DBManager::get()->fetchAll("SELECT * FROM wp_notified_user_list WHERE user_id = ? AND context_id = ?", array($user_id, $this->context_id));
+        $data = DBManager::get()->fetchAll("SELECT * FROM wp_notified_user_list WHERE user_id = ? AND context_id = ?", [$user_id, $this->context_id]);
 
         return sizeof($data) != 0;
     }
@@ -63,13 +61,12 @@ class NotifiedUserList implements IteratorAggregate
      *
      * @param string $user_id
      */
-    public function addToList($user_id) 
+    public function addToList($user_id)
     {
-        if(!$this->isOnList($user_id)) {
+        if (!$this->isOnList($user_id)) {
             $id = sha1(rand());
-            DBManager::get()->execute("INSERT INTO wp_notified_user_list (id, user_id, context_id) VALUES (?, ?, ?)", array($id, $user_id, $this->context_id));
+            DBManager::get()->execute("INSERT INTO wp_notified_user_list (id, user_id, context_id) VALUES (?, ?, ?)", [$id, $user_id, $this->context_id]);
         }
-
     }
 
     /**
@@ -77,12 +74,11 @@ class NotifiedUserList implements IteratorAggregate
      *
      * @param string $user_id
      */
-    public function deleteFromList($user_id) 
+    public function deleteFromList($user_id)
     {
-        if($this->isOnList($user_id)) {
-            DBManager::get()->execute("DELETE FROM wp_notified_user_list WHERE user_id = ? AND context_id = ?", array($user_id, $this->context_id));
+        if ($this->isOnList($user_id)) {
+            DBManager::get()->execute("DELETE FROM wp_notified_user_list WHERE user_id = ? AND context_id = ?", [$user_id, $this->context_id]);
         }
-
     }
 
     /**
@@ -95,13 +91,12 @@ class NotifiedUserList implements IteratorAggregate
      */
     public function getIterator()
     {
-        $data = DBManager::get()->fetchAll("SELECT user_id FROM wp_notified_user_list WHERE context_id = ?", array($this->context_id)); 
-        $usersInList = array();
-        
-        foreach($data as $uid){
+        $data = DBManager::get()->fetchAll("SELECT user_id FROM wp_notified_user_list WHERE context_id = ?", [$this->context_id]);
+        $usersInList = [];
+
+        foreach ($data as $uid) {
             $usersInList[] = User::findFull($uid['user_id']);
         }
-        
         return new ArrayIterator($usersInList);
     }
 }

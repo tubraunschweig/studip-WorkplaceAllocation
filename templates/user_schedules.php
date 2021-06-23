@@ -31,7 +31,6 @@
     </thead>
     <tbody>
     <?php
-
     if (sizeof($schedules) == 0) {
         ?>
         <tr>
@@ -39,14 +38,12 @@
         </tr>
         <?php
     }
-
     foreach ($schedules as $schedule) {
         /** @var Institute $institute */
-        $institute = Institute::find($schedule->getWorkplace()->getContextId());
-        ?>
+        $institute = Institute::find($schedule->getWorkplace()->getContextId()); ?>
         <tr>
             <td>
-                <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $schedule->getWorkplace()->getId(), 'cid' => $institute->institut_id, 'day' => $schedule->getStart()->format('d.m.Y')), 'timetable') ?>">
+                <a href="<?= PluginEngine::getLink('WorkplaceAllocation', ['wp_id' => $schedule->getWorkplace()->getId(), 'cid' => $institute->institut_id, 'day' => $schedule->getStart()->format('d.m.Y')], 'timetable') ?>">
                     <?= $institute->name ?>
                 </a>
             </td>
@@ -57,6 +54,7 @@
                 <?= $schedule->getStart()->format('d.m.Y H:i') ?> Uhr
                 -
                 <?= $schedule->getStart()->add($schedule->getDuration())->format('d.m.Y H:i') ?> Uhr
+
             </td>
         </tr>
         <?php

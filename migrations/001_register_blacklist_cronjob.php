@@ -12,7 +12,7 @@
 
 require_once __DIR__.'/../cronjobs/blacklist_cronjob.php';
 
-class RegisterBlacklistCronjob extends Migration 
+class RegisterBlacklistCronjob extends Migration
 {
     private $FILENAME;
 

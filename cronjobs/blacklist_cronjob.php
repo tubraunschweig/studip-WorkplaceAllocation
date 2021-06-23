@@ -9,8 +9,9 @@
  * Time: 11:34
  */
 
-class BlacklistCronJob extends CronJob 
+class BlacklistCronJob extends CronJob
 {
+
     /**
      * Return the name of the cronjob.
      */
@@ -35,9 +36,9 @@ class BlacklistCronJob extends CronJob
      * @param array $parameters  Parameters for this cronjob instance which
      *                           were defined during scheduling.
      */
-    public function execute($last_result, $parameters = array())
+    public function execute($last_result, $parameters = [])
     {
         $now = new DateTime();
-        DBManager::get()->execute("DELETE FROM wp_blacklist WHERE expiration < ?", array($now->getTimestamp()));
+        DBManager::get()->execute("DELETE FROM wp_blacklist WHERE expiration < ?", [$now->getTimestamp()]);
     }
 }

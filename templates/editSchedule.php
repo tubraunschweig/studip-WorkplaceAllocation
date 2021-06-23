@@ -17,16 +17,17 @@ foreach ($messageBoxes as $box) {
     print($box);
 }
 
+
 ?>
 
 <h1>Termin bearbeiten <?= $schedule->getStart()->format('d.m.Y - H:i') ?> Uhr</h1>
-<a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $schedule->getWorkplace()->getId(), 'day' => $schedule->getStart()->format('d.m.Y')), $admin ? 'addSchedule' : 'timetable') ?>">zurück</a>
-<form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('s_id' => $schedule->getId()), 'editSchedule') ?>" method="post" class="default">
+<a href="<?= PluginEngine::getLink('WorkplaceAllocation', ['wp_id' => $schedule->getWorkplace()->getId(), 'day' => $schedule->getStart()->format('d.m.Y')], $admin ? 'addSchedule' : 'timetable') ?>">zurück</a>
+<form action="<?= PluginEngine::getLink('WorkplaceAllocation', ['s_id' => $schedule->getId()], 'editSchedule') ?>" method="post" class="default">
     <section>
         <label for="s_owner">Besitzer</label>
         <?php
 
-        if($admin):
+        if ($admin):
             $search = new SQLSearch("SELECT user_id, CONCAT(Vorname, ' ', Nachname, ' (', username, ')') FROM auth_user_md5 WHERE Nachname LIKE :input OR username LIKE :input OR Vorname LIKE :input", _('Benutzer'), 'username');
             $quickSearch = QuickSearch::get('s_owner', $search);
             $quickSearch->setInputClass('size-m');
@@ -37,7 +38,6 @@ foreach ($messageBoxes as $box) {
             <input type="text" name="owner" id="s_owner" class="size-m" value="<?= $schedule->getOwner()->vorname ?> <?= $schedule->getOwner()->nachname ?> (<?= $schedule->getOwner()->username ?>)" disabled>
         <?php
         endif;
-
         ?>
     </section>
     <section>
@@ -45,7 +45,7 @@ foreach ($messageBoxes as $box) {
         <textarea id="s_comment" name="s_comment" cols="75" rows="4" <?= $schedule->getOwner()->user_id != get_userid() ? 'disabled' : '' ?>><?= $schedule->getComment() ?></textarea>
     </section>
 
-    <? if($admin): ?>
+    <?php if ($admin): ?>
     <section>
         <label for="s_duration">Dauer</label>
         <select id="s_duration" name="s_duration">
@@ -68,17 +68,16 @@ foreach ($messageBoxes as $box) {
             <?php
             $duration = $schedule->getDuration();
 
-            if($duration->format('%h%I') > 400):
+            if ($duration->format('%h%I') > 400):
             ?>
                 <option value="<?= $duration->format('P%yY%mM%dDT%hH%iM%sS') ?>" selected><?= $duration->format('%h') ?> Stunden <?= $duration->format('%i') ?> Minuten</option>
             <?php
             endif;
-
             ?>
         </select>
     </section>
-    <? endif;?>
-    
+    <?php endif;?>
+
     <?= CSRFProtection::tokenTag() ?>
-    <?=\Studip\Button::create('Speichern', null, array('type' => 'submit', 'class' => 'accept')) ?>
+    <?=\Studip\Button::create('Speichern', null, ['type' => 'submit', 'class' => 'accept']) ?>
 </form>

@@ -13,7 +13,6 @@
  */
 
 if (isset($messageBoxes) && sizeof($messageBoxes) > 0) {
-
     foreach ($messageBoxes as $messageBox) {
         print($messageBox);
     }
@@ -21,7 +20,7 @@ if (isset($messageBoxes) && sizeof($messageBoxes) > 0) {
 
 $rule = $workplace->getRule();
 /** @var \Studip\Button $submitButton */
-$submitButton = \Studip\Button::create(_('Speichern'), null, array('type' => 'submit'));
+$submitButton = \Studip\Button::create(_('Speichern'), null, ['type' => 'submit']);
 
 ?>
 <h1>Arbeitsplatz bearbeiten</h1>
@@ -93,45 +92,64 @@ $submitButton = \Studip\Button::create(_('Speichern'), null, array('type' => 'su
         <input type="text" class="daily_pause" name="daily_pause_end_hour" title="Ende Stunde" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseEnd() != null) ? $rule->getPauseEnd()->format('%H') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
         :<input type="text" class="daily_pause" name="daily_pause_end_minute" title="Ende Minute" style="width: 2em;" value="<?= ($rule != null && $rule->getPauseEnd() != null) ? $rule->getPauseEnd()->format('%I') : '00' ?>" <?= ($rule != null && $rule->hasPause()) ? '' : 'disabled' ?>>
     </section>
-
     <script type="application/javascript">
-
         $('#daily_pause_exist').change(function () {
-
             if (this.checked) {
                 $('.daily_pause').prop('disabled', false);
             } else {
                 $('.daily_pause').prop('disabled', true);
             }
         });
-        
     </script>
-
     <section>
         <label for="wp_rule_slot_duration">Slot Länge</label>
         <select name="slot_duration" id="wp_rule_slot_duration">
-            <option value="PT0H30M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT0H30M'){print("selected");} ?>>&frac12; Stunde</option>
-            <option value="PT1H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H0M'){print("selected");} ?>>1 Stunde</option>
-            <option value="PT1H30M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H30M'){print("selected");} ?>>1&frac12; Stunden</option>
-            <option value="PT2H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT2H0M'){print("selected");} ?>>2 Stunden</option>
-            <option value="PT3H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT3H0M'){print("selected");} ?>>3 Stunden</option>
+            <option value="PT0H30M" <?php if ($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT0H30M') {
+    print('selected');
+} ?>>&frac12; Stunde</option>
+            <option value="PT1H0M" <?php if ($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H0M') {
+    print('selected');
+} ?>>1 Stunde</option>
+            <option value="PT1H30M" <?php if ($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H30M') {
+    print('selected');
+} ?>>1&frac12; Stunden</option>
+            <option value="PT2H0M" <?php if ($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT2H0M') {
+    print('selected');
+} ?>>2 Stunden</option>
+            <option value="PT3H0M" <?php if ($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT3H0M') {
+    print('selected');
+} ?>>3 Stunden</option>
         </select>
     </section>
     <section>
         <label>Anmeldezeitraum</label>
         Im Voraus buchbar für x<br>
         <select title="Anmeldezeitraum Start" name="registration_start">
-            <option value="P7D" <? if($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P7D'){print('selected');} ?>>1 Woche</option>
-            <option value="P14D" <? if($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P14D'){print('selected');} ?>>2 Wochen</option>
-            <option value="P28D" <? if($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P28D'){print('selected');} ?>>4 Wochen</option>
+            <option value="P7D" <?php if ($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P7D') {
+    print('selected');
+} ?>>1 Woche</option>
+            <option value="P14D" <?php if ($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P14D') {
+    print('selected');
+} ?>>2 Wochen</option>
+            <option value="P28D" <?php if ($rule != null && $rule->getRegistrationStart()->format('P%dD') == 'P28D') {
+    print('selected');
+} ?>>4 Wochen</option>
         </select>
         <br>
         Buchbar bis x vor Termin<br>
         <select title="Anmeldezeitraum Ende" name="registration_end">
-            <option value="P0D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P0D'){print('selected');} ?>>unmitelbar</option>
-            <option value="P1D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P1D'){print('selected');} ?>>1 Tag</option>
-            <option value="P7D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P7D'){print('selected');} ?>>1 Woche</option>
-            <option value="P14D" <? if($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P14D'){print('selected');} ?>>2 Wochen</option>
+            <option value="P0D" <?php if ($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P0D') {
+    print('selected');
+} ?>>unmittelbar</option>
+            <option value="P1D" <?php if ($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P1D') {
+    print('selected');
+} ?>>1 Tag</option>
+            <option value="P7D" <?php if ($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P7D') {
+    print('selected');
+} ?>>1 Woche</option>
+            <option value="P14D" <?php if ($rule != null && $rule->getRegistrationEnd()->format('P%dD') == 'P14D') {
+    print('selected');
+} ?>>2 Wochen</option>
         </select>
     </section>
     <section>

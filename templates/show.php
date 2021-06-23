@@ -31,78 +31,69 @@
     <tbody>
     <?php
 
-    if(sizeof($workplaces) == 0) {
+    if (sizeof($workplaces) == 0) {
         ?>
         <tr>
             <td colspan="3" style="text-align: center;">Es wurden noch keine Arbeitsplätze eingerichtet.</td>
         </tr>
         <?php
     }
-
     $blacklist = Blacklist::getBlacklist();
     $isOnBlacklist = $blacklist->isOnList(get_userid());
-
     if ($isOnBlacklist) {
         $blacklistExpiration = $blacklist->getExpiration(get_userid());
     }
-
     foreach ($workplaces as $workplace) {
-
-        if($isOnBlacklist) {
+        if ($isOnBlacklist) {
             ?>
                 <tr>
                     <td>
-                        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId()), 'timetable') ?>"><?= $workplace->getName() ?></a>
+                        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', ['wp_id' => $workplace->getId()], 'timetable') ?>"><?= $workplace->getName() ?></a>
                     </td>
                     <td>
                         <?= /** @noinspection PhpParamsInspection */
                         tooltipIcon($workplace->getDescription()) ?>
                     </td>
                 </tr>
-            <?php 
+            <?php
         } else {
-
-            if($workplace->isActive()) {
-
+            if ($workplace->isActive()) {
                 $registrationEnd = (new DateTime())->sub($workplace->getRule()->getRegistrationEnd());
                 $quickBookDay = new DateTime();
                 $quickBookDay->add($workplace->getRule()->getRegistrationStart())->sub($workplace->getRule()->getStart());
 
-                while(!$workplace->getRule()->isDayBookable($quickBookDay, false) || $quickBookDay < $registrationEnd) {
+                while (!$workplace->getRule()->isDayBookable($quickBookDay, false) || $quickBookDay < $registrationEnd) {
                     $quickBookDay = $quickBookDay->sub(new DateInterval('P1D'));
-                }
-
-                ?>
-                <tr>
+                } ?>
+            <tr>
+                <td>
+                        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', ['wp_id' => $workplace->getId(), 'week' => '1'], 'timetable') ?>"><?= $workplace->getName() ?></a>
+                </td>
+                <td>
+                    <?= /** @noinspection PhpParamsInspection */
+                    tooltipIcon($workplace->getDescription()) ?>
+                </td>
                     <td>
-                        <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'week' => '1'), 'timetable') ?>"><?= $workplace->getName() ?></a>
-                    </td>
-                    <td>
-                        <?= /** @noinspection PhpParamsInspection */
-                        tooltipIcon($workplace->getDescription()) ?>
-                    </td>
-                    <td>
-                        <?php 
+                        <?php
 
                         if (!($isOnBlacklist && ($blacklistExpiration == null || $blacklistExpiration >= $quickBookDay)) && $quickBookDay > $registrationEnd):?>
-                        <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('wp_id' => $workplace->getId(), 'week' => '1', 'day' => $quickBookDay->format('d.m.Y')), 'timetable') ?>" method="post">
-                            <input type="hidden" name="next_schedule" value="true">
+                        <form action="<?= PluginEngine::getLink('WorkplaceAllocation', ['wp_id' => $workplace->getId(), 'week' => '1', 'day' => $quickBookDay->format('d.m.Y')], 'timetable') ?>" method="post">
+                        <input type="hidden" name="dont_book" value="true">
                             <?= CSRFProtection::tokenTag() ?>
-                            <?= Studip\Button::create('Termin am ' . $quickBookDay->format('d.m.Y') . ' buchen', null, array('type' => 'submit'));?>
-                        </form>
+                            <?= Studip\Button::create('Termin am ' . $quickBookDay->format('d.m.Y') . ' buchen', null, ['type' => 'submit']); ?>
+                    </form>
 
-                        <?php 
-                        
+                        <?php
+
                         endif; ?>
 
-                    </td>
-                </tr>
+                </td>
+            </tr>
 
-                <?php
+            <?php
             }
-        }    
+        }
     }
-
     ?>
     </tbody>
 </table>

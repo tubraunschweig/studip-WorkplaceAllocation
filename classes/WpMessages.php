@@ -19,7 +19,7 @@
  */
 class WpMessages extends SimpleORMap
 {
-    static protected function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'wp_messages';
         parent::configure($config);

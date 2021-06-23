@@ -20,15 +20,13 @@ class Blacklist implements IteratorAggregate
      * @param null|string $context_id if null then use actual context
      * @return Blacklist
      */
-    static public function getBlacklist($context_id = null) 
+    public static function getBlacklist($context_id = null)
     {
-        if($context_id == null) {
+        if ($context_id == null) {
             $context_id = Request::get('cid');
         }
-
         $return = new Blacklist();
         $return->context_id = $context_id;
-        
         return $return;
     }
 
@@ -37,9 +35,9 @@ class Blacklist implements IteratorAggregate
      *
      * @return int size of list
      */
-    public function list_size() 
+    public function list_size()
     {
-        $data = DBManager::get()->fetchAll("SELECT * FROM wp_blacklist WHERE context_id = ?", array($this->context_id));
+        $data = DBManager::get()->fetchAll("SELECT * FROM wp_blacklist WHERE context_id = ?", [$this->context_id]);
 
         return sizeof($data);
     }
@@ -50,9 +48,9 @@ class Blacklist implements IteratorAggregate
      * @param string $user_id
      * @return bool
      */
-    public function isOnList($user_id) 
+    public function isOnList($user_id)
     {
-        $data = DBManager::get()->fetchAll("SELECT * FROM wp_blacklist WHERE context_id = ? AND user_id = ?", array($this->context_id, $user_id));
+        $data = DBManager::get()->fetchAll("SELECT * FROM wp_blacklist WHERE context_id = ? AND user_id = ?", [$this->context_id, $user_id]);
 
         return sizeof($data) != 0;
     }
@@ -63,20 +61,19 @@ class Blacklist implements IteratorAggregate
      * @param string $user_id id of requested user
      * @return DateTime|null datetime of expiration or null if no no expiration set or user not on list
      */
-    public function getExpiration($user_id) 
+    public function getExpiration($user_id)
     {
         if (!$this->isOnList($user_id)) {
             return null;
         }
 
-        $data = DBManager::get()->fetchFirst("SELECT * FROM wp_blacklist WHERE context_id = ? AND user_id = ?", array($this->context_id, $user_id));
+        $data = DBManager::get()->fetchFirst("SELECT * FROM wp_blacklist WHERE context_id = ? AND user_id = ?", [$this->context_id, $user_id]);
 
-        if($data['expiration'] == null) {
+        if ($data['expiration'] == null) {
             return null;
         } else {
             return new DateTime('@' . $data['expiration']);
         }
-
     }
 
     /**
@@ -85,15 +82,14 @@ class Blacklist implements IteratorAggregate
      * @param string $user_id
      * @param int|null $expiration unix Timestamp of automatic deletion
      */
-    public function addToList($user_id, $expiration = null) 
+    public function addToList($user_id, $expiration = null)
     {
-        if(!$this->isOnList($user_id)) {
-            DBManager::get()->execute("INSERT INTO wp_blacklist SET context_id = ?, user_id = ?, expiration = ?", array($this->context_id, $user_id, $expiration));
-            $notification = new WpNotifications('insert_blacklist', $user_id, PluginEngine::getLink('WorkplaceAllocation', array(), 'show'));
+        if (!$this->isOnList($user_id)) {
+            DBManager::get()->execute("INSERT INTO wp_blacklist SET context_id = ?, user_id = ?, expiration = ?", [$this->context_id, $user_id, $expiration]);
+            $notification = new WpNotifications('insert_blacklist', $user_id, PluginEngine::getLink('WorkplaceAllocation', [], 'show'));
             $notification->setContext($this->context_id);
             $notification->sendNotification();
         }
-
     }
 
     /**
@@ -101,15 +97,14 @@ class Blacklist implements IteratorAggregate
      *
      * @param string $user_id
      */
-    public function deleteFromList($user_id) 
+    public function deleteFromList($user_id)
     {
-        if($this->isOnList($user_id)) {
-            DBManager::get()->execute("DELETE FROM wp_blacklist WHERE context_id = ? AND user_id = ?", array($this->context_id, $user_id));
-            $notification = new WpNotifications('delete_blacklist', $user_id, PluginEngine::getLink('WorkplaceAllocation', array(), 'show'));
+        if ($this->isOnList($user_id)) {
+            DBManager::get()->execute("DELETE FROM wp_blacklist WHERE context_id = ? AND user_id = ?", [$this->context_id, $user_id]);
+            $notification = new WpNotifications('delete_blacklist', $user_id, PluginEngine::getLink('WorkplaceAllocation', [], 'show'));
             $notification->setContext($this->context_id);
             $notification->sendNotification();
         }
-
     }
 
 
@@ -123,22 +118,20 @@ class Blacklist implements IteratorAggregate
      */
     public function getIterator()
     {
-        $data = DBManager::get()->fetchAll("SELECT user_id, expiration FROM wp_blacklist WHERE context_id = ?", array($this->context_id));
-        $usersInList = array();
-        
-        foreach($data as $uid){
-            $entry = array();
+        $data = DBManager::get()->fetchAll("SELECT user_id, expiration FROM wp_blacklist WHERE context_id = ?", [$this->context_id]);
+        $usersInList = [];
+
+        foreach ($data as $uid) {
+            $entry = [];
             $entry['user'] = User::findFull($uid['user_id']);
 
-            if($uid['expiration'] != null){
+            if ($uid['expiration'] != null) {
                 $entry['expiration'] = new DateTime('@' . $uid['expiration']);
             } else {
                 $entry['expiration'] = null;
             }
-
             $usersInList[] = $entry;
         }
-
         return new ArrayIterator($usersInList);
     }
 }

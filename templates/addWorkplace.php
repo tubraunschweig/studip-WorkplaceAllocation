@@ -12,18 +12,18 @@
  * @var string $errorDetails details of the occurred error
  */
 
-if($error) {
+if ($error) {
     print(MessageBox::error(_('Bitte beheben Sie erst folgende Fehler, bevor Sie fortfahren:'), $errorDetails));
 }
 
 
 /** @var \Studip\Button $submitButton */
-$submitButton = \Studip\Button::create(_('Hinzufügen'), null, array('type' => 'submit'));
+$submitButton = \Studip\Button::create(_('Hinzufügen'), null, ['type' => 'submit']);
 
 ?>
 <h1><?= _('Arbeitsplatz hinzufügen')?></h1>
 
-<form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'addWorkplace') ?>" method="post" class="default">
+<form action="<?= PluginEngine::getLink('WorkplaceAllocation', [], 'addWorkplace') ?>" method="post" class="default">
     <section>
         <label for="wp_name">
             <span class="required"><?=_("Name")?></span>

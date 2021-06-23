@@ -13,7 +13,7 @@
  */
 
 global $defaultMessageTexts;
-$defaultMessageTexts = array();
+$defaultMessageTexts = [];
 
 
 $defaultMessageTexts['insert_blacklist']['meta'] = 'Hinzufügen zur Sperrliste';
@@ -30,4 +30,3 @@ $defaultMessageTexts['delete_schedule']['message'] = 'Ihr Arbeitsplatztermin in 
 
 $defaultMessageTexts['change_schedule']['meta'] = 'Ändern eines Termins';
 $defaultMessageTexts['change_schedule']['message'] = 'Ihr Arbeitsplatztermin in der Einrichtung/Veranstaltung "[context]" wurde geändert';
-

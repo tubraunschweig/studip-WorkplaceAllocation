@@ -19,7 +19,7 @@ Zeitslots mit Link auf Profilseite des Nutzers, variabler Länge, Kommentarfunkt
 
 Blockingliste zur temporären Sperrung von Nutzern von den Arbeitsplätzen. Standardzeitspanne von 7 Tagen. Individuell modifizierbar.
 
-Versendung von Stud.IP Nachrichten mit modifizierbaren Texten bei Erstellung, Modifizierung und Löschung von Zeitslots sowie Veränderungen der Blockingliste an Betroffene. 
+Versendung von Stud.IP Nachrichten mit modifizierbaren Texten bei Erstellung, Modifizierung und Löschung von Zeitslots sowie Veränderungen der Blockingliste an Betroffene.
 
 Mailingliste zur Benachrichtigung einer frei zusammenstellbaren Gruppe von Nutzern bei Erstellung, Modifizierung und Löschung von Zeitslots.  
 

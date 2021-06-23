@@ -13,7 +13,6 @@
  */
 
 if (isset($messageBoxes) && sizeof($messageBoxes) > 0) {
-
     foreach ($messageBoxes as $messageBox) {
         print($messageBox);
     }
@@ -41,12 +40,11 @@ Benachrichtigte Nutzer
     <tbody>
     <?php
 
-    if($userlist->list_size() > 0) {
-
-        foreach($userlist as $user){
+    if ($userlist->list_size() > 0) {
+        foreach ($userlist as $user) {
             ?>
             <tr>
-                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post" style="display:inline">
+                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', [], 'manageNotifiedUsers') ?>" method="post" style="display:inline">
                 <?php $id = $user->user_id; ?>
                 <td><?= ($user->vorname . ' ' . $user->nachname) ?></td>
                 <td><?= $user->username . ' ' ?></td>
@@ -61,7 +59,6 @@ Benachrichtigte Nutzer
             <?php
         }
     } else {
-
         ?>
         <tr>
             <th></th>
@@ -70,14 +67,13 @@ Benachrichtigte Nutzer
         </tr>
         <?php
     }
-    
     ?>
     <tr></tr>
     </tbody>
     <tfoot>
-        <tr>
+    <tr>
             <td colspan="4">
-                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post">
+                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', [], 'manageNotifiedUsers') ?>" method="post">
                     <input type="hidden" name="action" value="add">
                     <?php
                     $search = new SQLSearch("SELECT user_id, CONCAT(Vorname, ' ', Nachname, ' (', username, ')') FROM auth_user_md5 WHERE Nachname LIKE :input OR username LIKE :input OR Vorname LIKE :input", _('Benutzer'), 'username');
@@ -87,8 +83,8 @@ Benachrichtigte Nutzer
                     ?><br>
                     <?= CSRFProtection::tokenTag() ?>
                     <?= Studip\Button::create('Hinzufügen') ?>
-                </form>
+        </form>
             </td>
-        </tr>
+    </tr>
     </tfoot>
 </table>
