@@ -527,6 +527,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                 $newStart = new DateTime('@' . $request['wp_schedule_new_start']);
                 $schedule->setStart($newStart, true);
                 $workplace->refillFromWaitingList($day);
+            } else if (isset($request['dont_book'])) {
+                // don't book just show	
             } else {
                 $start = $request['wp_schedule_start'];
                 $duration = $request['wp_schedule_duration'];

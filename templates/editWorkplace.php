@@ -110,10 +110,11 @@ $submitButton = \Studip\Button::create(_('Speichern'), null, array('type' => 'su
     <section>
         <label for="wp_rule_slot_duration">Slot Länge</label>
         <select name="slot_duration" id="wp_rule_slot_duration">
-            <option value="PT0H30M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT0H30M'){print('selected');} ?>>&frac12; Stunde</option>
-            <option value="PT1H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H0M'){print('selected');} ?>>1 Stunde</option>
-            <option value="PT1H30M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H30M'){print('selected');} ?>>1&frac12; Stunden</option>
-            <option value="PT2H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT2H0M'){print('selected');} ?>>2 Stunden</option>
+            <option value="PT0H30M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT0H30M'){print("selected");} ?>>&frac12; Stunde</option>
+            <option value="PT1H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H0M'){print("selected");} ?>>1 Stunde</option>
+            <option value="PT1H30M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT1H30M'){print("selected");} ?>>1&frac12; Stunden</option>
+            <option value="PT2H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT2H0M'){print("selected");} ?>>2 Stunden</option>
+            <option value="PT3H0M" <? if($rule != null && $rule->getSlotDuration()->format('PT%hH%iM') == 'PT3H0M'){print("selected");} ?>>3 Stunden</option>
         </select>
     </section>
     <section>
