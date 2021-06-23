@@ -9,8 +9,8 @@
  * Time: 11:34
  */
 
-class BlacklistCronJob extends CronJob {
-
+class BlacklistCronJob extends CronJob 
+{
     /**
      * Return the name of the cronjob.
      */

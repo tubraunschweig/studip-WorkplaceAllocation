@@ -42,14 +42,12 @@ class Workplace
         $this->active = $active;
         $this->contextId = $contextId;
         
-        if($rule != null)
-        {
+        if($rule != null) {
             $this->rule = Rule::getRule($rule);
-        }
-        else
-        {
+        } else {
             $this->rule = null;
         }
+
     }
 
     /**
@@ -142,16 +140,17 @@ class Workplace
      */
     public function activate()
     {
-        if($this->active == 'on')
-        {
+        if($this->active == 'on') {
             return true;
         }
-        if($this->rule == null)
-        {
+
+        if($this->rule == null) {
             return false;
         }
+
         $this->active = 'on';
         DBManager::get()->execute("UPDATE wp_workplaces SET active = 'on' WHERE id = ?", array($this->id));
+
         return true;
     }
 
@@ -162,12 +161,13 @@ class Workplace
      */
     public function deactivate()
     {
-        if($this->active == 'off')
-        {
+        if($this->active == 'off') {
             return true;
         }
+
         $this->active = 'off';
         DBManager::get()->execute("UPDATE wp_workplaces SET active = 'off' WHERE id = ?", array($this->id));
+
         return true;
     }
 
@@ -188,10 +188,10 @@ class Workplace
      */
     public function createRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $onlyMembersCanBook = false, $days = array(true, true, true, true, true, true, true))
     {
-        if($this->rule != null)
-        {
+        if($this->rule != null) {
             return;
         }
+
         $this->rule = Rule::newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser, $onlyMembersCanBook, $days);
         DBManager::get()->execute("UPDATE wp_workplaces SET rule_id = ? WHERE id = ?", array($this->rule->getId(), $this->getId()));
     }
@@ -212,14 +212,13 @@ class Workplace
      * @param DateTime $time any time on wanted day is possible
      * @return Schedule[] return array of schedules, is empty if no schedule is found
      */
-    public function getSchedulesByDay($time) {
+    public function getSchedulesByDay($time) 
+    {
         $day = new DateTime($time->format('d.m.Y'));
-
         $data = DBManager::get()->fetchAll('SELECT id FROM wp_schedule WHERE workplace_id = ? AND start > ? and start < ?', array($this->id, $day->format('U'), $day->format('U') + 86400));
-
         $schedules = array();
-        foreach($data as $d)
-        {
+
+        foreach($data as $d) {
             $schedules[] = Schedule::getSchedule($d['id']);
         }
 
@@ -231,7 +230,8 @@ class Workplace
      *
      * @param DateTime $day any time on wanted day is given
      */
-    public function refillFromWaitingList($day) {
+    public function refillFromWaitingList($day) 
+    {
         $realDay = new DateTime($day->format('d.m.Y'));
 
         if(WaitingList::peek($this, $realDay) == null) {
@@ -246,24 +246,24 @@ class Workplace
         $dayEndTime->add($this->getRule()->getEnd());
         $pauseStartTime = null;
         $pauseEndTime = null;
-        if($this->getRule()->hasPause()){
+
+        if($this->getRule()->hasPause()) {
             $pauseStartTime = clone $day;
             $pauseStartTime->add($this->getRule()->getPauseStart());
             $pauseEndTime = clone $day;
             $pauseEndTime->add($this->getRule()->getPauseEnd());
         }
 
-        for ($time = clone $dayStartTime;
-                $time <= $dayEndTime;
-                $time->add($this->rule->getSlotDuration()))
-        {
+        for ($time = clone $dayStartTime; $time <= $dayEndTime; $time->add($this->rule->getSlotDuration())) {
 
             $startTime = clone $time;
             $endTime = clone $time;
             $endTime->add($this->rule->getSlotDuration());
 
             $foundSchedule = null;
+
             foreach ($daySchedules as $schedule) {
+
                 if ($schedule->getStart() >= $startTime && $schedule->getStart() < $endTime) {
                     $foundSchedule = $schedule;
                 }
@@ -280,6 +280,7 @@ class Workplace
                 Schedule::newSchedule($nextFromWaitingList->getUserid(), $this->id, $startTime->getTimestamp(), $this->rule->getSlotDuration()->format('P%yY%mM%dDT%hH%iM%sS'));
             }
         }
+
     }
 
     
@@ -296,7 +297,8 @@ class Workplace
     public static function getWorkplace($id)
     {
         $data = \DBManager::get()->fetchAll("SELECT * FROM wp_workplaces WHERE id = ?", array($id));
-        if(sizeof($data) < 1){
+
+        if(sizeof($data) < 1) {
             return null;
         }
 
@@ -316,9 +318,7 @@ class Workplace
     public static function newWorkplace($name, $description, $contextId)
     {
         $id = sha1(rand());
-        \DBManager::get()->execute(
-            "INSERT INTO wp_workplaces (id, name, description, context_id) VALUES (?, ?, ?, ?)",
-            array($id, $name, $description, $contextId));
+        \DBManager::get()->execute("INSERT INTO wp_workplaces (id, name, description, context_id) VALUES (?, ?, ?, ?)", array($id, $name, $description, $contextId));
         
         return Workplace::getWorkplace($id);
     }
@@ -335,8 +335,7 @@ class Workplace
 
         $workplaceList = array();
 
-        foreach($data as $item)
-        {
+        foreach($data as $item) {
             $workplaceList[] = self::getWorkplace($item['id']);
         }
 

@@ -54,6 +54,7 @@ class Rule
         $this->id = $id;
         $this->start = new DateInterval($start);
         $this->end = new DateInterval($end);
+
         if($pauseStart == null || $pauseEnd == null) {
             $this->pauseStart = null;
             $this->pauseEnd = null;
@@ -61,6 +62,7 @@ class Rule
             $this->pauseStart = new DateInterval($pauseStart);
             $this->pauseEnd = new DateInterval($pauseEnd);
         }
+
         $this->registrationStart = new DateInterval($registrationStart);
         $this->registrationEnd = new DateInterval($registrationEnd);
         $this->slotDuration = new DateInterval($slotDuration);
@@ -104,7 +106,8 @@ class Rule
      *
      * @return DateInterval
      */
-    public function getPauseStart() {
+    public function getPauseStart() 
+    {
         return $this->pauseStart;
     }
 
@@ -113,7 +116,8 @@ class Rule
      *
      * @return DateInterval
      */
-    public function getPauseEnd() {
+    public function getPauseEnd() 
+    {
         return $this->pauseEnd;
     }
 
@@ -214,12 +218,14 @@ class Rule
      *
      * @param string $pauseStart
      */
-    public function setPauseStart($pauseStart) {
+    public function setPauseStart($pauseStart) 
+    {
         if($pauseStart == null) {
             $this->pauseStart = null;
         } else {
             $this->pauseStart = new DateInterval($pauseStart);
         }
+
         DBManager::get()->execute("UPDATE wp_rules SET pause_start = ? WHERE id = ?", array($pauseStart, $this->id));
     }
 
@@ -228,12 +234,14 @@ class Rule
      *
      * @param string $pauseEnd
      */
-    public function setPauseEnd($pauseEnd) {
+    public function setPauseEnd($pauseEnd) 
+    {
         if($pauseEnd == null) {
             $this->pauseEnd = null;
         } else {
             $this->pauseEnd = new DateInterval($pauseEnd);
-        };
+        }
+
         DBManager::get()->execute("UPDATE wp_rules SET pause_end = ? WHERE id = ?", array($pauseEnd, $this->id));
     }
 
@@ -288,8 +296,6 @@ class Rule
     public function setDay($dayOfWeek, $state)
     {
         $this->days[$dayOfWeek] = $state;
-
-
         DBManager::get()->execute("UPDATE wp_rules SET days = ? WHERE id = ?", array(self::daysArrayToNumber($this->days), $this->id));
     }
 
@@ -301,7 +307,6 @@ class Rule
     public function setOneScheduleByDayAndUser($oneScheduleByDayAndUser)
     {
         $this->oneScheduleByDayAndUser = $oneScheduleByDayAndUser;
-
         DBManager::get()->execute("UPDATE wp_rules SET one_schedule_by_day_and_user = ? WHERE id = ?", array($oneScheduleByDayAndUser, $this->id));
     }
 
@@ -313,7 +318,6 @@ class Rule
     public function setOnlyMembersCanBook($onlyMembersCanBook)
     {
         $this->onlyMembersCanBook = $onlyMembersCanBook;
-
         DBManager::get()->execute("UPDATE wp_rules SET only_members_can_book = ? WHERE id = ?", array($onlyMembersCanBook, $this->id));
     }
 
@@ -326,36 +330,45 @@ class Rule
      * @param bool $admin is booker an admin
      * @return bool true if day is bookable false if not
      */
-    public function isBookable($start, $duration, $workplace, $admin = false) {
-        if(Blacklist::getBlacklist()->isOnList(get_userid())){
+    public function isBookable($start, $duration, $workplace, $admin = false) 
+    {
+        if(Blacklist::getBlacklist()->isOnList(get_userid())) {
             return false;
         }
+
         $end = clone $start;
         $end->add($duration);
         $day = date_create($start->format('d.m.Y'));
-        $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE (workplace_id = ? AND start > ? ) AND ( start < ? )",
-            array($workplace->getId(), $day->getTimestamp(), $day->getTimestamp() + 86400));
+        $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE (workplace_id = ? AND start > ? ) AND ( start < ? )", array($workplace->getId(), $day->getTimestamp(), $day->getTimestamp() + 86400));
+
         foreach ($data as $schedule_id) {
             $schedule = Schedule::getSchedule($schedule_id);
             $scheduleEnd = clone $schedule->getStart();
             $scheduleEnd->add($schedule->getDuration());
+
             if(($schedule->getStart() <= $start && $scheduleEnd > $start) || ($schedule->getStart() < $end && $schedule->getStart() > $start)){
                 return false;
             }
+
             if($this->oneScheduleByDayAndUser && $schedule->getOwner()->user_id == get_userid() && !$admin) {
                 return false;
             }
         }
+
         $user_schedules = Schedule::getSchedulesByUser(get_userid());
+
         foreach ($user_schedules as $schedule) {
+
             if ($schedule->getWorkplace() === $workplace) {
                 $scheduleEnd = clone $schedule->getStart();
                 $scheduleEnd->add($schedule->getDuration());
+
                 if(($schedule->getStart() >= $start && $schedule->getStart() < $end) || ($scheduleEnd > $start && $scheduleEnd <= $end) || ($schedule->getStart() < $start && $scheduleEnd > $end)) {
                     return false;
                 }
             }
         }
+
         return true;
     }
 
@@ -367,7 +380,8 @@ class Rule
      * @param Workplace|null $workplace target workplace. Is only needed if it should be checked against the "one schedule by day and user"-flag
      * @return bool true if day is bookable, false if not
      */
-    public function isDayBookable($time, $admin, $workplace = null) {
+    public function isDayBookable($time, $admin, $workplace = null) 
+    {
         $day = new DateTime($time->format('d.m.Y'));
 
         $numberOfDayISO = $day->format('N');
@@ -377,29 +391,35 @@ class Rule
 
         $startCheckTime = clone $now;
         $endCheckTime = clone $now;
+
         if($startCheckTime->add($this->registrationStart)->sub($this->start) < $day && !$admin) {
             return false;
         }
+
         if($endCheckTime->add($this->registrationEnd)->sub(new DateInterval('PT23H23M')) > $day && !$admin) {
             return false;
         }
+
         if($workplace != null && $this->isOneScheduleByDayAndUser() && !$admin) {
             $dayStart = clone $day;
             $dayStart->add($this->getStart());
             $dayEnd = clone $day;
             $dayEnd->add($this->getEnd());
-            $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start >= ? AND start <= ? AND user_id = ?",
-                array($workplace->getId(), $dayStart->getTimestamp(), $dayEnd->getTimestamp(), get_userid()));
+            $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start >= ? AND start <= ? AND user_id = ?", array($workplace->getId(), $dayStart->getTimestamp(), $dayEnd->getTimestamp(), get_userid()));
+
             if (sizeof($data) > 0) {
                 return false;
             }
         }
-        if(Blacklist::getBlacklist($_GET['cid'])->isOnList(get_userid())) {
+
+        if(Blacklist::getBlacklist(Request::get('cid'))->isOnList(get_userid())) {
             return false;
         }
+
         if(!$this->getDay($numberOfDay)) {
             return false;
         }
+
         return true;
     }
 
@@ -408,12 +428,14 @@ class Rule
      *
      * @return bool true if rule contains pause, false if not
      */
-    public function hasPause() {
+    public function hasPause() 
+    {
         if($this->pauseStart == null || $this->pauseEnd == null) {
             return false;
         } else {
             return true;
         }
+
     }
 
     /**
@@ -424,8 +446,8 @@ class Rule
      * @param bool $admin is booker admin
      * @return bool true if schedule is booked, false if not
      */
-    public function bookFirstPossibleSchedule($workplace, $time, $admin = false) {
-
+    public function bookFirstPossibleSchedule($workplace, $time, $admin = false) 
+    {
         $day = new DateTime($time->format('d.m.Y'));
         $endOfDay = clone $day;
         $endOfDay->add(new DateInterval('PT23H59M59S'));
@@ -434,6 +456,7 @@ class Rule
         $endTime->add($this->end);
 
         $hasPause = false;
+
         if($this->pauseStart != null && $this->pauseEnd != null) {
             $pauseStart = clone $day;
             $pauseStart->add($this->pauseStart);
@@ -447,29 +470,33 @@ class Rule
 
         $time = clone $day;
         $time->add($this->start);
+
         foreach($schedules as $id) {
             $schedule = Schedule::getSchedule($id['id']);
 
             $testTime = clone $time;
             $testTime->add($this->slotDuration);
 
-
             if($hasPause == true && $testTime >= $pauseStart && $time < $pauseEnd) {
                 $time = clone  $pauseEnd;
             } else {
+
                 if($schedule->getStart() > $time && $time->diff($schedule->getStart())->format('%h%I') >= $this->slotDuration->format('%h%I') && $this->isBookable($time,$this->slotDuration,$workplace, $admin)) {
                     Schedule::newSchedule(get_userid(), $workplace->getId(), $time->getTimestamp(), $this->slotDuration->format('P%yY%mM%dDT%hH%iM%sS'));
                     return true;
                 }
+
                 $time = clone $schedule->getStart();
                 $time->add($schedule->getDuration());
             }
         }
         $testTime = clone $time;
-        if($testTime->add($this->slotDuration) <= $endTime && $this->isBookable($time, $this->slotDuration, $workplace, $admin)){
+
+        if($testTime->add($this->slotDuration) <= $endTime && $this->isBookable($time, $this->slotDuration, $workplace, $admin)) {
             Schedule::newSchedule(get_userid(), $workplace->getId(), $time->getTimestamp(), $this->slotDuration->format('P%yY%mM%dDT%hH%iM%sS'));
             return true;
         }
+
         return false;
     }
 
@@ -488,8 +515,7 @@ class Rule
     {
         $data = DBManager::get()->fetchAll("SELECT * FROM wp_rules WHERE id = ?", array($id));
 
-        if(sizeof($data) < 1)
-        {
+        if(sizeof($data) < 1) {
             return null;
         }
 
@@ -528,8 +554,6 @@ class Rule
      */
     public static function newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $onlyMembersCanBook = false, $days = array(true, true, true, true, true, true, true))
     {
-
-
         $id = sha1(rand());
         DBManager::get()->execute(
             "INSERT INTO wp_rules (id, start, end, pause_start, pause_end, registration_start, registration_end, slot_duration, one_schedule_by_day_and_user, only_members_can_book, days) 
@@ -546,13 +570,17 @@ class Rule
      * @param array $days array of days (<Mon>, <Tue>, <Wed>, <Thu>, <Fri>, <Sat>, <Sun>)
      * @return int number to store in database
      */
-    private static function daysArrayToNumber($days) {
+    private static function daysArrayToNumber($days) 
+    {
         $daysNumber = 0;
+
         for($i = 0; $i <= 6; $i++) {
+
             if($days[$i]){
                 $daysNumber += pow(2, $i);
             }
         }
+
         return $daysNumber;
     }
 
@@ -562,14 +590,18 @@ class Rule
      * @param int $daysNumber number stored in database
      * @return array days array (<Mon>, <Tue>, <Wed>, <Thu>, <Fri>, <Sat>, <Sun>)
      */
-    private static function daysNumberToArray($daysNumber) {
+    private static function daysNumberToArray($daysNumber) 
+    {
         $days = array(false, false, false, false, false, false, false);
+        
         for($i = 6; $i >=0; $i --) {
+
             if($daysNumber >= pow(2, $i)) {
                 $days[$i] = true;
                 $daysNumber -= pow(2, $i);
             }
         }
+        
         return $days;
     }
 }

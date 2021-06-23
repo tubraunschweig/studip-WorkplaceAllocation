@@ -1,11 +1,13 @@
 pluginname=Arbeitsplatzvergabe
 pluginclassname=WorkplaceAllocation
 origin=tu-braunschweig
-version=0.7_rc7
+version=1.0_rc7
 studipMinVersion=4.1
+studipMaxVersion=4.5
 
 dbscheme=sql/install.sql
 uninstalldbscheme=sql/uninstall.sql
 
 category=Kommunikation und Zusammenarbeit
-descriptionshort=Tool für die Vergabe von Arbeitsplätzen an Studierende
+descriptionshort=Werkzeug für die Vergabe von Arbeitsplätzen an Studierende
+description=Das Plug-in wird auf Einrichtungen aktiviert und erlaubt dort das Anlegen von Arbeitsplätzen mit buchbaren Zeitschlitzen.

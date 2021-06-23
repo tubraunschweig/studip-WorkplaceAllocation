@@ -12,8 +12,8 @@
 
 require_once __DIR__.'/../cronjobs/blacklist_cronjob.php';
 
-class RegisterBlacklistCronjob extends Migration {
-
+class RegisterBlacklistCronjob extends Migration 
+{
     private $FILENAME;
 
     public function __construct($verbose = false)
@@ -24,7 +24,8 @@ class RegisterBlacklistCronjob extends Migration {
         $this->FILENAME = substr($this->FILENAME, strpos($this->FILENAME, 'public/'));
     }
 
-    public function up(){
+    public function up()
+    {
         BlacklistCronJob::register()->schedulePeriodic(20, 0);
     }
 

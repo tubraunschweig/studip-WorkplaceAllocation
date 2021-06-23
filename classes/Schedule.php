@@ -12,7 +12,6 @@
  */
 class Schedule
 {
-
     /** @var  String */
     private $id;
     /** @var  User */
@@ -39,8 +38,8 @@ class Schedule
      * @param String $comment comment
      * @param bool $blocked true if schedule is bocked by an admin
      */
-    private function __construct($id, $userID, $workplaceID, $start, $duration, $comment = "", $blocked = false) {
-
+    private function __construct($id, $userID, $workplaceID, $start, $duration, $comment = "", $blocked = false) 
+    {
         $this->id = $id;
         $this->owner = User::findFull($userID);
         $this->workplace = Workplace::getWorkplace($workplaceID);
@@ -142,12 +141,11 @@ class Schedule
      */
     public function setStart($start, $recursive = false)
     {
-
         $oldEndTime = clone $this->start;
         $oldEndTime->add($this->duration);
 
-        $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start < ? ORDER BY start DESC LIMIT 1",
-            array($this->workplace->getId(), $this->start->getTimestamp()));
+        $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start < ? ORDER BY start DESC LIMIT 1", array($this->workplace->getId(), $this->start->getTimestamp()));
+
         if(sizeof($data) > 0) {
             $lastSchedule = Schedule::getSchedule($data[0]['id']);
             $lastScheduleEndTime = clone $lastSchedule->getStart();
@@ -156,9 +154,10 @@ class Schedule
             $lastScheduleEndTime = null;
         }
 
-        if($lastScheduleEndTime != null && $lastScheduleEndTime > $this->start){
+        if($lastScheduleEndTime != null && $lastScheduleEndTime > $this->start) {
             return false;
         }
+
         $this->start = $start;
         DBManager::get()->execute("UPDATE wp_schedule SET start = ? WHERE id = ?", array($this->start->format("U"), $this->id));
 
@@ -181,8 +180,8 @@ class Schedule
         Schedule::notifyMailinglist($this, 'setStart');
 
         if($recursive) {
-            $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start = ?",
-                array($this->workplace->getId(), $oldEndTime->getTimestamp()));
+            $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start = ?", array($this->workplace->getId(), $oldEndTime->getTimestamp()));
+
             if (sizeof($data) > 0) {
                 $newEndTime = clone $this->start;
                 $newEndTime->add($this->duration);
@@ -204,9 +203,8 @@ class Schedule
      */
     public function setDuration($duration)
     {
+        $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start > ? ORDER BY start ASC LIMIT 1", array($this->workplace->getId(), $this->start->getTimestamp()));
 
-        $data = DBManager::get()->fetchAll("SELECT id FROM wp_schedule WHERE workplace_id = ? AND start > ? ORDER BY start ASC LIMIT 1",
-            array($this->workplace->getId(), $this->start->getTimestamp()));
         if(sizeof($data) > 0) {
             $nextSchedule = Schedule::getSchedule($data[0]['id']);
         } else {
@@ -215,6 +213,7 @@ class Schedule
 
         $newEnd = clone $this->getStart();
         $newEnd->add($duration);
+        
         if(($newEnd->format('Hi') > $this->getWorkplace()->getRule()->getEnd()->format('%h%I')) OR ($nextSchedule != null AND $newEnd > $nextSchedule->getStart())) {
             return false;
         }
@@ -281,7 +280,7 @@ class Schedule
     {
         DBManager::get()->execute("DELETE FROM wp_schedule WHERE id = ?", array($this->id));
         $nextFromWaitingList = WaitingList::pop($this->workplace, $this->start);
-        //var_dump($nextFromWaitingList);
+
         if($nextFromWaitingList != null) {
             Schedule::newSchedule($nextFromWaitingList->getUserid(), $this->workplace->getId(), $this->start->getTimestamp(), $this->duration->format('P%yY%mM%dDT%hH%iM%sS'));
         }
@@ -315,7 +314,8 @@ class Schedule
      * @param string $id schedule id
      * @return null|Schedule null if id not exist
      */
-    static public function getSchedule($id) {
+    static public function getSchedule($id) 
+    {
         $data = DBManager::get()->fetchAll("SELECT * FROM wp_schedule WHERE id = ?", array($id));
 
         if(sizeof($data) < 1) {
@@ -346,17 +346,17 @@ class Schedule
      * @param bool $blocked true in schedule is blocked by admin
      * @return null|Schedule null if error occurred
      */
-    static public function newSchedule($userID, $workplaceID, $start, $duration, $comment = "", $blocked = false) {
+    static public function newSchedule($userID, $workplaceID, $start, $duration, $comment = "", $blocked = false) 
+    {
         $id = sha1(rand());
 
-        if($blocked){
+        if($blocked) {
             $type = 'blocked';
         } else {
             $type = 'normal';
         }
 
-        DBManager::get()->execute("INSERT INTO wp_schedule (id, user_id, workplace_id, start, duration, comment, type) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            array($id, $userID, $workplaceID, $start, $duration, $comment, $type));
+        DBManager::get()->execute("INSERT INTO wp_schedule (id, user_id, workplace_id, start, duration, comment, type) VALUES (?, ?, ?, ?, ?, ?, ?)", array($id, $userID, $workplaceID, $start, $duration, $comment, $type));
 
         $workplace = Workplace::getWorkplace($workplaceID);
         $notification = new WpNotifications(
@@ -399,6 +399,7 @@ class Schedule
             $schedule_end = clone $schedule->getStart();
             $schedule_end->add($schedule->getDuration());
             $now = new DateTime();
+
             if ($schedule_end > $now) {
                 $returnArray[] = $schedule;
             }
@@ -417,6 +418,7 @@ class Schedule
     static private function notifyMailinglist($schedule, $actionkey)
     {
         $mailinglist = NotifiedUserList::getNotifiedUserList($schedule->getWorkplace()->getContextId());
+
         if($mailinglist->list_size() > 0) {
             $mail = new StudipMail();
 
@@ -442,6 +444,7 @@ Dies ist eine automatisch generierte Mitteilung.
             $mail->setSubject('[Arbeitsplatzvergabe] Termin '.$actiontext[$actionkey]);
             
             foreach ($mailinglist as $mailingUser) {
+                
                 if (filter_var($mailingUser->email, FILTER_VALIDATE_EMAIL)) {
                     $mail->addRecipient($mailingUser->email, $mailingUser->vorname." ".$mailingUser->nachname);
                 }

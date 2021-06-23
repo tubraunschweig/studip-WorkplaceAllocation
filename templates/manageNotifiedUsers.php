@@ -13,6 +13,7 @@
  */
 
 if (isset($messageBoxes) && sizeof($messageBoxes) > 0) {
+
     foreach ($messageBoxes as $messageBox) {
         print($messageBox);
     }
@@ -39,21 +40,28 @@ Benachrichtigte Nutzer
     </thead>
     <tbody>
     <?php
+
     if($userlist->list_size() > 0) {
+
         foreach($userlist as $user){
             ?>
             <tr>
+                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post" style="display:inline">
+                <?php $id = $user->user_id; ?>
                 <td><?= ($user->vorname . ' ' . $user->nachname) ?></td>
-                <td><?= $user->username ?></td>
+                <td><?= $user->username . ' ' ?></td>
                 <td style="text-align: right;">
-                    <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('user_id' => $user->user_id), 'delNotifiedUser') ?>">
-                    <?= Icon::create('trash', 'clickable')->asImg() ?>
-                    </a>
+                    <input type="hidden" name="user_id" value="<?= $id ?>">
+                    <input type="hidden" name="action" value="delete">
+                    <?= CSRFProtection::tokenTag() ?>
+                    <input type="image" src="<?= (Icon::create('trash', 'clickable'))->asImagePath() ?>" title="Eintrag löschen" alt="Submit">
                 </td>
+                </form>
             </tr>
             <?php
         }
     } else {
+
         ?>
         <tr>
             <th></th>
@@ -62,13 +70,25 @@ Benachrichtigte Nutzer
         </tr>
         <?php
     }
+    
     ?>
-    <tr>
-        <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post" >
-        <td></td>
-        <td><input type="text" id="mnu_add_id" name="username" value="Stud.IP Nutzername" /></td>
-        <td><?= Studip\Button::create("Hinzufügen") ?></td>
-        </form>
-    </tr>
-</tbody>
+    <tr></tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="4">
+                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers') ?>" method="post">
+                    <input type="hidden" name="action" value="add">
+                    <?php
+                    $search = new SQLSearch("SELECT user_id, CONCAT(Vorname, ' ', Nachname, ' (', username, ')') FROM auth_user_md5 WHERE Nachname LIKE :input OR username LIKE :input OR Vorname LIKE :input", _('Benutzer'), 'username');
+                    $quickSearch = QuickSearch::get('user_id', $search);
+                    $quickSearch->setInputClass('size-m');
+                    print($quickSearch->render());
+                    ?><br>
+                    <?= CSRFProtection::tokenTag() ?>
+                    <?= Studip\Button::create('Hinzufügen') ?>
+                </form>
+            </td>
+        </tr>
+    </tfoot>
 </table>

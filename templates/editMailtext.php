@@ -19,9 +19,9 @@ global $defaultMessageTexts;
 <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail') ?>">zurück</a>
 <br>
 <br>
-<b>Einhängepunkt:</b> <?= $defaultMessageTexts[$_GET['hook_point']]['meta'] ?>
+<b>Einhängepunkt:</b> <?= $defaultMessageTexts[Request::get('hook_point')]['meta'] ?>
 
-<form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('hook_point' => $_GET['hook_point']), 'editMailtext') ?>" method="post" class="default">
+<form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('hook_point' => Request::get('hook_point')), 'editMailtext') ?>" method="post" class="default">
     <section>
         <label for="subject">Betreff:</label>
         <input type="text" name="subject" id="subject" class="size-m" value="<?= $message == null ? '' : $message->subject ?>">
@@ -34,13 +34,6 @@ global $defaultMessageTexts;
         Die Zeichenkette [context] wird durch den Namen der Einrichtung ersetzt.<br>
         <textarea id="text" name="text" cols="75" rows="30"><?= $message != null ? $message->message : '' ?></textarea>
     </section>
-    <?=\Studip\Button::create(
-        "Speichern",
-        null,
-        array(
-            "type" => "submit",
-            "class" => "accept"
-        )
-    )
-    ?>
+    <?= CSRFProtection::tokenTag() ?>
+    <?=\Studip\Button::create('Speichern', null, array('type' => 'submit', 'class' => 'accept'))?>
 </form>

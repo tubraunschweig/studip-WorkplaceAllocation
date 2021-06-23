@@ -27,25 +27,21 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     {
         parent::__construct();
         
-        require_once __DIR__."/classes/Workplace.php";
-        require_once __DIR__."/classes/Rule.php";
-        require_once __DIR__."/classes/Schedule.php";
-        require_once __DIR__."/classes/WaitingList.php";
-        require_once __DIR__."/classes/Blacklist.php";
-        require_once __DIR__."/classes/WpNotifications.php";
-        require_once __DIR__."/classes/WpMessages.php";
-        require_once __DIR__."/classes/NotifiedUserList.php";
+        StudipAutoloader::register();
+        StudipAutoloader::addAutoloadPath(__DIR__ . '/classes');
         
-        $this->templateFactory = new Flexi_TemplateFactory($this->getPluginPath().'/templates');
+        $this->templateFactory = new Flexi_TemplateFactory($this->getPluginPath() . '/templates');
 
-        $currentUser = User::findFull(get_userid());
+        $currentUser = User::findCurrent();
 
-        if(!isset($_REQUEST['username']) || $_REQUEST['username'] == $currentUser->username) {
+        $request = Request::getInstance();
+
+        if(!isset($request['username']) || $request['username'] == $currentUser->username) {
 
             /** @var Navigation $profileNavigation */
             $profileNavigation = Navigation::getItem('/profile');
 
-            $mySchedules = new Navigation("Arbeitsplätze", PluginEngine::getURL("WorkplaceAllocation", array(), 'my_schedules'));
+            $mySchedules = new Navigation('Arbeitsplätze', PluginEngine::getURL('WorkplaceAllocation', array(), 'my_schedules'));
             $mySchedules->setImage(new Icon('computer'));
             $mySchedules->setActiveImage(new Icon('computer'));
 
@@ -113,28 +109,26 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     function getTabNavigation($course_id)
     {
 
-        if (!$this->isActivated($course_id))
-        {
+        if (!$this->isActivated($course_id)) {
             return null;
         }
         
-        $workplaceAllocation = new Navigation("Arbeitsplätze", PluginEngine::getURL("WorkplaceAllocation", array(), 'show'));
+        $workplaceAllocation = new Navigation('Arbeitsplätze', PluginEngine::getURL('WorkplaceAllocation', array(), 'show'));
         $workplaceAllocation->setImage(new Icon('computer'));
         $workplaceAllocation->setActiveImage(new Icon('computer'));
 
         if($this->user_has_admin_perm($course_id)) {
-            $workplacesAdminNav = new Navigation('Arbeitsplätze', PluginEngine::getURL("WorkplaceAllocation", array(), 'admin'));
-            $workplacesAdminNav->setDescription("Richten Sie Anmeldungen zu Arbeitsplätzen für Ihre Studierenden ein.");
+            $workplacesAdminNav = new Navigation('Arbeitsplätze', PluginEngine::getURL('WorkplaceAllocation', array(), 'admin'));
+            $workplacesAdminNav->setDescription('Richten Sie Anmeldungen zu Arbeitsplätzen für Ihre Studierenden ein.');
             $workplacesAdminNav->setImage(new Icon('computer'));
 
             /** @var Navigation $courseAdminNav */
-            $courseAdminNav = Navigation::getItem("course/admin");
-            $courseAdminNav->addSubNavigation("workplaces", $workplacesAdminNav);
+            $courseAdminNav = Navigation::getItem('course/admin');
+            $courseAdminNav->addSubNavigation('workplaces', $workplacesAdminNav);
         }
 
-
         return array(
-            "workplaces" => $workplaceAllocation
+            'workplaces' => $workplaceAllocation
         );
     }
 
@@ -160,14 +154,16 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      * @param string $course_id context id
      * @return bool
      */
-    private function user_has_admin_perm($course_id) {
+    private function user_has_admin_perm($course_id) 
+    {
         $status = $GLOBALS['perm']->get_studip_perm($course_id, get_userid());
 
-        if($status == "dozent" || $status == "tutor" || $status == "admin" || $status == "root") {
+        if($status == 'dozent' || $status == 'tutor' || $status == 'admin' || $status == 'root') {
             return true;
         } else {
             return false;
         }
+
     }
 
     /**
@@ -175,15 +171,18 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      *
      * @return bool
      */
-    private function user_is_member() {
+    private function user_is_member() 
+    {
         $current_institute = Institute::findCurrent();
         $user_institutes = InstituteMember::findByUser(get_userid());
 
         for($i = 0, $size = count($user_institutes); $i < $size; $i++) {
+
             if($current_institute->getId() == $user_institutes[$i]['institut_id']) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -197,7 +196,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         
         /** @var Flexi_Template $template */
         $template = $this->templateFactory->open('show');
-        $template->set_attribute('workplaces', Workplace::getWorkplacesByContext($_GET['cid']));
+        $template->set_attribute('workplaces', Workplace::getWorkplacesByContext(Request::get('cid')));
         $template->set_layout($GLOBALS['template_factory']->open('layouts/base'));
         print($template->render());
     }
@@ -209,36 +208,35 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      */
     public function admin_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
         
         $actionsWidget = new ActionsWidget();
         $actionsWidget->addLink(
-            "Arbeitsplatz hinzufügen",
-            PluginEngine::getLink("WorkplaceAllocation", array(), "addWorkplace"),
-            new Icon("add")
+            'Arbeitsplatz hinzufügen',
+            PluginEngine::getLink('WorkplaceAllocation', array(), 'addWorkplace'),
+            new Icon('add')
         );
         $actionsWidget->addLink(
-            "Sperrungen verwalten",
-            PluginEngine::getLink("WorkplaceAllocation", array(), "manageBlacklist"),
-            new Icon("community")
+            'Sperrungen verwalten',
+            PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist'),
+            new Icon('community')
         );
         $actionsWidget->addLink(
-            "Benachritigungstexte verwalten",
-            PluginEngine::getLink("WorkplaceAllocation", array(), "manageMail"),
-            new Icon("mail")
+            'Benachritigungstexte verwalten',
+            PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail'),
+            new Icon('mail')
         );
         $actionsWidget->addLink(
-            "Mailingliste verwalten",
-            PluginEngine::getLink("WorkplaceAllocation", array(), "manageNotifiedUsers"),
-            new Icon("mail")
+            'Mailingliste verwalten',
+            PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers'),
+            new Icon('mail')
         );
         $actionsWidget->addLink(
-            "Alle Arbeitsplätze drucken",
-            PluginEngine::getLink("WorkplaceAllocation", array(), "pdf"),
-            new Icon("print"),
+            'Alle Arbeitsplätze drucken',
+            PluginEngine::getLink('WorkplaceAllocation', array(), 'pdf'),
+            new Icon('print'),
             array('target' => '_blank')
         );
         
@@ -249,40 +247,39 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         /** @var Flexi_Template $template */
         $template = $this->templateFactory->open('admin');
         $template->set_layout($GLOBALS['template_factory']->open('layouts/base'));
-        $template->set_attribute('workplaces', Workplace::getWorkplacesByContext($_GET['cid']));
+        $template->set_attribute('workplaces', Workplace::getWorkplacesByContext(Request::get('cid')));
+
+        PageLayout::addStylesheet($this->getPluginURL() . '/assets/stylesheets/link_button.css');
         
         print($template->render());
     }
 
     /**
      * save activation route
-     * set an new activation state for all workplaces in the $_POST array
+     * set a new activation state for all workplaces in the POST request
      *
      * @throws AccessDeniedException
      */
     public function saveActivation_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
-        if(Request::isPost())
-        {
-            $workplaces = Workplace::getWorkplacesByContext($_GET['cid']);
-            foreach ($workplaces as $workplace)
-            {
-                if (isset($_POST[$workplace->getId()]))
-                {
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $workplaces = Workplace::getWorkplacesByContext(Request::get('cid'));
+            foreach ($workplaces as $workplace) {
+
+                if (Request::get($workplace->getId()) != null) {
                     $workplace->activate();
-                }
-                else
-                {
+                } else {
                     $workplace->deactivate();
                 }
             }
         }
-        header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'admin'));
+
+        header('Location: ' . PluginEngine::getLink('WorkplaceAllocation', array(), 'admin'));
         exit;
     }
 
@@ -293,28 +290,27 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      */
     public function addWorkplace_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
+
         $errorDetails = array();
         $error = false;
         
-        if(Request::isPost())
-        {
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
             
-            if(empty($_POST["wp_name"])) {
+            if(!($request['wp_name'])) {
                 $error = true;
-                $errorDetails[] = _("Bitte geben Sie einen Namen für den Arbeitsplatz an.");
-            }
-            else
-            {
-                Workplace::newWorkplace($_POST['wp_name'], $_POST['wp_description'], $_GET['cid']);
-                header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'admin'));
+                $errorDetails[] = _('Bitte geben Sie einen Namen für den Arbeitsplatz an.');
+            } else {
+                Workplace::newWorkplace($request['wp_name'], $request['wp_description'], $request['cid']);
+                header('Location: ' . PluginEngine::getLink('WorkplaceAllocation', array(), 'admin'));
             }
         } else {
-            $_POST['wp_name'] = "";
-            $_POST['wp_description'] = "";
+            Request::set('wp_name', '');
+            Request::set('wp_description', '');
         }
         
         Navigation::activateItem('/course/admin/workplaces');
@@ -322,8 +318,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         /** @var Flexi_Template $template */
         $template = $this->templateFactory->open('addWorkplace');
         $template->set_layout($GLOBALS['template_factory']->open('layouts/base'));
-        $template->set_attribute("error", $error);
-        $template->set_attribute("errorDetails", $errorDetails);
+        $template->set_attribute('error', $error);
+        $template->set_attribute('errorDetails', $errorDetails);
 
         print($template->render());
     }
@@ -336,33 +332,37 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      */
     public function delWorkplace_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
+            $workplace = Workplace::getWorkplace(Request::get('wp_id'));
 
-        $workplace = Workplace::getWorkplace($_GET['wp_id']);
+            if(!isset($request['confirm'])) {
+                
+                $trueResponse = $_POST;
+                $trueResponse['confirm'] = true;
+                $falseResponse = $_POST;
+                $falseResponse['confirm'] = false;
+                $this->admin_action();
+                print(createQuestion2(
+                    'Möchten Sie den Arbeitsplatz "' . $workplace->getName() . '" wirklich löschen ?',
+                    $trueResponse, 
+                    $falseResponse,
+                    '?cid=' . $request['cid']
+                ));
+            }
 
-        if(isset($_GET['delete']))
-        {
-            if($_GET['delete'])
-            {
+            if($request['confirm']) {
                 $workplace->deleteWorkplace();
             }
-            header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'admin'));
 
+            header('Location: ' . PluginEngine::getLink('WorkplaceAllocation', array(), 'admin'));
         }
-        else
-        {
-            $this->admin_action();
 
-            print(createQuestion(
-                "Möchten Sie den Arbeitsplatz \"".$workplace->getName()."\" wirklich löschen ?",
-                array("delete" => true, "wp_id" => $workplace->getId()), 
-                array("delete" => false, "wp_id" => $workplace->getId())
-            ));
-        }
     }
 
     /**
@@ -372,74 +372,71 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      */
     public function editWorkplace_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
         Navigation::activateItem('/course/admin/workplaces');
 
-        $workplace = Workplace::getWorkplace($_GET['wp_id']);
+        $workplace = Workplace::getWorkplace(Request::get('wp_id'));
         $rule = $workplace->getRule();
-
 
         /** @var string[] $messageBoxes */
         $messageBoxes = array();
         $errorDetails = array();
         $error = false;
         
-        if(Request::isPost())
-        {
-            if(isset($_POST['day']) && (empty($_POST['daily_start_hour'])
-                || empty($_POST['daily_start_minute'])
-                || empty($_POST['daily_end_hour'])
-                || empty($_POST['daily_end_minute'])))
-            {
-                $error = true;
-                $errorDetails[] = "Bitte geben sie einen korrekten Wert für die tägliche Öffnungszeit an.";
-            }
-            else
-            {
-                $workplace->setDescription($_POST['wp_description']);
-                $workplace->setName($_POST['wp_name']);
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
 
-                $start = 'PT'.$_POST['daily_start_hour'].'H'.$_POST['daily_start_minute'].'M';
-                $end = 'PT'.$_POST['daily_end_hour'].'H'.$_POST['daily_end_minute'].'M';
-                if($_POST['daily_pause_exist'] == 'on') {
-                    $pauseStart = 'PT'.$_POST['daily_pause_start_hour'].'H'.$_POST['daily_pause_start_minute'].'M';
-                    $pauseEnd = 'PT'.$_POST['daily_pause_end_hour'].'H'.$_POST['daily_pause_end_minute'].'M';
+            if(isset($request['day']) && (empty($request['daily_start_hour']) || empty($request['daily_start_minute']) || empty($request['daily_end_hour']) || empty($request['daily_end_minute']))) {
+                $error = true;
+                $errorDetails[] = 'Bitte geben sie einen korrekten Wert für die tägliche Öffnungszeit an.';
+            } else {
+                $workplace->setDescription($request['wp_description']);
+                $workplace->setName($request['wp_name']);
+
+                $start = 'PT' . $request['daily_start_hour'] . 'H' . $request['daily_start_minute'] . 'M';
+                $end = 'PT' . $request['daily_end_hour'] . 'H' . $request['daily_end_minute'] . 'M';
+
+                if($request['daily_pause_exist'] == 'on') {
+                    $pauseStart = 'PT' . $request['daily_pause_start_hour'] . 'H' . $request['daily_pause_start_minute'] . 'M';
+                    $pauseEnd = 'PT' . $request['daily_pause_end_hour'] . 'H' . $request['daily_pause_end_minute'] . 'M';
                 } else {
                     $pauseStart = null;
                     $pauseEnd = null;
                 }
-                if($rule == null)
-                {
-                    $workplace->createRule($start, $end, $pauseStart, $pauseEnd, $_POST['registration_start'], $_POST['registration_end'], $_POST['slot_duration']);
+
+                if($rule == null) {
+                    $workplace->createRule($start, $end, $pauseStart, $pauseEnd, $request['registration_start'], $request['registration_end'], $request['slot_duration']);
                     $rule = $workplace->getRule();
-                }
-                else
-                {
+                } else {
                     $rule->setStart($start);
                     $rule->setEnd($end);
                     $rule->setPauseStart($pauseStart);
                     $rule->setPauseEnd($pauseEnd);
-                    $rule->setRegistrationStart($_POST['registration_start']);
-                    $rule->setRegistrationEnd($_POST['registration_end']);
-                    $rule->setSlotDuration($_POST['slot_duration']);
+                    $rule->setRegistrationStart($request['registration_start']);
+                    $rule->setRegistrationEnd($request['registration_end']);
+                    $rule->setSlotDuration($request['slot_duration']);
                 }
-                if(isset($_POST['one_schedule_by_day_and_user']) && $_POST['one_schedule_by_day_and_user'] == 'on') {
+
+                if(isset($request['one_schedule_by_day_and_user']) && $request['one_schedule_by_day_and_user'] == 'on') {
                     $rule->setOneScheduleByDayAndUser(true);
                 } else {
                     $rule->setOneScheduleByDayAndUser(false);
                 }
-                if(isset($_POST['only_members_can_book']) && $_POST['only_members_can_book'] == 'on') {
+
+                if(isset($request['only_members_can_book']) && $request['only_members_can_book'] == 'on') {
                     $rule->setOnlyMembersCanBook(true);
                 } else {
                     $rule->setOnlyMembersCanBook(false);
                 }
-                if(is_array($_POST['day'])) {
+
+                if(is_array($request['day'])) {
                     for ($i = 0; $i < 7; $i++) {
-                        if (in_array($i, $_POST['day'])) {
+
+                        if (in_array($i, $request['day'])) {
                             $rule->setDay($i, true);
                         } else {
                             $rule->setDay($i, false);
@@ -449,11 +446,13 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
 
                 $messageBoxes[] = MessageBox::success(
                     'Erfolgreich gespeichert',
-                    array('<a href="'.PluginEngine::getLink('WorkplaceAllocation',array(),'admin').'">Zurück zur Übersicht</a>'));
+                    array('<a href="' . PluginEngine::getLink('WorkplaceAllocation',array(),'admin') . '">Zurück zur Übersicht</a>')
+                );
             }
         }
+
         if($error) {
-            $messageBoxes[] = MessageBox::error(_("Bitte beheben Sie erst folgende Fehler, bevor Sie fortfahren:"), $errorDetails);
+            $messageBoxes[] = MessageBox::error(_('Bitte beheben Sie erst folgende Fehler, bevor Sie fortfahren:'), $errorDetails);
         }
         
         /** @var Flexi_Template $template */
@@ -468,50 +467,51 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     /**
      * route to add schedule
      *
-     * @param bool $isSetNavigation if this is an embedded route set true
+     * @param bool $isSetNavigation if navigation has already been activated, set true
      */
     public function addSchedule_action($isSetNavigation = false)
     {
-
-        if(!$isSetNavigation)
-        {
+        if(!$isSetNavigation) {
             Navigation::activateItem('/course/admin/workplaces');
         }
 
         // file based lock to limit schedule manipulations to one user per workplace at once
-        $path = $this->getPluginPath().'/locks/'.$_GET['wp_id'];
+        $path = $this->getPluginPath() . '/locks/' . Request::get('wp_id');
         $lock = fopen($path, 'c');
 
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
             $admin = false;
         } else {
             $admin = true;
         }
 
-        $workplace = Workplace::getWorkplace($_GET['wp_id']);
+        $workplace = Workplace::getWorkplace(Request::get('wp_id'));
 
         if(!$admin && $workplace->getRule()->isOnlyMembersCanBook() && !$this->user_is_member()) {
-            throw new AccessDeniedException("Termine an diesem Arbeitsplatz sind nur für Mitglieder der Einrichtung buchbar");
+            throw new AccessDeniedException('Termine an diesem Arbeitsplatz sind nur für Mitglieder der Einrichtung buchbar');
         }
 
         $nowTime = new DateTime();
-        if(isset($_GET['day']))
-        {
-            $day = new DateTime($_GET['day']);
+
+        if(Request::get('day') != null) {
+            $day = new DateTime(Request::get('day'));
         } else {
             $day = new DateTime($nowTime->format('d.m.Y'));
         }
 
         $messageBox = null;
 
-        if(Request::isPost())
-        {
+        if(Request::isPost() && !(Request::get('embedded', $default = false))) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
+
             // closing lock for schedule manipulations or waiting
             flock($lock, LOCK_EX);
 
-            if(isset($_POST['next_schedule']) && $_POST['next_schedule'] == 'true') {
+            if(isset($request['next_schedule']) && $request['next_schedule'] == 'true') {
+
                 if(!$workplace->getRule()->bookFirstPossibleSchedule($workplace, $day, $admin)) {
+
                     if(!$workplace->getRule()->isDayBookable($day, $admin, $workplace)) {
                         $messageBox = MessageBox::error('Der Termin konnte nicht gebucht werden, dies kann verschiedene Ursachen haben', array('Sie wurden gesperrt.', 'Es ist nur ein Termin pro Nutzer und Tag zugelassen.', 'Es ist zu einer Kollision gekommen, in diesem Falle versuche in der Übersicht nochmal einen Termin für diesen Tag zu buchen um einen Platz auf der Warteliste zu bekommen.'));
                     } else {
@@ -522,22 +522,25 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                         $messageBox = MessageBox::error('Am ' . $day->format('d.m.Y') . ' ist kein Termin mehr frei. ');
                     }
                 }
-            } else if (isset($_POST['action']) && $_POST['action'] == 'move_up' && isset($_POST['wp_schedule_id']) && isset($_POST['wp_schedule_new_start'])) {
-                $schedule = Schedule::getSchedule($_POST['wp_schedule_id']);
-                $newStart = new DateTime('@'.$_POST['wp_schedule_new_start']);
+            } else if (isset($request['action']) && $request['action'] == 'move_up' && isset($request['wp_schedule_id']) && isset($request['wp_schedule_new_start'])) {
+                $schedule = Schedule::getSchedule($request['wp_schedule_id']);
+                $newStart = new DateTime('@' . $request['wp_schedule_new_start']);
                 $schedule->setStart($newStart, true);
                 $workplace->refillFromWaitingList($day);
             } else if (isset($request['dont_book'])) {
                 // don't book just show	
             } else {
-                $start = $_POST['wp_schedule_start'];
-                $duration = $_POST['wp_schedule_duration'];
+                $start = $request['wp_schedule_start'];
+                $duration = $request['wp_schedule_duration'];
+
                 if ($workplace->getRule()->isBookable(new DateTime('@' . $start), new DateInterval($duration), $workplace, $admin)) {
                     $blocked = false;
-                    if (isset($_POST['wp_schedule_type']) && $_POST['wp_schedule_type'] == 'blocked') {
+
+                    if (isset($request['wp_schedule_type']) && $request['wp_schedule_type'] == 'blocked') {
                         $blocked = true;
                     }
-                    Schedule::newSchedule(get_userid(), $workplace->getId(), $start, $duration, "", $blocked);
+
+                    Schedule::newSchedule(get_userid(), $workplace->getId(), $start, $duration, '', $blocked);
                 } else {
                     $messageBox = MessageBox::error('Der Termin konnte nicht gebucht werden, dies kann verschiedene Ursachen haben', array('Der Termin ist bereits belegt.', 'Es ist nur ein Termin pro Nutzer und Tag zugelassen.'));
                 }
@@ -554,9 +557,8 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
         $template->set_attribute('admin', $admin);
         $template->set_attribute('day', $day);
 
-        PageLayout::addStylesheet($this->getPluginURL().'/assets/stylesheets/timetable.css');
+        PageLayout::addStylesheet($this->getPluginURL() . '/assets/stylesheets/timetable.css');
         print($template->render());
-
     }
 
     /**
@@ -571,9 +573,9 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
     /**
      * route to edit a specific schedule
      */
-    public function editSchedule_action() {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
+    public function editSchedule_action() 
+    {
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
             Navigation::activateItem('/course/workplaces');
             $admin = false;
         } else {
@@ -581,37 +583,42 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
             $admin = true;
         }
 
-        $schedule = Schedule::getSchedule($_GET['s_id']);
+        $schedule = Schedule::getSchedule(Request::get('s_id'));
 
         // file based lock to limit schedule manipulations to one user per workplace at once
-        $path = $this->getPluginPath().'/locks/'.$schedule->getWorkplace()->getId();
+        $path = $this->getPluginPath() . '/locks/' . $schedule->getWorkplace()->getId();
         $lock = fopen($path, 'c');
 
         $messageBoxes = array();
 
-        if(Request::isPost())
-        {
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
+
             // closing lock for schedule manipulations or waiting
             flock($lock, LOCK_EX);
 
             $success = true;
-            if(isset($_POST['s_duration']) && $admin) {
-                $duration = new DateInterval($_POST['s_duration']);
+
+            if(isset($request['s_duration']) && $admin) {
+                $duration = new DateInterval($request['s_duration']);
+
                 if(!$schedule->setDuration($duration)) {
                     $messageBoxes[] = MessageBox::error('Die Änderung der Terminlänge ist nicht zulässig');
                     $success = false;
                 }
             }
-            if(isset($_POST['s_comment']) && $schedule->getOwner()->user_id == get_userid()) {
-                $schedule->setComment($_POST['s_comment']);
+
+            if(isset($request['s_comment']) && $schedule->getOwner()->user_id == get_userid()) {
+                $schedule->setComment($request['s_comment']);
             }
-            if(isset($_POST['s_owner']) && $admin) {
-                $newOwner = User::findFull($_POST['s_owner']);
+
+            if(isset($request['s_owner']) && $admin) {
+                $newOwner = User::findFull($request['s_owner']);
                 $schedule->setOwner($newOwner);
             }
 
             if ($success) {
-
                 $backLink = PluginEngine::getLink(
                     'WorkplaceAllocation',
                     array('wp_id' => $schedule->getWorkplace()->getId(),
@@ -619,7 +626,7 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
                           'day' => $schedule->getStart()->format('d.m.Y')),
                     $admin ? 'addSchedule' : 'timetable');
 
-                $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert", array("<a href='".$backLink."'>zurück</a>"));
+                $messageBoxes[] = MessageBox::success('Erfolgreich gespeichert', array('<a href="' . $backLink . '">zurück</a>'));
             }
 
             flock($lock, LOCK_UN);
@@ -641,61 +648,50 @@ class WorkplaceAllocation extends StudIPPlugin implements StandardPlugin, Homepa
      *
      * @throws AccessDeniedException
      */
-    public function removeSchedule_action() {
-        $schedule = Schedule::getSchedule($_GET['s_id']);
+    public function removeSchedule_action() 
+    {
+        $schedule = Schedule::getSchedule(Request::get('s_id'));
+        $admin = $this->user_has_admin_perm(Request::get('cid'));
 
-        $admin = $this->user_has_admin_perm($_GET['cid']);
+        if(!($admin || $schedule->getOwner()->user_id == get_userid())) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
+        }    
+      
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
+            
+            if(!isset($request['confirm'])) {
 
-        if(!($this->user_has_admin_perm($_GET['cid']) || $schedule->getOwner()->user_id == get_userid())) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
-        }
-        $start = $schedule->getStart();
+                if($schedule->getStart() > new DateTime()) { //start liegt in Zukunft --> delete action
 
-        if ($schedule->getStart() <= new DateTime()) {
-            header('Location: '.PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $_GET['wp_id'], 'day' => $start->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));
-            return;
-        }
+                    $request->set('day', $schedule->getStart()->format('d.m.Y'));
+                    $request->set('wp_id', $schedule->getWorkplace()->getId());
+                    $request->set('week', '1');
+                    $request->set('embedded', '1');
 
-        if(isset($_GET['delete'])) {
-            if($_GET['delete']) {
-                $institute = Institute::findCurrent();
-                /** @var InstituteMember[] $instituteAdmins */
-                $instituteAdmins = InstituteMember::findByInstituteAndStatus($institute->getId(), 'admin');
-                $currentUser = User::findCurrent();
-                $mail = new StudipMail();
-                $mail->setBodyText("Ein Termin in der Einrichtung \"".$institute->name."\" wurde gelöscht:\n
-\n
-".strftime('%A, %e. %h %Y %H:%M Uhr', $schedule->getStart()->getTimestamp())."\n
-gelöscht von ".$currentUser->getFullName()."\n
-\n
-------\n
-Dies ist eine automatisch generierte Mitteilung.
-                ");
-                $mail->setSubject('[Arbeitsplatzvergabe] Termin gelöscht');
-                foreach ($instituteAdmins as $adminUser) {
-                    $mail->addRecipient($adminUser->email, $adminUser->vorname." ".$adminUser->nachname);
+                    $trueResponse = $_POST;
+                    $trueResponse['confirm'] = true;
+                    $falseResponse = $_POST;
+                    $falseResponse['confirm'] = false;
+                    $admin ? $this->addSchedule_action() : $this->timetable_action();
+                    print(createQuestion2(
+                        'Möchten Sie den Termin wirklich löschen ?',
+                        $trueResponse,
+                        $falseResponse,
+                        '?cid=' . $request['cid']
+                    ));
+                } else {
+                    throw new AccessDeniedException('Der Termin ist bereits abgelaufen');
                 }
+            }
 
+            if($request['confirm']) {
                 $schedule->deleteSchedule();
+            }
 
-                $mail->send();
-            }
-            header('Location: '.PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $_GET['wp_id'], 'day' => $start->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));
-        } else {
-            if($start > new DateTime() ){ //start liegt in Zukunft --> delete action
-            $_GET['day'] = $schedule->getStart()->format('d.m.Y');
-            $admin ? $this->addSchedule_action() : $this->timetable_action();
-            print(createQuestion(
-                "Möchten Sie den Termin wirklich löschen ?",
-                array('delete' => true, 's_id' => $schedule->getId(), 'wp_id' => $schedule->getWorkplace()->getId()),
-                array('delete' => false, 's_id' => $schedule->getId(), 'wp_id' => $schedule->getWorkplace()->getId())));
-        
-            }else{
-                throw new AccessDeniedException("Der Termin ist bereits abgelaufen");
-            }
+            header('Location: ' . PluginEngine::getURL('WorkplaceAllocation', array('wp_id' => $schedule->getWorkplace()->getId(), 'week' => '1', 'day' => $schedule->getStart()->format('d.m.Y')), $admin ? 'addSchedule': 'timetable'));   
         }
-
-
     }
 
     /**
@@ -703,61 +699,76 @@ Dies ist eine automatisch generierte Mitteilung.
      *
      * @throws AccessDeniedException
      */
-    public function manageBlacklist_action() {
-        if(!$this->user_has_admin_perm($_GET['cid'])) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+    public function manageBlacklist_action() 
+    {
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
         if(Request::isPost()) {
-            if(isset($_POST['action']) && isset($_POST['user_id'])) {
-                $user = new StudIPUser($_POST['user_id']);
-                switch ($_POST['action']) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
+
+            if(isset($request['action']) && isset($request['user_id'])) {
+                $user = User::findFull($request['user_id']);
+                switch ($request['action']) {
                     case 'delete':
-                        if(!isset($_POST['delete'])){
+
+                        if(!isset($request['delete'])) {
+
                             $trueResponse = $_POST;
                             $trueResponse['delete'] = true;
                             $falseResponse = $_POST;
                             $falseResponse['delete'] = false;
                             print(createQuestion2(
-                                "Möchten sie den Nutzer ".$user->getGivenname()." ".$user->getSurname()." (".$user->getUsername().") wirklich von der Sperrliste entfernen?",
+                                'Möchten sie den Nutzer ' . $user->vorname . ' ' . $user->nachname . ' (' . $user->username . ') wirklich von der Sperrliste entfernen?',
                                 $trueResponse,
                                 $falseResponse,
-                                "?cid=".$_GET['cid']
+                                '?cid=' . $request['cid']
                             ));
                         }
-                        if($_POST['delete']) {
-                            Blacklist::getBlacklist()->deleteFromList($user->getUserid());
+
+                        if($request['delete']) {
+                            Blacklist::getBlacklist()->deleteFromList($user->user_id);
                         }
+
                         break;
                     case 'add':
-                        if(!isset($_POST['add'])){
+
+                        if(!isset($request['add'])) {
+
                             $trueResponse = $_POST;
                             $trueResponse['add'] = true;
                             $falseResponse = $_POST;
                             $falseResponse['add'] = false;
                             print(createQuestion2(
-                                "Möchten sie den Nutzer \"".$user->getGivenname()." ".$user->getSurname()." (".$user->getUsername().")\" wirklich zur Sperrliste hinzufügen und in der Zeit der Sperrung alle Reservierungen löschen?",
+                                'Möchten sie den Nutzer ' . $user->vorname . ' ' . $user->nachname . ' (' . $user->username . ') wirklich zur Sperrliste hinzufügen und in der Zeit der Sperrung alle Reservierungen löschen?',
                                 $trueResponse,
                                 $falseResponse,
-                                "?cid=".$_GET['cid']
+                                '?cid=' . $request['cid']
                             ));
                         }
-                        if($_POST['add']) {
+
+                        if($request['add']) {
                             $expiration = null;
-                            if(sizeof($_POST['expiration']) > 0 && $_POST['expiration'] > 0){
+
+                            if(sizeof($request['expiration']) > 0 && $request['expiration'] > 0) {
                                 $time = new DateTime();
                                 $today = new DateTime($time->format('d.m.Y'));
-                                $expiration = $today->getTimestamp() + ($_POST['expiration'] * 24 * 60 * 60) -1;
-                                $expirationDatetime = new DateTime('@'.$expiration);
+                                $expiration = $today->getTimestamp() + ($request['expiration'] * 24 * 60 * 60) -1;
+                                $expirationDatetime = new DateTime('@' . $expiration);
                             }
-                            $user_schedules = Schedule::getSchedulesByUser($user->getUserid());
+
+                            $user_schedules = Schedule::getSchedulesByUser($user->user_id);
                             foreach ($user_schedules as $schedule) {
+
                                 if ($expiration == null || $schedule->getStart() < $expirationDatetime) {
                                     $schedule->deleteSchedule();
                                 }
                             }
-                            Blacklist::getBlacklist()->addToList($user->getUserid(), $expiration);
+                            Blacklist::getBlacklist()->addToList($user->user_id, $expiration);
                         }
+
                         break;
                 }
             }
@@ -768,9 +779,9 @@ Dies ist eine automatisch generierte Mitteilung.
         /** @var Flexi_Template $template */
         $template = $this->templateFactory->open('manageBlacklist');
         $template->set_layout($GLOBALS['template_factory']->open('layouts/base'));
-        $template->set_attribute('blacklist', Blacklist::getBlacklist($_GET['cid']));
+        $template->set_attribute('blacklist', Blacklist::getBlacklist(Request::get('cid')));
 
-        PageLayout::addStylesheet($this->getPluginURL().'/assets/stylesheets/link_button.css');
+        PageLayout::addStylesheet($this->getPluginURL() . '/assets/stylesheets/link_button.css');
 
         print($template->render());
     }
@@ -782,25 +793,22 @@ Dies ist eine automatisch generierte Mitteilung.
      */
     public function manageMail_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid'])){
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
         Navigation::activateItem('/course/admin/workplaces');
 
-        require_once(__DIR__.'/conf/default_mesage_texts.php');
+        require_once(__DIR__ . '/conf/default_mesage_texts.php');
         global $defaultMessageTexts;
-
         foreach ($defaultMessageTexts as $messageTextId => $messageTextDetails) {
-            $studipMessage = WpMessages::findBySQL("context_id = ? AND hook_point = ?", array($_GET['cid'], $messageTextId));
+            $studipMessage = WpMessages::findBySQL("context_id = ? AND hook_point = ?", array(Request::get('cid'), $messageTextId));
+
             if(sizeof($studipMessage) > 0) {
                 $defaultMessageTexts[$messageTextId]['studip_message'] = $studipMessage[0];
             } else {
                 $defaultMessageTexts[$messageTextId]['studip_message'] = null;
             }
-        }
-        if(Request::isPost()) {
-
         }
 
         /** @var Flexi_Template $template */
@@ -818,13 +826,13 @@ Dies ist eine automatisch generierte Mitteilung.
      */
     public function editMailtext_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid'])) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
-        $message = WpMessages::findBySQL('context_id = ? AND hook_point = ?', array($_GET['cid'], $_GET['hook_point']));
+        $message = WpMessages::findBySQL("context_id = ? AND hook_point = ?", array(Request::get('cid'), Request::get('hook_point')));
 
-        if(sizeof($message) == 0){
+        if(sizeof($message) == 0) {
             /** @var WpMessages $message */
             $message = null;
         } else {
@@ -833,28 +841,31 @@ Dies ist eine automatisch generierte Mitteilung.
         }
 
         if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
             $data = array(
-                'context_id' => $_GET['cid'],
-                'hook_point' => $_GET['hook_point'],
-                'subject' => $_POST['subject'],
-                'message' => $_POST['text'],
-                'active' => isset($_POST['active']) && $_POST['active'] == 'on'
+                'context_id' => $request['cid'],
+                'hook_point' => $request['hook_point'],
+                'subject' => $request['subject'],
+                'message' => $request['text'],
+                'active' => isset($request['active']) && $request['active'] == 'on'
             );
+
             if($message == null) {
                 $message = new WpMessages();
                 $message->id = $message->getNewId();
             }
+
             foreach ($data as $key => $item) {
                 //$message->setValue($key, $item);
                 $message->$key = $item;
             }
             $message->store();
 
-            header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail'));
+            header('Location: ' . PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail'));
         }
 
         Navigation::activateItem('/course/admin/workplaces');
-
 
         /** @var Flexi_Template $template */
         $template = $this->templateFactory->open('editMailtext');
@@ -862,7 +873,6 @@ Dies ist eine automatisch generierte Mitteilung.
         $template->set_attribute('message', $message);
 
         print($template->render());
-
     }
 
      /**
@@ -872,8 +882,8 @@ Dies ist eine automatisch generierte Mitteilung.
      */
     public function manageNotifiedUsers_action()
     {
-        if(!$this->user_has_admin_perm($_GET['cid'])){
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
         Navigation::activateItem('/course/admin/workplaces');
@@ -881,16 +891,47 @@ Dies ist eine automatisch generierte Mitteilung.
         /** @var string[] $messageBoxes */
         $messageBoxes = array();
 
-        if(Request::isPost())
-        {
-            if(!isset($_POST['username']) || $_POST['username'] == "") {
-                $messageBoxes[] = MessageBox::error('Kein Nutzer angegeben.');
-            } else if($user_id = get_userid($_POST['username'])) { // checks if username is real
-                NotifiedUserList::getNotifiedUserList()->addToList($user_id);
-                $messageBoxes[] = MessageBox::success("Erfolgreich gespeichert.");
-            } else {
-                $messageBoxes[] = MessageBox::error('Der von Ihnen angegebene Nutzer existiert nicht.');
-            }
+        $userlist = NotifiedUserList::getNotifiedUserList(); 
+
+        if(Request::isPost()) {
+            CSRFProtection::verifySecurityToken();
+            $request = Request::getInstance();
+            switch($request['action']) {
+                case 'add':
+
+                    if(!isset($request['user_id']) || $request['user_id'] == '') {
+                        $messageBoxes[] = MessageBox::error('Kein Nutzer angegeben.');      
+                    } else {
+                        $userlist->addToList($request['user_id']);
+                        $messageBoxes[] = MessageBox::success('Erfolgreich gespeichert.');
+                    }
+
+                    break;
+                case 'delete':
+
+                    if(!isset($request['confirm'])) {
+
+                        $trueResponse = $_POST;
+                        $trueResponse['confirm'] = true;
+                        $falseResponse = $_POST;
+                        $falseResponse['confirm'] = false;
+                        print(createQuestion2(
+                            'Möchten Sie den User "' . User::findFull($request['user_id'])->username . '" wirklich löschen?',
+                            $trueResponse, 
+                            $falseResponse,
+                            '?cid=' . $request['cid']
+                        )); 
+                    }
+
+                    if($request['confirm']) {
+                        NotifiedUserList::getNotifiedUserList()->deleteFromList($request['user_id']);
+                    }
+
+                    header('Location: ' . PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers'));
+                    break;
+                default:
+                    break;    
+            }   
         }
 
         /** @var Flexi_Template $template */
@@ -899,43 +940,9 @@ Dies ist eine automatisch generierte Mitteilung.
         $template->set_attribute('userlist', NotifiedUserList::getNotifiedUserList());
         $template->set_attribute('messageBoxes', $messageBoxes);
 
+        PageLayout::addStylesheet($this->getPluginURL() . '/assets/stylesheets/link_button.css');
+
         print($template->render());
-    }
-
-    /**
-     * route to delete a user who gets notification mails when schedules are created
-     * first ask if you really would like to delete this user from the mailing list
-     *
-     * @throws AccessDeniedException
-     */
-    public function delNotifiedUser_action()
-    {
-        if(!$this->user_has_admin_perm($_GET['cid']))
-        {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
-        }
-
-        $user = User::findFull($_GET['user_id']);
-
-        if(isset($_GET['delete']))
-        {
-            if($_GET['delete'])
-            {
-                NotifiedUserList::getNotifiedUserList()->deleteFromList($_GET['user_id']);
-            }
-            header('Location: '.PluginEngine::getLink('WorkplaceAllocation', array(), 'manageNotifiedUsers'));
-
-        }
-        else
-        {
-            $this->manageNotifiedUsers_action();
-
-            print(createQuestion(
-                "Möchten Sie den User \"".$user->username."\" wirklich löschen ?",
-                array("user_id" => $_GET['user_id'], "delete" => true), 
-                array("delete" => false)
-            ));
-        }
     }
 
     /**
@@ -943,11 +950,13 @@ Dies ist eine automatisch generierte Mitteilung.
      *
      * @throws AccessDeniedException
      */
-    public function my_schedules_action() {
-        $currentUser = User::findFull(get_userid());
+    public function my_schedules_action() 
+    {
+        $currentUser = User::findCurrent();
+        $request = Request::getInstance();
 
-        if(isset($_REQUEST['username']) && $_REQUEST['username'] != $currentUser->username) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+        if(isset($request['username']) && $request['username'] != $currentUser->username) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
         Navigation::activateItem('/profile/workplace_schedules');
@@ -965,34 +974,35 @@ Dies ist eine automatisch generierte Mitteilung.
      *
      * @throws AccessDeniedException
      */
-    public function pdf_action() {
-
-        if (!$this->user_has_admin_perm($_GET['cid'])) {
-            throw new AccessDeniedException("Du hast nicht die nötigen Rechte zum Aufruf dieser Seite");
+    public function pdf_action() 
+    {
+        if (!$this->user_has_admin_perm(Request::get('cid'))) {
+            throw new AccessDeniedException('Du hast nicht die nötigen Rechte zum Aufruf dieser Seite');
         }
 
-        if(isset($_GET['wp_id'])) {
-            $workplace = Workplace::getWorkplace($_GET['wp_id']);
+        if(Request::get('wp_id') != null) {
+            $workplace = Workplace::getWorkplace(Request::get('wp_id'));
             $workplaces = array($workplace);
         } else {
-            $workplaces = Workplace::getWorkplacesByContext($_GET['cid']);
+            $workplaces = Workplace::getWorkplacesByContext(Request::get('cid'));
         }
+
         $pdf = new TCPDF();
 
         //document information
         $pdf->SetCreator('Stud.IP Arbeitsplatz Vergabe Plugin');
         $pdf->SetAuthor('Stud.IP');
+
         if(isset($workplace)) {
-            $pdf->SetTitle('Arbeitsplatz ' . $workplace->getName() . " " . date('d.m.Y'));
+            $pdf->SetTitle('Arbeitsplatz ' . $workplace->getName() . ' ' . date('d.m.Y'));
         } else {
             $pdf->SetTitle('Arbeitsplätze ' . date('d.m.Y'));
         }
-        $pdf->SetSubject('Stud.IP Arbeitsplätze');
 
+        $pdf->SetSubject('Stud.IP Arbeitsplätze');
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->SetAutoPageBreak(false);
-
 
         foreach ($workplaces as $wp) {
             #Collecting information
@@ -1011,12 +1021,11 @@ Dies ist eine automatisch generierte Mitteilung.
 
             $topStart = 70;
 
-
             $pdf->AddPage();
 
             #Header
-            $pdf->Image(__DIR__.'/img/studip-logo.png', 148.67, 17.5, 53.33, 12.5, "PNG");
-            $pdf->Image(__DIR__.'/img/tubs_logo.jpg', 17, 17.5, 63, 23, "JPG");
+            $pdf->Image(__DIR__ . '/img/studip-logo.png', 148.67, 17.5, 53.33, 12.5, 'PNG');
+            $pdf->Image(__DIR__ . '/img/tubs_logo.jpg', 17, 17.5, 63, 23, 'JPG');
             $pdf->Rect(80, 35, 122, 0.5, 'F', array(), array(190, 30, 60));
 
             #Headline
@@ -1033,30 +1042,31 @@ Dies ist eine automatisch generierte Mitteilung.
             #Timetable
             $pdf->SetXY(27, $topStart);
 
-            for($i = 0; $i< $steps; $i+=(60*30)) {
-                $pdf->Rect(27, $topStart+$i*$stepHeight, 175, 0.5, 'F', array(), array(200, 200, 200));
-                $pdf->SetXY(27, $topStart+$i*$stepHeight);
-                $pdf->Cell(30, (60*30)*$stepHeight, date('H:i', $i+$startTime->getTimestamp()));
+            for($i = 0; $i < $steps; $i += (60*30)) {
+                $pdf->Rect(27, $topStart + $i * $stepHeight, 175, 0.5, 'F', array(), array(200, 200, 200));
+                $pdf->SetXY(27, $topStart + $i * $stepHeight);
+                $pdf->Cell(30, (60*30) * $stepHeight, date('H:i', $i + $startTime->getTimestamp()));
             }
 
             foreach ($schedules as $schedule) {
-                $timeString = '1970-01-01 '.$schedule->getStart()->format('H:i:s');
+                $timeString = '1970-01-01 ' . $schedule->getStart()->format('H:i:s');
                 $scheduleStartTableStart = new DateTime($timeString, new DateTimeZone('UTC'));
                 $scheduleStartTableStart->sub($wp->getRule()->getStart());
                 $scheduleDurationTime = new DateTime('@0');
                 $scheduleDurationTime->add($schedule->getDuration());
-                $pdf->Rect(47, $topStart+$scheduleStartTableStart->getTimestamp()*$stepHeight, 155, $scheduleDurationTime->getTimestamp()*$stepHeight, 'FD',array('all' => array('width' => 0.5, 'color' => array(35, 64, 153))), array(255,255,255));
-                $pdf->SetXY(50, $topStart+$scheduleStartTableStart->getTimestamp()*$stepHeight);
+                $pdf->Rect(47, $topStart + $scheduleStartTableStart->getTimestamp() * $stepHeight, 155, $scheduleDurationTime->getTimestamp() * $stepHeight, 'FD', array('all' => array('width' => 0.5, 'color' => array(35, 64, 153))), array(255,255,255));
+                $pdf->SetXY(50, $topStart + $scheduleStartTableStart->getTimestamp() * $stepHeight);
+
                 $comment = $schedule->getComment();
-                strlen($comment)>48?$string=substr($comment, 0,48).'...':$string=$comment;
-                $pdf->Cell(150, $scheduleDurationTime->getTimestamp()*$stepHeight, $schedule->getOwner()->vorname.' '.$schedule->getOwner()->nachname.'   '.$string);
+                strlen($comment) > 48 ? $string = substr($comment, 0, 48) . '...' : $string = $comment;
+                $pdf->Cell(150, $scheduleDurationTime->getTimestamp()*$stepHeight, $schedule->getOwner()->vorname . ' ' . $schedule->getOwner()->nachname . '   ' . $string);
             }
 
 
             #Footer
             $pdf->SetXY(24, 276);
             $pdf->SetFontSize(10);
-            $pdf->Cell(50, 5, "Seite ".$pdf->getAliasNumPage()." von ".$pdf->getAliasNbPages());
+            $pdf->Cell(50, 5, 'Seite ' . $pdf->getAliasNumPage() . ' von ' . $pdf->getAliasNbPages());
         }
 
         print($pdf->Output('studip_arbeitsplatz.pdf', 'I'));
@@ -1077,7 +1087,8 @@ Dies ist eine automatisch generierte Mitteilung.
      *
      * @return object   template object to render or NULL
      */
-    function getHomepageTemplate($user_id) {
+    function getHomepageTemplate($user_id) 
+    {
         return null;
     }
 }
