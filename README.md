@@ -27,25 +27,40 @@ Druckfunktion für Öffnungszeiten aller Arbeitsplätze im PDF Format
 
 ## Version History:
 
-v0.1
+#### v0.1
+
 Initial
-v0.2
+
+#### v0.2
+
 Warteliste für belegte Terminblöcke hinzugefügt
-v0.3
+
+#### v0.3
+
 Warteliste für belegte Terminblöcke auf Nutzerwunsch deaktiviert
-v0.4
+
+#### v0.4
+
 Bugfix für Fehler bei neu erstellten Arbeitsplätzen ohne Tage
-v0.5
+
+#### v0.5
+
 Name bei Terminen ist Link auf Profil  
-v0.6
+
+#### v0.6
+
 Mailingliste für Terminänderungen hinzugefügt
-v0.7
+
+#### v0.7
+
 Terminansicht standartmäßig per Woche
 Option der Beschränkung von Arbeitsplätzen für Einrichtungsmitglieder
 Überarbeitung der Terminansicht
 Darstellung von Kommentaren in Termin- und Druckansicht
 Implementation eines locks für Modifikationen von Termindaten
-v1.0
+
+#### v1.0
+
 Verbesserung der Suchfunktion für das Hinzufügen zur Mailingliste
 Implementation des Stud.IP CSRF Schutzes
 Implementation des Stud.IP Coding-Stils
