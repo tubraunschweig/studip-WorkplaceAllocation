@@ -1,21 +1,21 @@
-Stud.IP WorkplaceAllocation Plugin
-=
+# Stud.IP WorkplaceAllocation Plugin
+
 Das Plug-in erlaubt es Einrichtungen die Buchungen ihrer studentischen Arbeitsplätze im Stud.IP System zu organisieren.
 
 Nach Aktivierung des Plug-ins auf der Seite der Einrichtung können im Menüpunkt "Verwaltung" Arbeitsplätze erstellt und konfiguriert werden.
 
 Die Anmeldung für Zeitslots auf Arbeitsplätzen erfolgt über den Menüpunkt "Arbeitsplätze" auf der Seite der Einrichtung.
 
-Installation
--
+## Installation
+
 Um das Plug-in zu installieren muss erst eine installierbare ZIP Datei gebaut werden.
 Diese Dev Version benutzt das Build-Management Tool Make. Mit dem Befehl `make build` wird automatisch eine Installationsdatei aus dem aktuellen Stand erzeugt. Das erzeugte ZIP Archiv kann dann im Stud.IP Backend installiert werden.
 
-Features
--
+## Features
+
 Erstellung von Arbeitsplätzen mit umfassenden Optionen für Zeitslots. Einstellungen für Tage, Öffnungszeiten, Pausen, Slotlänge, Limitierung des Anmeldezeitraums, Besondere Optionen wie "Ein Termin pro Tag und Nutzer" oder "Termine nur für Mitglieder der Einrichtung"
 
-Zeitslots mit Link auf Profilseite des Nutzers, variabler Länge, Kommentarfunktion und nachträglicher Modifikationsmöglichkeit. 
+Zeitslots mit Link auf Profilseite des Nutzers, variabler Länge, Kommentarfunktion und nachträglicher Modifikationsmöglichkeit.
 
 Blockingliste zur temporären Sperrung von Nutzern von den Arbeitsplätzen. Standardzeitspanne von 7 Tagen. Individuell modifizierbar.
 
@@ -25,8 +25,8 @@ Mailingliste zur Benachrichtigung einer frei zusammenstellbaren Gruppe von Nutze
 
 Druckfunktion für Öffnungszeiten aller Arbeitsplätze im PDF Format
 
-Version History:
--
+## Version History:
+
 v0.1
 Initial
 v0.2
