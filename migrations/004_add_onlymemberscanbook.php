@@ -9,15 +9,15 @@
 
 class AddOnlyMembersCanBook extends Migration
 {
-    function up() 
+    public function up()
     {
         $db = DBManager::get();
         $db->exec("ALTER TABLE wp_rules ADD COLUMN only_members_can_book TINYINT(1);");
     }
 
-    function down() 
+    public function down()
     {
         $db = DBManager::get();
-        $db->exec("ALTER TABLE wp_rules DROP COLUMN only_members_can_book;"); 
+        $db->exec("ALTER TABLE wp_rules DROP COLUMN only_members_can_book;");
     }
 }

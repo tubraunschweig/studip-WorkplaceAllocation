@@ -41,13 +41,12 @@ class Workplace
         $this->description = $description;
         $this->active = $active;
         $this->contextId = $contextId;
-        
-        if($rule != null) {
+
+        if ($rule != null) {
             $this->rule = Rule::getRule($rule);
         } else {
             $this->rule = null;
         }
-
     }
 
     /**
@@ -109,7 +108,7 @@ class Workplace
     {
         return $this->contextId;
     }
-    
+
 
     /**
      * set workplace description
@@ -119,7 +118,7 @@ class Workplace
     public function setDescription($description)
     {
         $this->description = $description;
-        DBManager::get()->execute("UPDATE wp_workplaces SET description = ? WHERE id = ?", array($description, $this->id));
+        DBManager::get()->execute("UPDATE wp_workplaces SET description = ? WHERE id = ?", [$description, $this->id]);
     }
 
     /**
@@ -130,7 +129,7 @@ class Workplace
     public function setName($name)
     {
         $this->name = $name;
-        DBManager::get()->execute("UPDATE wp_workplaces SET name = ? WHERE id = ?", array($name, $this->id));
+        DBManager::get()->execute("UPDATE wp_workplaces SET name = ? WHERE id = ?", [$name, $this->id]);
     }
 
     /**
@@ -140,17 +139,15 @@ class Workplace
      */
     public function activate()
     {
-        if($this->active == 'on') {
+        if ($this->active == 'on') {
             return true;
         }
 
-        if($this->rule == null) {
+        if ($this->rule == null) {
             return false;
         }
-
         $this->active = 'on';
-        DBManager::get()->execute("UPDATE wp_workplaces SET active = 'on' WHERE id = ?", array($this->id));
-
+        DBManager::get()->execute("UPDATE wp_workplaces SET active = 'on' WHERE id = ?", [$this->id]);
         return true;
     }
 
@@ -161,13 +158,11 @@ class Workplace
      */
     public function deactivate()
     {
-        if($this->active == 'off') {
+        if ($this->active == 'off') {
             return true;
         }
-
         $this->active = 'off';
-        DBManager::get()->execute("UPDATE wp_workplaces SET active = 'off' WHERE id = ?", array($this->id));
-
+        DBManager::get()->execute("UPDATE wp_workplaces SET active = 'off' WHERE id = ?", [$this->id]);
         return true;
     }
 
@@ -186,14 +181,13 @@ class Workplace
      * @param bool $onlyMembersCanBook "only members can book"-flag
      * @param array $days array of day states in boolean (<Mon>, <Tue>, <Wed>, <Thu>, <Fri>, <Sat>, <Sun>)
      */
-    public function createRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $onlyMembersCanBook = false, $days = array(true, true, true, true, true, true, true))
+    public function createRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser = false, $onlyMembersCanBook = false, $days = [true, true, true, true, true, true, true])
     {
-        if($this->rule != null) {
+        if ($this->rule != null) {
             return;
         }
-
         $this->rule = Rule::newRule($start, $end, $pauseStart, $pauseEnd, $registrationStart, $registrationEnd, $slotDuration, $oneScheduleByDayAndUser, $onlyMembersCanBook, $days);
-        DBManager::get()->execute("UPDATE wp_workplaces SET rule_id = ? WHERE id = ?", array($this->rule->getId(), $this->getId()));
+        DBManager::get()->execute("UPDATE wp_workplaces SET rule_id = ? WHERE id = ?", [$this->rule->getId(), $this->getId()]);
     }
 
     /**
@@ -201,9 +195,9 @@ class Workplace
      */
     public function deleteWorkplace()
     {
-        DBManager::get()->execute("DELETE FROM wp_workplaces WHERE id = ?", array($this->id));
-        DBManager::get()->execute("DELETE FROM wp_rules WHERE id = ?", array($this->getRule()->getId()));
-        DBManager::get()->execute("DELETE FROM wp_schedule WHERE workplace_id = ?", array($this->id));
+        DBManager::get()->execute("DELETE FROM wp_workplaces WHERE id = ?", [$this->id]);
+        DBManager::get()->execute("DELETE FROM wp_rules WHERE id = ?", [$this->getRule()->getId()]);
+        DBManager::get()->execute("DELETE FROM wp_schedule WHERE workplace_id = ?", [$this->id]);
     }
 
     /**
@@ -212,13 +206,14 @@ class Workplace
      * @param DateTime $time any time on wanted day is possible
      * @return Schedule[] return array of schedules, is empty if no schedule is found
      */
-    public function getSchedulesByDay($time) 
+    public function getSchedulesByDay($time)
     {
         $day = new DateTime($time->format('d.m.Y'));
-        $data = DBManager::get()->fetchAll('SELECT id FROM wp_schedule WHERE workplace_id = ? AND start > ? and start < ?', array($this->id, $day->format('U'), $day->format('U') + 86400));
-        $schedules = array();
 
-        foreach($data as $d) {
+        $data = DBManager::get()->fetchAll('SELECT id FROM wp_schedule WHERE workplace_id = ? AND start > ? and start < ?', [$this->id, $day->format('U'), $day->format('U') + 86400]);
+        $schedules = [];
+
+        foreach ($data as $d) {
             $schedules[] = Schedule::getSchedule($d['id']);
         }
 
@@ -230,11 +225,11 @@ class Workplace
      *
      * @param DateTime $day any time on wanted day is given
      */
-    public function refillFromWaitingList($day) 
+    public function refillFromWaitingList($day)
     {
         $realDay = new DateTime($day->format('d.m.Y'));
 
-        if(WaitingList::peek($this, $realDay) == null) {
+        if (WaitingList::peek($this, $realDay) == null) {
             return;
         }
 
@@ -247,7 +242,7 @@ class Workplace
         $pauseStartTime = null;
         $pauseEndTime = null;
 
-        if($this->getRule()->hasPause()) {
+        if ($this->getRule()->hasPause()) {
             $pauseStartTime = clone $day;
             $pauseStartTime->add($this->getRule()->getPauseStart());
             $pauseEndTime = clone $day;
@@ -255,15 +250,12 @@ class Workplace
         }
 
         for ($time = clone $dayStartTime; $time <= $dayEndTime; $time->add($this->rule->getSlotDuration())) {
-
             $startTime = clone $time;
             $endTime = clone $time;
             $endTime->add($this->rule->getSlotDuration());
 
             $foundSchedule = null;
-
             foreach ($daySchedules as $schedule) {
-
                 if ($schedule->getStart() >= $startTime && $schedule->getStart() < $endTime) {
                     $foundSchedule = $schedule;
                 }
@@ -272,18 +264,17 @@ class Workplace
             if ($foundSchedule != null) {
                 $time = clone $foundSchedule->getStart();
                 $time->add($foundSchedule->getDuration())->sub($this->rule->getSlotDuration());
-            } else if($this->getRule()->hasPause() && $endTime > $pauseStartTime && $startTime < $pauseEndTime) {
+            } elseif ($this->getRule()->hasPause() && $endTime > $pauseStartTime && $startTime < $pauseEndTime) {
                 $time = clone $pauseEndTime;
                 $time->sub($this->rule->getSlotDuration());
-            } else if ($endTime <= $dayEndTime) {
+            } elseif ($endTime <= $dayEndTime) {
                 $nextFromWaitingList = WaitingList::pop($this, $realDay);
                 Schedule::newSchedule($nextFromWaitingList->getUserid(), $this->id, $startTime->getTimestamp(), $this->rule->getSlotDuration()->format('P%yY%mM%dDT%hH%iM%sS'));
             }
         }
-
     }
 
-    
+
 
     /*
      * Static functions
@@ -296,9 +287,9 @@ class Workplace
      */
     public static function getWorkplace($id)
     {
-        $data = \DBManager::get()->fetchAll("SELECT * FROM wp_workplaces WHERE id = ?", array($id));
+        $data = \DBManager::get()->fetchAll("SELECT * FROM wp_workplaces WHERE id = ?", [$id]);
 
-        if(sizeof($data) < 1) {
+        if (sizeof($data) < 1) {
             return null;
         }
 
@@ -318,8 +309,8 @@ class Workplace
     public static function newWorkplace($name, $description, $contextId)
     {
         $id = sha1(rand());
-        \DBManager::get()->execute("INSERT INTO wp_workplaces (id, name, description, context_id) VALUES (?, ?, ?, ?)", array($id, $name, $description, $contextId));
-        
+        \DBManager::get()->execute("INSERT INTO wp_workplaces (id, name, description, context_id) VALUES (?, ?, ?, ?)", [$id, $name, $description, $contextId]);
+
         return Workplace::getWorkplace($id);
     }
 
@@ -331,15 +322,16 @@ class Workplace
      */
     public static function getWorkplacesByContext($contextId)
     {
-        $data = DBManager::get()->fetchAll("SELECT id FROM wp_workplaces WHERE context_id = ?", array($contextId));
+        $data = DBManager::get()->fetchAll("SELECT id FROM wp_workplaces WHERE context_id = ?", [$contextId]);
 
-        $workplaceList = array();
+        $workplaceList = [];
 
-        foreach($data as $item) {
+        foreach ($data as $item) {
             $workplaceList[] = self::getWorkplace($item['id']);
         }
 
-        function cmp($a, $b) {
+        function cmp($a, $b)
+        {
             /** @var Workplace $a */
             /** @var workplace $b */
             return strcmp($a->getName(), $b->getName());

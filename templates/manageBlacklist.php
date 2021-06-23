@@ -33,9 +33,7 @@
     </thead>
     <tbody>
     <?php
-
     if ($blacklist->list_size() > 0) {
-
         foreach ($blacklist as $entry) {
             /** @var User $user */
             $user = $entry['user'];
@@ -47,7 +45,7 @@
                 <td><?= $user->username ?></td>
                 <td><?= $expiration != null ? $expiration->format('d.m.Y') : _('Unbegrenzt') ?></td>
                 <td style="text-align: right;">
-                    <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>" method="post">
+                    <form action="<?= PluginEngine::getLink('WorkplaceAllocation', [], 'manageBlacklist') ?>" method="post">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="user_id" value="<?= $user->user_id ?>">
                         <?= CSRFProtection::tokenTag() ?>
@@ -57,19 +55,17 @@
             </tr>
             <?php
         }
-
     } else {
         ?>
         <tr><td colspan="4" style="text-align: center">Aktuell sind keine Personen auf der Sperrliste.</td></tr>
         <?php
     }
-
     ?>
     </tbody>
     <tfoot>
         <tr>
             <td colspan="4">
-                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageBlacklist') ?>" method="post">
+                <form action="<?= PluginEngine::getLink('WorkplaceAllocation', [], 'manageBlacklist') ?>" method="post">
                     <input type="hidden" name="action" value="add">
                     <?php
                     $search = new SQLSearch("SELECT user_id, CONCAT(Vorname, ' ', Nachname, ' (', username, ')') FROM auth_user_md5 WHERE Nachname LIKE :input OR username LIKE :input OR Vorname LIKE :input", _('Benutzer'), 'username');

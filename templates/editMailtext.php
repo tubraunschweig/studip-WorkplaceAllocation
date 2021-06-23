@@ -16,12 +16,12 @@ global $defaultMessageTexts;
 ?>
 
 <h1>Benachrichtigungstexte bearbeiten</h1>
-<a href="<?= PluginEngine::getLink('WorkplaceAllocation', array(), 'manageMail') ?>">zurück</a>
+<a href="<?= PluginEngine::getLink('WorkplaceAllocation', [], 'manageMail') ?>">zurück</a>
 <br>
 <br>
 <b>Einhängepunkt:</b> <?= $defaultMessageTexts[Request::get('hook_point')]['meta'] ?>
 
-<form action="<?= PluginEngine::getLink('WorkplaceAllocation', array('hook_point' => Request::get('hook_point')), 'editMailtext') ?>" method="post" class="default">
+<form action="<?= PluginEngine::getLink('WorkplaceAllocation', ['hook_point' => Request::get('hook_point')], 'editMailtext') ?>" method="post" class="default">
     <section>
         <label for="subject">Betreff:</label>
         <input type="text" name="subject" id="subject" class="size-m" value="<?= $message == null ? '' : $message->subject ?>">
@@ -35,5 +35,5 @@ global $defaultMessageTexts;
         <textarea id="text" name="text" cols="75" rows="30"><?= $message != null ? $message->message : '' ?></textarea>
     </section>
     <?= CSRFProtection::tokenTag() ?>
-    <?=\Studip\Button::create('Speichern', null, array('type' => 'submit', 'class' => 'accept'))?>
+    <?=\Studip\Button::create('Speichern', null, ['type' => 'submit', 'class' => 'accept'])?>
 </form>

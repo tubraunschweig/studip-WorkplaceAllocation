@@ -33,7 +33,7 @@ Benachrichtigungstexte
     <tbody>
     <?php
 
-    foreach($defaultMessageTexts as $hookPoint => $defaultMessageText) {
+    foreach ($defaultMessageTexts as $hookPoint => $defaultMessageText) {
         /** @var WpMessages $studipMessage */
         $studipMessage = $defaultMessageText['studip_message']
         ?>
@@ -41,15 +41,13 @@ Benachrichtigungstexte
             <td><?= $defaultMessageText['meta'] ?></td>
             <td><?= $studipMessage !== null && $studipMessage->active ? Assets::img('icons/20/green/accept') . ' (aktiv)' : Assets::img('icons/20/red/decline') . ' (inaktiv)' ?></td>
             <td style="text-align: right;">
-                <a href="<?= PluginEngine::getLink('WorkplaceAllocation', array('hook_point' => $hookPoint), 'editMailtext') ?>">
+                <a href="<?= PluginEngine::getLink('WorkplaceAllocation', ['hook_point' => $hookPoint], 'editMailtext') ?>">
                     <?= Assets::img('icons/20/blue/edit') ?>
                 </a>
             </td>
         </tr>
         <?php
-
     }
-
     ?>
 </tbody>
 </table>

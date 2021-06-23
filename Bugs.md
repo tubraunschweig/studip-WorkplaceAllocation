@@ -1,6 +1,6 @@
 ## Fehler
 1. Termine der Studierenden werden manchmal nicht angelegt:
-Termine der Studierenden werden manchmal trotz Versandt einer Bestätigungsmail nicht angelegt. Dies kommt in der Zeit der Vollbelastung während der Abgabephase so zwischen 3 und 5 mal vor. 
+Termine der Studierenden werden manchmal trotz Versandt einer Bestätigungsmail nicht angelegt. Dies kommt in der Zeit der Vollbelastung während der Abgabephase so zwischen 3 und 5 mal vor.
 
 Da es nur bei starker Nutzung vereinzelt auftritt könnte es mit Kollisionen zu tun haben.
 

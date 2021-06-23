@@ -19,27 +19,24 @@ class WaitingList
      * @param DateTime $day any time on target day
      * @return int|null waiting list position of null on error
      */
-    static function push($workplace, $day) 
+    public static function push($workplace, $day)
     {
         $realDay = new DateTime($day->format('d.m.Y'));
-        $data = DBManager::get()->fetchAll("SELECT * FROM wp_waiting_list WHERE workplace_id = ? AND day = ? AND user_id = ?", array($workplace->getId(), $realDay->getTimestamp(), get_userid()));
+        $data = DBManager::get()->fetchAll("SELECT * FROM wp_waiting_list WHERE workplace_id = ? AND day = ? AND user_id = ?", [$workplace->getId(), $realDay->getTimestamp(), get_userid()]);
 
-        if(sizeof($data) == 0) {
-            DBManager::get()->execute("INSERT INTO wp_waiting_list (workplace_id, user_id, day, insertion_timestamp) VALUES (?, ?, ?, ?)", array($workplace->getId(), get_userid(), $realDay->getTimestamp(), time()));
+        if (sizeof($data) == 0) {
+            DBManager::get()->execute("INSERT INTO wp_waiting_list (workplace_id, user_id, day, insertion_timestamp) VALUES (?, ?, ?, ?)", [$workplace->getId(), get_userid(), $realDay->getTimestamp(), time()]);
         }
 
-        $data = DBManager::get()->fetchAll("SELECT * FROM wp_waiting_list WHERE workplace_id = ? AND day = ? ORDER BY insertion_timestamp ASC", array($workplace->getId(), $realDay->getTimestamp()));
+        $data = DBManager::get()->fetchAll("SELECT * FROM wp_waiting_list WHERE workplace_id = ? AND day = ? ORDER BY insertion_timestamp ASC", [$workplace->getId(), $realDay->getTimestamp()]);
         $counter = 1;
-        
         foreach ($data as $d) {
-
-            if($d['user_id'] == get_userid()){
+            if ($d['user_id'] == get_userid()) {
                 return $counter;
             } else {
                 $counter++;
             }
         }
-
         return null;
     }
 
@@ -50,17 +47,16 @@ class WaitingList
      * @param DateTime $day any time on target day
      * @return User|null first user on list or null on error
      */
-    static function peek($workplace, $day) 
+    public static function peek($workplace, $day)
     {
         $realDay = new DateTime($day->format('d.m.Y'));
-        $data = DBManager::get()->fetchAll("SELECT user_id FROM wp_waiting_list WHERE workplace_id = ? AND day = ? ORDER BY insertion_timestamp ASC", array($workplace->getId(), $realDay->getTimestamp()));
+        $data = DBManager::get()->fetchAll("SELECT user_id FROM wp_waiting_list WHERE workplace_id = ? AND day = ? ORDER BY insertion_timestamp ASC", [$workplace->getId(), $realDay->getTimestamp()]);
 
-        if(sizeof($data) > 0) {
+        if (sizeof($data) > 0) {
             return User::findFull($data[0]['user_id']);
         } else {
             return null;
         }
-
     }
 
     /**
@@ -70,15 +66,14 @@ class WaitingList
      * @param DateTime $day any time on target day
      * @return null|User first user on list or error
      */
-    static function pop($workplace, $day) 
+    public static function pop($workplace, $day)
     {
         $realDay = new DateTime($day->format('d.m.Y'));
         $user = self::peek($workplace, $day);
 
-        if($user != null) {
-            DBManager::get()->execute("DELETE FROM wp_waiting_list WHERE workplace_id = ? AND day = ? AND user_id = ?", array($workplace->getId(), $realDay->getTimestamp(), $user->user_id));
+        if ($user != null) {
+            DBManager::get()->execute("DELETE FROM wp_waiting_list WHERE workplace_id = ? AND day = ? AND user_id = ?", [$workplace->getId(), $realDay->getTimestamp(), $user->user_id]);
         }
-
         return $user;
     }
 }
