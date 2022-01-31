@@ -3,6 +3,7 @@ pluginclassname=WorkplaceAllocation
 origin=tu-braunschweig
 version=1.0
 studipMinVersion=4.1
+studipMaxVersion=4.6
 
 dbscheme=sql/install.sql
 uninstalldbscheme=sql/uninstall.sql
